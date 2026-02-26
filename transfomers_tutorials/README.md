@@ -20,9 +20,21 @@ Understanding transformers architecture from basic to advance hands-on with pyth
 
 1. create constant.py file inside code/ folder
 2. add below things in it, and add your values
-    a. GOOGLE_API_KEY=
-    b. openai_key=
-    c. huggingface_api_key=
-    d. LANGFUSE_SECRET_KEY=
-    e. LANGFUSE_PUBLIC_KEY=
-    f. LANGFUSE_BASE_URL=
+    a. GOOGLE_API_KEY= \n
+    b. openai_key= \n
+    c. huggingface_api_key= \n
+    d. LANGFUSE_SECRET_KEY= \n
+    e. LANGFUSE_PUBLIC_KEY= \n
+    f. LANGFUSE_BASE_URL= \n
+
+## What it includes
+
+1. basic transformer pipeline use
+2. load a specific model from huggingface
+3. how to use it for text generation
+4. fine tune full model
+5. fine tune full model with torch custom parameters
+6. PEFT - LoRA, QLoRA
+7. Model representation - ONNX, GGUF
+8. Quantization 
+9. encodings
