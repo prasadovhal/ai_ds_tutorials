@@ -209,3 +209,7 @@ __marimo__/
 
 # creds file
 codes/constant.py
+competition/results/*
+competition/trained_model/*
+*.csv
+*.onnx
