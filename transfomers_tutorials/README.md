@@ -12,7 +12,7 @@ Understanding transformers architecture from basic to advance hands-on with pyth
 5. set `poetry config virtualenvs.in-project true`
 6. run `poetry install`
 7. set venv 
-   - for windows `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
+   - for windows `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` or `.venv\Scripts\activate`
    - for linux/mac `source .venv/bin/activate`
 
 
