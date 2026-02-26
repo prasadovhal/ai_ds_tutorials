@@ -12,7 +12,7 @@ LLM chains &amp; Basic prompt engineering tutorial
 5. set `poetry config virtualenvs.in-project true`
 6. run `poetry install`
 7. set venv 
-   - for windows `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
+   - for windows `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` or `.venv\Scripts\activate`
    - for linux/mac `source .venv/bin/activate`
 
 ## changes you need to make
@@ -44,3 +44,5 @@ LLM chains &amp; Basic prompt engineering tutorial
 13. Token count and costing
 14. using async (mainly used for apps/apis)
 15. apps
+16. check langfuse
+17. testing langfuse working
