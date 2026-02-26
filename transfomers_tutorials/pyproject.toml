@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "transformers-demo"
+version = "0.1.0"
+description = "Transformer demo setup"
+authors = ["Prasad Ovhal"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.15"
+
+# Core ML
+torch = "*"
+transformers = "*"
+datasets = "*"
+evaluate = "*"
+accelerate = "*"
+
+# Vision
+timm = "*"
+
+# Efficient / Quantization / PEFT
+peft = "*"
+bitsandbytes = "*"
+
+# ONNX
+onnx = "*"
+onnxruntime = "*"
+onnxscript = "*"
+
+# LLM C++ runtime
+llama-cpp-python = "*"
+
+# ML utilities
+scikit-learn = "^1.8"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
