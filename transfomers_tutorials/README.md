@@ -18,14 +18,15 @@ Understanding transformers architecture from basic to advance hands-on with pyth
 
 ## changes you need to make
 
-1. create constant.py file inside code/ folder
-2. add below things in it, and add your values
-    a. GOOGLE_API_KEY= \n
-    b. openai_key= \n
-    c. huggingface_api_key= \n
-    d. LANGFUSE_SECRET_KEY= \n
-    e. LANGFUSE_PUBLIC_KEY= \n
-    f. LANGFUSE_BASE_URL= \n
+1. Create `constant.py` file inside `codes/` folder.
+2. Add the following keys inside it:
+   - `GOOGLE_API_KEY = "your_google_api_key"`
+   - `OPENAI_KEY = "your_openai_key"`
+   - `HUGGINGFACE_API_KEY = "your_huggingface_api_key"`
+   - `LANGFUSE_SECRET_KEY = "your_langfuse_secret_key"`
+   - `LANGFUSE_PUBLIC_KEY = "your_langfuse_public_key"`
+   - `LANGFUSE_BASE_URL = "https://cloud.langfuse.com"`
+
 
 ## What it includes
 
