@@ -209,7 +209,9 @@ __marimo__/
 
 # creds file
 codes/constant.py
-competition/results/*
-competition/trained_model/*
+competition/fake_news_detection/results/*
+competition/fake_news_detection/trained_model/*
+competition/Jigsaw_multilingual_toxic/results/*
+competition/Jigsaw_multilingual_toxic/multi_label_model/*
 *.csv
 *.onnx
