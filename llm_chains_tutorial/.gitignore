@@ -209,4 +209,5 @@ __marimo__/
 
 # creds file
 
-codes/constant.py
+constant.py
+*.csv
