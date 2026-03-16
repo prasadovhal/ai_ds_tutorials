@@ -100,7 +100,6 @@ Agent needs tools.
 
 from langchain_core.tools import tool
 
-
 @tool
 def retrieve_docs(query):
     """Retrieve EV related documents."""
@@ -221,3 +220,207 @@ while step < MAX_STEPS:
         break
 
     step += 1
+    
+############################################################################
+# Memory
+
+# Short-Term Memory
+
+memory = []
+
+def save_memory(msg):
+    memory.append(msg)
+    
+save_memory(response)
+
+# Long-Term Memory
+
+memory_vectorstore = FAISS.from_texts([], embeddings)
+
+############################################################################
+
+# Planning Agent
+
+plan = llm.invoke(
+"Break task into steps:\nCompare Tesla vs BYD revenue"
+)
+
+tasks = plan.split("\n")
+
+############################################################################
+
+# Reflection
+
+def reflective_agent(query):
+
+    # Step 1: get initial answer from agent
+    answer = agent(query)
+
+    # Step 2: ask LLM to critique answer
+    critique = llm.invoke(
+        f"""
+You are a reviewer.
+
+Check if the answer correctly answers the question.
+
+Question:
+{query}
+
+Answer:
+{answer}
+
+Respond with:
+GOOD if correct
+BAD if incorrect
+"""
+    )
+
+    critique = str(critique).lower()
+
+    print("\nInitial Answer:\n", answer)
+    print("\nCritique:", critique)
+
+    # Step 3: if bad, regenerate
+    if "bad" in critique:
+
+        improved_answer = llm.invoke(
+            f"""
+The previous answer was incorrect.
+
+Question:
+{query}
+
+Previous Answer:
+{answer}
+
+Generate a better answer.
+"""
+        )
+
+        return str(improved_answer)
+
+    return answer
+
+result = reflective_agent("Compare Tesla and BYD revenue")
+
+print("\nFinal Answer:\n", result)
+
+############################################################################
+
+# LangGraph Agentic RAG : Minimal
+
+from langgraph.graph import StateGraph
+
+def agent_node(state):
+
+    query = state["query"]
+
+    decision = llm.invoke(
+        f"Does this question require document retrieval?\n{query}"
+    )
+
+    if "yes" in str(decision).lower():
+        return {
+            "query": query,
+            "route": "retrieve"
+        }
+
+    return {
+        "query": query,
+        "route": "answer"
+    }
+
+
+def retrieve_node(state):
+
+    query = state["query"]
+
+    context = retrieve_docs.invoke(query)
+
+    return {
+        "context": context
+    }
+    
+
+def answer_node(state):
+
+    query = state["query"]
+    context = state.get("context", "")
+
+    answer = llm.invoke(
+        f"""
+Context:
+{context}
+
+Question:
+{query}
+"""
+    )
+
+    return {
+        "answer": str(answer)
+    }
+
+from langgraph.graph import StateGraph, START, END
+from typing import TypedDict
+
+from typing import TypedDict, Optional
+
+class State(TypedDict, total=False):
+    query: str
+    context: str
+    answer: str
+    route: str
+
+
+graph = StateGraph(State)
+
+graph.add_node("agent", agent_node)
+graph.add_node("retrieve", retrieve_node)
+graph.add_node("answer", answer_node)
+
+
+# ENTRY POINT
+graph.add_edge(START, "agent")
+
+# Conditional Routing (Core Agent Logic)
+
+graph.add_conditional_edges(
+    "agent",
+    lambda state: state["route"],
+    {
+        "retrieve": "retrieve",
+        "answer": "answer"
+    }
+)
+# FLOW
+graph.add_edge("retrieve", "answer")
+
+# end point
+graph.add_edge("answer", END)
+
+
+app = graph.compile()
+
+
+result = app.invoke({
+    "query": "Compare Tesla and BYD revenue"
+})
+
+print(result["answer"])
+
+
+"""
+Internal Execution Flow: LangGraph internally runs:
+
+START
+ ↓
+agent_node()
+ ↓
+retrieve_node()
+ ↓
+answer_node()
+ ↓
+END
+
+"""
