@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "graphql-tutorials"
+description = "GraphQL with Python - Complete Tutorial (Basic to Advanced)"
+version = "0.1.0"
+authors = ["Prasad Ovhal <prasadovhal99@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+strawberry-graphql = {extras = ["fastapi"], version = "*"}
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+sqlalchemy = "*"
+aiosqlite = "*"
+pyjwt = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
+python-multipart = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-asyncio = "*"
+httpx = "*"
+ruff = "*"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

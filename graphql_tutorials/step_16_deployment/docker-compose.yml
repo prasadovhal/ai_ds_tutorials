@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=your-production-secret-key
+      - DEBUG=false
+      - ALLOWED_ORIGINS=https://yourdomain.com
+      - MAX_QUERY_DEPTH=10

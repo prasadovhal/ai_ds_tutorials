@@ -1,0 +1,75 @@
+"""An author in the catalog"""
+type Author {
+  id: ID!
+
+  """Full name"""
+  name: String!
+
+  """Short biography"""
+  bio: String
+}
+
+"""A book in the catalog"""
+type Book {
+  id: ID!
+
+  """Book title"""
+  title: String!
+
+  """Year of publication"""
+  year: Int!
+  genre: Genre!
+  author: Author!
+}
+
+enum Genre {
+  FICTION
+  NON_FICTION
+  SCIENCE_FICTION
+  FANTASY
+  MYSTERY
+}
+
+input BookInput {
+  title: String!
+  authorName: String!
+  year: Int!
+  genre: Genre!
+}
+
+input ReviewInput {
+  bookId: ID!
+  rating: Int!
+  comment: String!
+}
+
+type Review {
+  id: ID!
+
+  """Rating from 1 to 5"""
+  rating: Int!
+  comment: String!
+  bookId: ID!
+}
+
+type Query {
+  """Get all books"""
+  books: [Book!]!
+
+  """Get a book by ID"""
+  book(id: ID!): Book
+
+  """Get all authors"""
+  authors: [Author!]!
+
+  """Get reviews for a book"""
+  reviews(bookId: ID!): [Review!]!
+}
+
+type Mutation {
+  """Add a new book"""
+  createBook(input: BookInput!): Book!
+
+  """Add a review to a book"""
+  addReview(input: ReviewInput!): Review!
+}
