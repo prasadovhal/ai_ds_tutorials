@@ -1,0 +1,379 @@
+{
+  "metadata": {
+    "description": "Sample RAG evaluation data for Chapter 5 - RAG Evaluation",
+    "source": "Derived from Kaggle LLM Science Exam (train.csv) with simulated retrievals from wiki_stem_corpus.csv",
+    "total_examples": 10,
+    "task_type": "retrieval_augmented_generation_qa",
+    "scenario": "A RAG pipeline that retrieves Wikipedia STEM passages to answer science MCQ questions"
+  },
+  "rag_examples": [
+    {
+      "id": 0,
+      "query": "What is the Roche limit and what factors determine it?",
+      "ground_truth_answer": "The Roche limit is the distance at which tidal effects would cause an object to disintegrate since differential force from a planet overcomes the attraction of the parts between them.",
+      "correct_option": "D",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_0_1",
+          "text": "In celestial mechanics, the Roche limit, also called Roche radius, is the distance from a celestial body within which a second celestial body, held together only by its own force of gravity, will disintegrate because the first body's tidal forces exceed the second body's self-gravitation. Inside the Roche limit, orbiting material disperses and forms rings, whereas outside the limit, material tends to coalesce.",
+          "source": "Roche_limit",
+          "relevance_label": 1,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_0_2",
+          "text": "The Roche limit depends on the densities of the two bodies and the orbit of the satellite. For a rigid satellite, the theoretical limit is approximately 2.44 times the radius of the primary body, multiplied by the cube root of the ratio of the primary's density to the satellite's density. For fluid satellites, the Roche limit is larger because the body deforms more easily.",
+          "source": "Roche_limit",
+          "relevance_label": 1,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_0_3",
+          "text": "The term is named after Edouard Roche, the French astronomer who first calculated this theoretical limit in 1848. His work was based on the assumption that the satellite is held together only by self-gravity. Roche also contributed to the nebular hypothesis of the formation of the Solar System.",
+          "source": "Edouard_Roche",
+          "relevance_label": 0,
+          "rank": 3
+        },
+        {
+          "chunk_id": "ctx_0_4",
+          "text": "Tidal forces are based on the gravitational attractive force. In the case of a planet and a satellite, the near side of the satellite is attracted more strongly by the planet than the far side, creating a differential force that can tear the satellite apart if the satellite comes too close.",
+          "source": "Tidal_force",
+          "relevance_label": 1,
+          "rank": 4
+        }
+      ],
+      "generated_answer": "The Roche limit is the distance from a celestial body within which a second body held together only by gravity will disintegrate due to tidal forces exceeding self-gravitation [1]. It depends on the densities of both bodies and the orbit, with a theoretical value of approximately 2.44 times the primary's radius for rigid satellites [2]. The differential gravitational force between the near and far sides of the satellite is what drives this disintegration [4].",
+      "citations": [1, 2, 4],
+      "quality_label": "good",
+      "has_hallucination": false
+    },
+    {
+      "id": 1,
+      "query": "What is Gauss's law and how does it relate to electric flux and symmetry?",
+      "ground_truth_answer": "Gauss's law holds in all cases, but it is most useful for calculations involving symmetric electric fields, like those with spherical or cylindrical symmetry. Electric flux is not affected by distant charges outside the closed surface, whereas the net electric field E can be influenced by charges outside.",
+      "correct_option": "B",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_1_1",
+          "text": "In physics and electromagnetism, Gauss's law, also known as Gauss's flux theorem, is one of Maxwell's equations. It relates the distribution of electric charge to the resulting electric field. In its integral form, it states that the flux of the electric field out of an arbitrary closed surface is proportional to the electric charge enclosed by the surface, irrespective of how that charge is distributed.",
+          "source": "Gauss_law",
+          "relevance_label": 1,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_1_2",
+          "text": "Gauss's law is most useful in situations with high symmetry, such as spherical symmetry, cylindrical symmetry, or planar symmetry. In these cases, the electric field can be determined using Gaussian surfaces that exploit the symmetry, simplifying the integral considerably. Without symmetry, Gauss's law is still valid but does not easily yield the electric field.",
+          "source": "Gauss_law",
+          "relevance_label": 1,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_1_3",
+          "text": "Carl Friedrich Gauss was a German mathematician and physicist who made significant contributions to many fields, including number theory, algebra, statistics, analysis, differential geometry, geodesy, geophysics, mechanics, electrostatics, astronomy, matrix theory, and optics.",
+          "source": "Carl_Friedrich_Gauss",
+          "relevance_label": 0,
+          "rank": 3
+        },
+        {
+          "chunk_id": "ctx_1_4",
+          "text": "Electric flux is defined as the total electric field passing through a given area. It is a scalar quantity measured in SI base units as kg m3 s-3 A-1. The electric flux through a closed surface depends only on the charges enclosed within the surface, not on charges outside it. However, the net electric field at any point on the surface can be influenced by external charges.",
+          "source": "Electric_flux",
+          "relevance_label": 1,
+          "rank": 4
+        }
+      ],
+      "generated_answer": "Gauss's law states that the electric flux through a closed surface is proportional to the enclosed charge [1]. While it holds universally, it is most useful when there is high symmetry such as spherical or cylindrical symmetry, which simplifies calculations [2]. The electric flux through a closed surface depends only on enclosed charges, but the net electric field at the surface can be influenced by external charges [4].",
+      "citations": [1, 2, 4],
+      "quality_label": "good",
+      "has_hallucination": false
+    },
+    {
+      "id": 2,
+      "query": "What is the butterfly effect in physics?",
+      "ground_truth_answer": "The butterfly effect is a phenomenon that highlights the difference between the application of the notion of causality in physics and a more general use of causality as represented by Mackie's INUS conditions.",
+      "correct_option": "E",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_2_1",
+          "text": "In chaos theory, the butterfly effect is the sensitive dependence on initial conditions in which a small change in one state of a deterministic nonlinear system can result in large differences in a later state. The term is closely associated with the work of mathematician and meteorologist Edward Lorenz.",
+          "source": "Butterfly_effect",
+          "relevance_label": 1,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_2_2",
+          "text": "The concept of the butterfly effect is found in chaos theory and was popularized by Edward Lorenz. It is derived from the metaphorical example of the details of a tornado being influenced by the flapping of the wings of a distant butterfly several weeks earlier.",
+          "source": "Butterfly_effect",
+          "relevance_label": 1,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_2_3",
+          "text": "Butterflies are insects in the macrolepidopteran clade Rhopalocera from the order Lepidoptera, which also includes moths. Adult butterflies have large, often brightly coloured wings, and conspicuous, fluttering flight.",
+          "source": "Butterfly",
+          "relevance_label": 0,
+          "rank": 3
+        },
+        {
+          "chunk_id": "ctx_2_4",
+          "text": "In quantum mechanics, wave function collapse is an irreversible process. This is distinct from classical sensitivity to initial conditions, as quantum mechanics introduces fundamental indeterminacy at the subatomic level.",
+          "source": "Quantum_mechanics",
+          "relevance_label": 0,
+          "rank": 4
+        }
+      ],
+      "generated_answer": "The butterfly effect describes the sensitive dependence on initial conditions in chaos theory, where small changes in a deterministic nonlinear system can lead to vastly different outcomes [1]. The concept was popularized by Edward Lorenz using the metaphor of a butterfly's wing flap influencing a distant tornado [2]. It fundamentally challenges simple notions of proportional causality in Newtonian physics, showing that tiny perturbations can have enormous consequences.",
+      "citations": [1, 2],
+      "quality_label": "good",
+      "has_hallucination": false
+    },
+    {
+      "id": 3,
+      "query": "What is the blocking temperature of an antiferromagnetic layer in a spin valve?",
+      "ground_truth_answer": "The blocking temperature is the temperature at or above which the antiferromagnetic layer ceases to prevent the orientation of an adjacent ferromagnetic layer. It is typically lower than the Neel temperature.",
+      "correct_option": "D",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_3_1",
+          "text": "A spin valve is a device consisting of two or more conducting magnetic materials, whose electrical resistance can change between two values depending on the relative alignment of the magnetization in the layers. The change in resistance is a result of the giant magnetoresistance effect.",
+          "source": "Spin_valve",
+          "relevance_label": 0,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_3_2",
+          "text": "The Neel temperature is the temperature above which an antiferromagnetic material becomes paramagnetic. It is named after Louis Neel, who received the Nobel Prize in Physics in 1970 for his work on antiferromagnetism and ferrimagnetism.",
+          "source": "Neel_temperature",
+          "relevance_label": 0,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_3_3",
+          "text": "In magnetic storage devices, the exchange bias effect is used to pin the magnetization of one ferromagnetic layer in a fixed direction. This pinning is achieved by coupling the ferromagnetic layer with an antiferromagnetic layer through exchange interaction at the interface.",
+          "source": "Exchange_bias",
+          "relevance_label": 0,
+          "rank": 3
+        },
+        {
+          "chunk_id": "ctx_3_4",
+          "text": "Ferromagnetism is a property of certain materials that results in a significant, observable magnetic moment. Materials with ferromagnetism include iron, cobalt, nickel, and many of their alloys. Ferromagnetic materials have a Curie temperature above which they lose their ferromagnetic properties.",
+          "source": "Ferromagnetism",
+          "relevance_label": 0,
+          "rank": 4
+        }
+      ],
+      "generated_answer": "The blocking temperature in a spin valve is the temperature at which the antiferromagnetic layer can no longer pin the magnetization of the adjacent ferromagnetic layer [1]. Above this temperature, the exchange bias effect disappears [3]. The blocking temperature is typically higher than the Neel temperature, which is the temperature above which antiferromagnetic ordering is lost [2].",
+      "citations": [1, 2, 3],
+      "quality_label": "poor_hallucinated",
+      "has_hallucination": true,
+      "hallucination_details": "The generated answer incorrectly states the blocking temperature is typically HIGHER than the Neel temperature. In reality, it is LOWER. Also, the retrieved contexts do not contain specific information about the blocking temperature definition, so the answer fabricates details not found in the sources."
+    },
+    {
+      "id": 4,
+      "query": "What is the relationship between diffraction pattern spacing and the size of a diffracting object?",
+      "ground_truth_answer": "The angular spacing of features in the diffraction pattern is inversely proportional to the dimensions of the object causing the diffraction. Therefore, if the diffracting object is smaller, the resulting diffraction pattern will be wider.",
+      "correct_option": "D",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_4_1",
+          "text": "Diffraction refers to various phenomena that occur when a wave encounters an obstacle or opening. It is defined as the bending of waves around the corners of an obstacle or through an aperture into the region of geometrical shadow of the obstacle or aperture. In classical physics, the diffraction phenomenon is described by the Huygens-Fresnel principle.",
+          "source": "Diffraction",
+          "relevance_label": 1,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_4_2",
+          "text": "The angular spacing of features in a diffraction pattern is inversely proportional to the dimensions of the object causing the diffraction. Thus, narrower slits produce broader diffraction patterns, and vice versa. This relationship is fundamental to understanding resolution limits in optical instruments.",
+          "source": "Diffraction",
+          "relevance_label": 1,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_4_3",
+          "text": "The resolving power of an optical instrument is determined by the diffraction limit. The Rayleigh criterion states that two point sources are just resolved when the central diffraction maximum of one image coincides with the first minimum of the diffraction pattern of the other.",
+          "source": "Angular_resolution",
+          "relevance_label": 1,
+          "rank": 3
+        }
+      ],
+      "generated_answer": "The angular spacing in a diffraction pattern is inversely proportional to the size of the diffracting object [2]. This means smaller objects produce wider (more spread out) diffraction patterns, while larger objects produce narrower patterns. This inverse relationship is a consequence of the wave nature of light described by the Huygens-Fresnel principle [1], and it is fundamental to understanding resolution limits in optical instruments [3].",
+      "citations": [1, 2, 3],
+      "quality_label": "good",
+      "has_hallucination": false
+    },
+    {
+      "id": 5,
+      "query": "What is the reactive Leidenfrost effect?",
+      "ground_truth_answer": "The reactive Leidenfrost effect is a phenomenon where solid particles float above hot surfaces and move erratically, observed in non-volatile materials.",
+      "correct_option": "A",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_5_1",
+          "text": "The Leidenfrost effect is a physical phenomenon in which a liquid, close to a surface that is significantly hotter than the liquid's boiling point, produces an insulating vapor layer that keeps the liquid from boiling rapidly. Because of this repulsive force, a droplet hovers over the surface rather than making physical contact with it.",
+          "source": "Leidenfrost_effect",
+          "relevance_label": 1,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_5_2",
+          "text": "Heat transfer is a discipline of thermal engineering that concerns the generation, use, conversion, and exchange of thermal energy between physical systems. The fundamental modes of heat transfer are conduction, convection, and radiation.",
+          "source": "Heat_transfer",
+          "relevance_label": 0,
+          "rank": 2
+        }
+      ],
+      "generated_answer": "The reactive Leidenfrost effect is an extension of the classical Leidenfrost effect, where a liquid produces a vapor layer when close to a very hot surface [1]. In the reactive variant, non-volatile solid materials undergo chemical decomposition at the hot surface, generating gaseous reaction products that create a similar levitating cushion. This causes solid particles to float above the hot surface and exhibit erratic, self-propelled motion.",
+      "citations": [1],
+      "quality_label": "partial",
+      "has_hallucination": true,
+      "hallucination_details": "The answer adds detail about 'chemical decomposition' and 'gaseous reaction products' that is not present in the retrieved contexts. While some of this may be factually correct, it is not grounded in the provided sources."
+    },
+    {
+      "id": 6,
+      "query": "What is the propagation constant in sinusoidal waves?",
+      "ground_truth_answer": "The propagation constant is a complex number that varies with distance due to the phase change in the sinusoidal wave.",
+      "correct_option": "D",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_6_1",
+          "text": "The propagation constant of a sinusoidal electromagnetic wave is a measure of the change undergone by the amplitude and phase of the wave as it propagates in a given direction. The quantity being measured can be the voltage, the current in a circuit, or a field vector such as electric field strength or flux density.",
+          "source": "Propagation_constant",
+          "relevance_label": 1,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_6_2",
+          "text": "The propagation constant is a complex quantity with the real part called the attenuation constant and the imaginary part called the phase constant. The phase constant represents the change in phase per unit length along the path travelled by the wave.",
+          "source": "Propagation_constant",
+          "relevance_label": 1,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_6_3",
+          "text": "A sinusoidal wave is a mathematical curve defined in terms of the sine trigonometric function. It is a continuous wave and is foundational in signal processing, acoustics, and electromagnetics.",
+          "source": "Sine_wave",
+          "relevance_label": 0,
+          "rank": 3
+        }
+      ],
+      "generated_answer": "The propagation constant is a measure of how a sinusoidal wave changes in amplitude and phase as it travels [1]. It is a complex quantity: the real part is the attenuation constant (which describes amplitude decay) and the imaginary part is the phase constant (which describes phase change per unit length) [2].",
+      "citations": [1, 2],
+      "quality_label": "good",
+      "has_hallucination": false
+    },
+    {
+      "id": 7,
+      "query": "What is the gravitomagnetic interaction according to general relativity?",
+      "ground_truth_answer": "The gravitomagnetic interaction is a new force of nature generated by rotating matter, whose intensity is proportional to the rate of spin, according to the general theory of relativity.",
+      "correct_option": "C",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_7_1",
+          "text": "General relativity is a theory of gravitation developed by Albert Einstein between 1907 and 1915. The theory states that massive objects cause a distortion in space-time, which is felt as gravity. The curvature of spacetime is directly related to the energy and momentum of whatever matter and radiation are present.",
+          "source": "General_relativity",
+          "relevance_label": 0,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_7_2",
+          "text": "In general relativity, gravitomagnetism or gravitoelectromagnetism refers to a set of formal analogies between the equations for electromagnetism and relativistic gravitation. Gravitomagnetic effects arise from the motion or rotation of massive objects, analogous to how magnetic fields arise from moving electric charges.",
+          "source": "Gravitoelectromagnetism",
+          "relevance_label": 1,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_7_3",
+          "text": "The Lense-Thirring effect, also known as frame-dragging, is a gravitomagnetic effect predicted by general relativity. It occurs near rotating massive objects, where spacetime is dragged around in the direction of rotation.",
+          "source": "Lense_Thirring_effect",
+          "relevance_label": 1,
+          "rank": 3
+        },
+        {
+          "chunk_id": "ctx_7_4",
+          "text": "Isaac Newton published his law of universal gravitation in 1687. According to Newton, every point mass attracts every other point mass by a force acting along the line intersecting the two points.",
+          "source": "Newton_gravity",
+          "relevance_label": 0,
+          "rank": 4
+        }
+      ],
+      "generated_answer": "According to general relativity, the gravitomagnetic interaction arises from the motion or rotation of massive objects, analogous to how magnetic fields arise from moving charges in electromagnetism [2]. A key manifestation is the Lense-Thirring effect (frame-dragging), where spacetime near rotating objects is dragged in the direction of rotation [3]. The intensity of this effect is proportional to the angular momentum of the rotating body.",
+      "citations": [2, 3],
+      "quality_label": "good",
+      "has_hallucination": false
+    },
+    {
+      "id": 8,
+      "query": "What is dynamic scaling in self-similar systems?",
+      "ground_truth_answer": "Dynamic scaling refers to the evolution of self-similar systems, where data obtained from snapshots at fixed times exhibits similarity to the respective data taken from snapshots of any earlier or later time, tested by a time-dependent stochastic variable.",
+      "correct_option": "A",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_8_1",
+          "text": "In statistical mechanics, scaling theory describes the behavior of physical systems near phase transitions. Critical phenomena exhibit universality, where different physical systems share the same critical exponents and scaling functions.",
+          "source": "Scaling_theory",
+          "relevance_label": 0,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_8_2",
+          "text": "Self-similarity is a typical property of fractals. A self-similar object is exactly or approximately similar to a part of itself. Many objects in the real world, such as coastlines, are statistically self-similar.",
+          "source": "Self_similarity",
+          "relevance_label": 0,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_8_3",
+          "text": "A stochastic process is a mathematical object usually defined as a family of random variables. The term random function is also used to refer to a stochastic or random process.",
+          "source": "Stochastic_process",
+          "relevance_label": 0,
+          "rank": 3
+        }
+      ],
+      "generated_answer": "Dynamic scaling in self-similar systems refers to the evolution where data from snapshots at different times shows a scaling relationship. In critical phenomena near phase transitions, systems exhibit universal scaling behavior [1]. Self-similar objects share properties across different scales [2], and when this applies over time, we get dynamic scaling. The temporal evolution is typically tested using stochastic variables [3] that exhibit time-dependent similarity.",
+      "citations": [1, 2, 3],
+      "quality_label": "poor_fabricated",
+      "has_hallucination": true,
+      "hallucination_details": "None of the retrieved contexts actually discuss dynamic scaling. The answer stitches together loosely related concepts (scaling theory, self-similarity, stochastic processes) and presents them as if they directly explain dynamic scaling. This is a classic case of context-stuffing hallucination where the model fabricates coherence from irrelevant sources."
+    },
+    {
+      "id": 9,
+      "query": "What is the ultraviolet catastrophe in classical physics?",
+      "ground_truth_answer": "The ultraviolet catastrophe is the misbehavior of a formula for higher frequencies.",
+      "correct_option": "B",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "ctx_9_1",
+          "text": "The ultraviolet catastrophe, also called the Rayleigh-Jeans catastrophe, was the prediction of late 19th-century classical physics that an ideal black body at thermal equilibrium would emit an unbounded quantity of energy as wavelength decreases into the ultraviolet range. This prediction, based on the Rayleigh-Jeans law, disagreed with experimental observations.",
+          "source": "Ultraviolet_catastrophe",
+          "relevance_label": 1,
+          "rank": 1
+        },
+        {
+          "chunk_id": "ctx_9_2",
+          "text": "Max Planck resolved the ultraviolet catastrophe by proposing that electromagnetic energy could only be emitted in quantized form. His quantum hypothesis introduced the concept of energy quanta, with energy proportional to frequency: E = hv, where h is Planck's constant.",
+          "source": "Planck_law",
+          "relevance_label": 1,
+          "rank": 2
+        },
+        {
+          "chunk_id": "ctx_9_3",
+          "text": "Black-body radiation is the thermal electromagnetic radiation within or surrounding a body in thermodynamic equilibrium with its environment, emitted by a black body. It has a specific spectrum and intensity that depends only on the body's temperature.",
+          "source": "Black_body_radiation",
+          "relevance_label": 1,
+          "rank": 3
+        },
+        {
+          "chunk_id": "ctx_9_4",
+          "text": "Ultraviolet radiation is electromagnetic radiation with a wavelength from 10 nm to 400 nm, shorter than that of visible light but longer than X-rays. UV radiation is present in sunlight and constitutes about 10% of the total electromagnetic radiation output from the Sun.",
+          "source": "Ultraviolet",
+          "relevance_label": 0,
+          "rank": 4
+        }
+      ],
+      "generated_answer": "The ultraviolet catastrophe was a problem in late 19th-century classical physics where the Rayleigh-Jeans law predicted that a black body at thermal equilibrium would emit infinite energy at short wavelengths in the ultraviolet range, contradicting experimental observations [1]. This was resolved by Max Planck who proposed that energy is quantized (E = hv), introducing quantum mechanics [2]. The catastrophe specifically concerns the behavior of the Rayleigh-Jeans formula which works well at low frequencies but diverges catastrophically at higher frequencies.",
+      "citations": [1, 2],
+      "quality_label": "good",
+      "has_hallucination": false
+    }
+  ]
+}

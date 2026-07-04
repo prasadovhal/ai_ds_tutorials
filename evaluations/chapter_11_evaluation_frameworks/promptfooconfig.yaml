@@ -1,0 +1,48 @@
+description: STEM QA evaluation from train.csv
+providers:
+- ollama:chat:llama3.2
+prompts:
+- 'Answer the following science question concisely:
+
+  {{question}}'
+- 'You are a science expert. Provide a brief, accurate answer:
+
+  {{question}}'
+tests:
+- vars:
+    question: Which of the following statements accurately describes the impact of
+      Modified Newtonian Dynamics (MOND) on the observed "missing baryonic mass" discrepancy
+      in galaxy clusters?
+  assert:
+  - type: llm-rubric
+    value: 'Answer should convey: MOND is a theory that reduces the discrepancy between
+      the observed missing baryonic mass in galaxy clusters and the measured velocity
+      dispersions from'
+  - type: contains
+    value: D
+  - type: javascript
+    value: output.length > 20
+- vars:
+    question: Which of the following is an accurate definition of dynamic scaling
+      in self-similar systems?
+  assert:
+  - type: llm-rubric
+    value: 'Answer should convey: Dynamic scaling refers to the evolution of self-similar
+      systems, where data obtained from snapshots at fixed times exhibits similarity
+      to the respecti'
+  - type: contains
+    value: A
+  - type: javascript
+    value: output.length > 20
+- vars:
+    question: Which of the following statements accurately describes the origin and
+      significance of the triskeles symbol?
+  assert:
+  - type: llm-rubric
+    value: 'Answer should convey: The triskeles symbol was reconstructed as a feminine
+      divine triad by the rulers of Syracuse, and later adopted as an emblem. Its
+      usage may also be rel'
+  - type: contains
+    value: A
+  - type: javascript
+    value: output.length > 20

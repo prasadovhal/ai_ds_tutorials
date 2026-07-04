@@ -1,0 +1,601 @@
+{
+  "metadata": {
+    "description": "Sample agent traces and trajectories for Chapter 8 - Agent Evaluation",
+    "source": "Simulated agent interactions based on Kaggle LLM Science Exam dataset",
+    "total_traces": 6,
+    "trace_types": ["good_efficient", "good_verbose", "bad_wrong_tool", "bad_loop", "bad_wrong_answer", "partial_completion"],
+    "tools_available": ["search_knowledge_base", "calculate", "lookup_formula", "verify_answer", "ask_human"]
+  },
+  "tools_catalog": {
+    "search_knowledge_base": {
+      "description": "Search a science knowledge base for relevant information",
+      "parameters": {"query": "string", "max_results": "integer"},
+      "cost": 1.0,
+      "avg_latency_ms": 200
+    },
+    "calculate": {
+      "description": "Perform a mathematical calculation",
+      "parameters": {"expression": "string"},
+      "cost": 0.5,
+      "avg_latency_ms": 50
+    },
+    "lookup_formula": {
+      "description": "Look up a scientific formula by name or topic",
+      "parameters": {"formula_name": "string"},
+      "cost": 0.8,
+      "avg_latency_ms": 150
+    },
+    "verify_answer": {
+      "description": "Verify a candidate answer against known facts",
+      "parameters": {"claim": "string", "evidence": "string"},
+      "cost": 1.2,
+      "avg_latency_ms": 300
+    },
+    "ask_human": {
+      "description": "Escalate to a human expert for clarification",
+      "parameters": {"question": "string", "context": "string"},
+      "cost": 5.0,
+      "avg_latency_ms": 60000
+    }
+  },
+  "agent_traces": [
+    {
+      "trace_id": "trace_001",
+      "trace_type": "good_efficient",
+      "question_id": 0,
+      "goal": "Answer the question about MOND and missing baryonic mass in galaxy clusters",
+      "question": "Which of the following statements accurately describes the impact of Modified Newtonian Dynamics (MOND) on the observed 'missing baryonic mass' discrepancy in galaxy clusters?",
+      "choices": {
+        "A": "MOND postulates the existence of fuzzy dark matter.",
+        "B": "MOND increases the discrepancy from a factor of 10 to 20.",
+        "C": "MOND explains the mass is in the form of neutrinos and axions.",
+        "D": "MOND reduces the discrepancy from a factor of 10 to about 2.",
+        "E": "MOND eliminates the missing mass entirely."
+      },
+      "ground_truth": "D",
+      "plan": [
+        "Search for information about MOND and galaxy cluster mass discrepancy",
+        "Verify the specific factor reduction claimed in the answer options",
+        "Select the answer that matches the evidence"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "thought": "I need to find information about MOND's impact on the missing baryonic mass problem in galaxy clusters. Let me search for this specific topic.",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "MOND Modified Newtonian Dynamics baryonic mass galaxy clusters", "max_results": 3}
+          },
+          "observation": "MOND modifies Newton's law of gravity at low accelerations. While it successfully explains galaxy rotation curves without dark matter, it only reduces (not eliminates) the missing mass problem in galaxy clusters from a factor of ~10 to a factor of ~2.",
+          "reasoning_quality": "focused_and_relevant"
+        },
+        {
+          "step": 2,
+          "thought": "The search result clearly indicates MOND reduces the discrepancy from a factor of 10 to about 2. This matches option D. Let me verify this claim.",
+          "action": "verify_answer",
+          "tool_call": {
+            "tool": "verify_answer",
+            "arguments": {"claim": "MOND reduces missing baryonic mass discrepancy from factor 10 to factor 2", "evidence": "Published research on MOND and galaxy cluster dynamics"}
+          },
+          "observation": "Verified: Multiple studies confirm MOND reduces but does not eliminate the missing mass discrepancy in galaxy clusters, with the residual factor being approximately 2.",
+          "reasoning_quality": "verification_step"
+        },
+        {
+          "step": 3,
+          "thought": "Both the search and verification confirm option D. I'm confident in this answer.",
+          "action": "final_answer",
+          "tool_call": null,
+          "observation": null,
+          "reasoning_quality": "decisive"
+        }
+      ],
+      "final_answer": "D",
+      "total_tool_calls": 2,
+      "total_steps": 3,
+      "task_completed": true,
+      "goal_achieved": true,
+      "self_corrections": 0,
+      "unnecessary_steps": 0,
+      "total_latency_ms": 500,
+      "total_cost": 2.2
+    },
+    {
+      "trace_id": "trace_002",
+      "trace_type": "good_verbose",
+      "question_id": 4,
+      "goal": "Answer the question about diffraction pattern angular spacing",
+      "question": "Which of the following statements accurately describes the relationship between the dimensions of a diffracting object and the angular spacing of features in the diffraction pattern?",
+      "choices": {
+        "A": "Indirectly proportional; smaller object = narrower pattern.",
+        "B": "Directly proportional; smaller object = narrower pattern.",
+        "C": "Independent; smaller object = same pattern.",
+        "D": "Inversely proportional; smaller object = wider pattern.",
+        "E": "Proportional to square root; smaller object = slightly narrower."
+      },
+      "ground_truth": "D",
+      "plan": [
+        "Search for diffraction pattern fundamentals",
+        "Look up the specific formula relating object size to diffraction angle",
+        "Calculate an example to verify",
+        "Cross-check with the answer options",
+        "Select the best answer"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "thought": "I need to understand the relationship between diffracting object dimensions and angular spacing. Let me start with a search.",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "diffraction pattern angular spacing object dimensions relationship", "max_results": 5}
+          },
+          "observation": "Diffraction patterns show that the angular spacing of features is inversely proportional to the dimensions of the diffracting object. Smaller objects produce wider diffraction patterns.",
+          "reasoning_quality": "relevant_search"
+        },
+        {
+          "step": 2,
+          "thought": "Let me also look up the specific formula to be thorough.",
+          "action": "lookup_formula",
+          "tool_call": {
+            "tool": "lookup_formula",
+            "arguments": {"formula_name": "single slit diffraction"}
+          },
+          "observation": "Single-slit diffraction formula: sin(theta) = m * lambda / a, where theta is the diffraction angle, lambda is wavelength, a is slit width, and m is the order. Angular spacing is inversely proportional to slit width a.",
+          "reasoning_quality": "thorough_verification"
+        },
+        {
+          "step": 3,
+          "thought": "Let me calculate an example to make sure I understand the relationship correctly.",
+          "action": "calculate",
+          "tool_call": {
+            "tool": "calculate",
+            "arguments": {"expression": "For a=0.1mm, lambda=500nm: theta = arcsin(1 * 500e-9 / 0.1e-3) = arcsin(0.005) = 0.286 degrees. For a=0.05mm: theta = arcsin(0.01) = 0.573 degrees. Halving 'a' doubles theta."}
+          },
+          "observation": "Confirmed: halving the slit width doubles the angular spacing. The relationship is inversely proportional.",
+          "reasoning_quality": "mathematical_verification"
+        },
+        {
+          "step": 4,
+          "thought": "The search, formula, and calculation all confirm: inversely proportional, smaller object = wider pattern. This is option D.",
+          "action": "verify_answer",
+          "tool_call": {
+            "tool": "verify_answer",
+            "arguments": {"claim": "Angular spacing inversely proportional to object dimensions, smaller object = wider pattern", "evidence": "sin(theta) = m * lambda / a formula and numerical example"}
+          },
+          "observation": "Verified: The inverse proportionality between object dimensions and diffraction pattern angular spacing is well-established physics.",
+          "reasoning_quality": "final_verification"
+        },
+        {
+          "step": 5,
+          "thought": "All evidence confirms option D. While I used more steps than strictly necessary, each provided additional confidence.",
+          "action": "final_answer",
+          "tool_call": null,
+          "observation": null,
+          "reasoning_quality": "confident_but_verbose"
+        }
+      ],
+      "final_answer": "D",
+      "total_tool_calls": 4,
+      "total_steps": 5,
+      "task_completed": true,
+      "goal_achieved": true,
+      "self_corrections": 0,
+      "unnecessary_steps": 2,
+      "total_latency_ms": 700,
+      "total_cost": 3.5
+    },
+    {
+      "trace_id": "trace_003",
+      "trace_type": "bad_wrong_tool",
+      "question_id": 5,
+      "goal": "Answer the question about Gauss's law and electric flux",
+      "question": "Which of the following statements accurately describes the relationship between Gauss's law, electric flux, electric field, and symmetry?",
+      "choices": {
+        "A": "Gauss's law holds only for symmetric fields. Flux unit: kg*m3*s-3*A.",
+        "B": "Gauss's law holds in all cases but is most useful for symmetric fields. Flux unit: kg*m3*s-3*A-1.",
+        "C": "Gauss's law applies to all fields, flux unaffected by outside charges. Flux unit: kg*m3*s-1*C.",
+        "D": "Gauss's law only holds for cylindrical symmetry. Flux unit: kg*m2*s-2*A-1.",
+        "E": "Gauss's law holds for all situations, higher symmetry is beneficial. Flux unit: kg*m2*s-1*C."
+      },
+      "ground_truth": "B",
+      "plan": [
+        "Calculate something about Gauss's law",
+        "Look up a formula",
+        "Pick an answer"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "thought": "Let me try to calculate something about Gauss's law.",
+          "action": "calculate",
+          "tool_call": {
+            "tool": "calculate",
+            "arguments": {"expression": "Gauss law integral E dot dA = Q/epsilon_0"}
+          },
+          "observation": "Error: Cannot evaluate non-mathematical expression. Please provide a numerical calculation.",
+          "reasoning_quality": "wrong_tool_for_task"
+        },
+        {
+          "step": 2,
+          "thought": "The calculator couldn't help. Let me try looking up a formula, though I'm not sure which one.",
+          "action": "lookup_formula",
+          "tool_call": {
+            "tool": "lookup_formula",
+            "arguments": {"formula_name": "electric flux units"}
+          },
+          "observation": "Electric flux (Phi_E) has SI units of V*m (volt-meters) or equivalently kg*m3*s-3*A-1.",
+          "reasoning_quality": "partially_relevant"
+        },
+        {
+          "step": 3,
+          "thought": "I know the unit now but I still need to understand when Gauss's law applies. Let me calculate again...",
+          "action": "calculate",
+          "tool_call": {
+            "tool": "calculate",
+            "arguments": {"expression": "symmetry types: spherical, cylindrical, planar"}
+          },
+          "observation": "Error: Cannot evaluate non-mathematical expression.",
+          "reasoning_quality": "repeated_wrong_tool"
+        },
+        {
+          "step": 4,
+          "thought": "Calculator keeps failing. Let me just pick the answer with the right units: kg*m3*s-3*A-1.",
+          "action": "final_answer",
+          "tool_call": null,
+          "observation": null,
+          "reasoning_quality": "gave_up_on_reasoning"
+        }
+      ],
+      "final_answer": "B",
+      "total_tool_calls": 3,
+      "total_steps": 4,
+      "task_completed": true,
+      "goal_achieved": true,
+      "self_corrections": 0,
+      "unnecessary_steps": 2,
+      "total_latency_ms": 450,
+      "total_cost": 1.8,
+      "issues": ["Used calculate for non-mathematical tasks", "Repeated same mistake", "Got correct answer partly by luck"]
+    },
+    {
+      "trace_id": "trace_004",
+      "trace_type": "bad_loop",
+      "question_id": 7,
+      "goal": "Answer the question about blocking temperature in spin valves",
+      "question": "Which statement accurately describes the blocking temperature of an antiferromagnetic layer in a spin valve?",
+      "choices": {
+        "A": "Temperature where ferromagnetic magnetization aligns with field. Higher than Neel temperature.",
+        "B": "Temperature below which layer loses pinning ability. Higher than Neel temperature.",
+        "C": "Temperature where ferromagnetic layer becomes demagnetized. Higher than Neel temperature.",
+        "D": "Temperature at or above which layer ceases to prevent orientation. Typically lower than Neel temperature.",
+        "E": "Temperature where ferromagnetic layer loses pinning of antiferromagnetic layer. Higher than Neel temperature."
+      },
+      "ground_truth": "D",
+      "plan": [
+        "Search for blocking temperature",
+        "Search again if not clear",
+        "Search more",
+        "Eventually pick an answer"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "thought": "Let me search for blocking temperature in spin valves.",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "blocking temperature spin valve", "max_results": 3}
+          },
+          "observation": "The blocking temperature is related to the antiferromagnetic layer's ability to pin the ferromagnetic layer's magnetization direction.",
+          "reasoning_quality": "vague_result"
+        },
+        {
+          "step": 2,
+          "thought": "That wasn't specific enough. Let me search again with different terms.",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "antiferromagnetic blocking temperature definition", "max_results": 3}
+          },
+          "observation": "The blocking temperature is the temperature at or above which the antiferromagnetic layer can no longer maintain pinning of the adjacent ferromagnetic layer.",
+          "reasoning_quality": "better_but_still_searching"
+        },
+        {
+          "step": 3,
+          "thought": "I still need to know the relationship to the Neel temperature. Let me search again.",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "blocking temperature vs Neel temperature comparison", "max_results": 3}
+          },
+          "observation": "The blocking temperature is typically lower than the Neel temperature of the antiferromagnetic material.",
+          "reasoning_quality": "redundant_search"
+        },
+        {
+          "step": 4,
+          "thought": "Let me search one more time to be really sure...",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "spin valve antiferromagnetic pinning temperature Neel", "max_results": 5}
+          },
+          "observation": "In exchange bias systems, the blocking temperature TB is always less than or equal to the Neel temperature TN. Above TB, the antiferromagnet cannot maintain exchange coupling.",
+          "reasoning_quality": "unnecessary_repetition"
+        },
+        {
+          "step": 5,
+          "thought": "Maybe I should verify with one more search...",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "exchange bias blocking temperature lower than Neel", "max_results": 3}
+          },
+          "observation": "Confirmed: TB <= TN for antiferromagnetic layers in spin valves.",
+          "reasoning_quality": "excessive_verification"
+        },
+        {
+          "step": 6,
+          "thought": "Okay, I've confirmed enough times. The answer matches option D: temperature at or above which pinning ceases, typically lower than Neel temperature.",
+          "action": "final_answer",
+          "tool_call": null,
+          "observation": null,
+          "reasoning_quality": "finally_decided"
+        }
+      ],
+      "final_answer": "D",
+      "total_tool_calls": 5,
+      "total_steps": 6,
+      "task_completed": true,
+      "goal_achieved": true,
+      "self_corrections": 0,
+      "unnecessary_steps": 3,
+      "total_latency_ms": 1000,
+      "total_cost": 5.0,
+      "issues": ["Excessive searching - 5 searches when 2 would suffice", "No tool diversity", "Inefficient use of resources"]
+    },
+    {
+      "trace_id": "trace_005",
+      "trace_type": "bad_wrong_answer",
+      "question_id": 8,
+      "goal": "Answer the question about light-matter interactions causing energy shifts",
+      "question": "What is the term used in astrophysics to describe light-matter interactions resulting in energy shifts in the radiation field?",
+      "choices": {
+        "A": "Blueshifting",
+        "B": "Redshifting",
+        "C": "Reddening",
+        "D": "Whitening",
+        "E": "Yellowing"
+      },
+      "ground_truth": "C",
+      "plan": [
+        "Search for the term",
+        "Pick the answer"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "thought": "Light-matter interactions that shift energy... this sounds like it could be redshifting or blueshifting. Let me search.",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "astrophysics light energy shift radiation field", "max_results": 3}
+          },
+          "observation": "Several phenomena can shift radiation energy: Doppler redshift/blueshift (relative motion), gravitational redshift, and cosmological redshift. Also, interstellar reddening refers to the preferential scattering of blue light by dust, causing observed radiation to appear redder.",
+          "reasoning_quality": "relevant_but_misinterpreted"
+        },
+        {
+          "step": 2,
+          "thought": "The question asks about energy shifts in the radiation field. Redshifting is the most well-known energy shift in astrophysics. I'll go with B.",
+          "action": "final_answer",
+          "tool_call": null,
+          "observation": null,
+          "reasoning_quality": "jumped_to_conclusion"
+        }
+      ],
+      "final_answer": "B",
+      "total_tool_calls": 1,
+      "total_steps": 2,
+      "task_completed": true,
+      "goal_achieved": false,
+      "self_corrections": 0,
+      "unnecessary_steps": 0,
+      "total_latency_ms": 200,
+      "total_cost": 1.0,
+      "issues": ["Misinterpreted search results", "Did not distinguish between Doppler shift and reddening", "Should have verified answer before committing", "The observation actually contained the correct answer (reddening) but agent ignored it"]
+    },
+    {
+      "trace_id": "trace_006",
+      "trace_type": "partial_completion",
+      "question_id": 3,
+      "goal": "Answer the question about regularization in renormalization problems AND explain the reasoning",
+      "question": "What is the significance of regularization in terms of renormalization problems in physics?",
+      "choices": {
+        "A": "Regularizing with finite radius simplifies calculations involving infinities.",
+        "B": "Regularizing with infinite radius allows breakdown of theory. Applicable to other problems.",
+        "C": "Regularizing with finite radius demonstrates systems below certain size need no further calculation. Applicable to other problems.",
+        "D": "Regularizing with infinite radius provides highly accurate descriptions under specific conditions.",
+        "E": "Regularizing with infinite radius is essential for explaining sub-size system operations."
+      },
+      "ground_truth": "C",
+      "plan": [
+        "Search for regularization in renormalization",
+        "Understand the concept",
+        "Pick the answer",
+        "Provide detailed explanation"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "thought": "Let me search for regularization in the context of renormalization.",
+          "action": "search_knowledge_base",
+          "tool_call": {
+            "tool": "search_knowledge_base",
+            "arguments": {"query": "regularization renormalization physics electron mass-energy finite radius", "max_results": 3}
+          },
+          "observation": "Regularization involves imposing a finite cutoff (like a finite electron radius) to make divergent integrals tractable. This demonstrates that physics below a certain scale can be described without requiring detailed knowledge of sub-scale phenomena. The technique is broadly applicable to other renormalization problems.",
+          "reasoning_quality": "good_search"
+        },
+        {
+          "step": 2,
+          "thought": "This clearly matches option C. Let me select it.",
+          "action": "final_answer",
+          "tool_call": null,
+          "observation": null,
+          "reasoning_quality": "correct_but_incomplete"
+        }
+      ],
+      "final_answer": "C",
+      "total_tool_calls": 1,
+      "total_steps": 2,
+      "task_completed": false,
+      "goal_achieved": false,
+      "self_corrections": 0,
+      "unnecessary_steps": 0,
+      "total_latency_ms": 200,
+      "total_cost": 1.0,
+      "issues": ["Task required both answering AND explaining", "Agent only answered without providing explanation", "Partial task completion - got the answer right but missed the explanation requirement"]
+    }
+  ],
+  "multi_agent_traces": [
+    {
+      "trace_id": "multi_001",
+      "scenario": "Collaborative science question answering",
+      "agents": {
+        "researcher": {
+          "role": "Search and gather relevant scientific information",
+          "steps_taken": 3,
+          "tool_calls": ["search_knowledge_base", "search_knowledge_base", "lookup_formula"],
+          "findings": "Found relevant information about MOND theory and its implications for galaxy cluster mass discrepancies"
+        },
+        "analyzer": {
+          "role": "Analyze gathered information and evaluate answer options",
+          "steps_taken": 2,
+          "tool_calls": ["verify_answer"],
+          "findings": "Option D correctly matches the evidence: MOND reduces the factor from ~10 to ~2"
+        },
+        "responder": {
+          "role": "Formulate and deliver the final answer",
+          "steps_taken": 1,
+          "tool_calls": [],
+          "findings": "Selected D with high confidence based on analyzer's evaluation"
+        }
+      },
+      "coordination_quality": {
+        "clear_role_separation": true,
+        "no_redundant_work": true,
+        "effective_handoffs": true,
+        "consensus_reached": true
+      },
+      "final_answer": "D",
+      "ground_truth": "D",
+      "total_steps": 6,
+      "total_tool_calls": 4,
+      "goal_achieved": true
+    },
+    {
+      "trace_id": "multi_002",
+      "scenario": "Poorly coordinated science question answering",
+      "agents": {
+        "researcher": {
+          "role": "Search and gather relevant scientific information",
+          "steps_taken": 4,
+          "tool_calls": ["search_knowledge_base", "search_knowledge_base", "search_knowledge_base", "search_knowledge_base"],
+          "findings": "Found information about diffraction but kept re-searching the same topic"
+        },
+        "analyzer": {
+          "role": "Analyze gathered information and evaluate answer options",
+          "steps_taken": 3,
+          "tool_calls": ["search_knowledge_base", "calculate"],
+          "findings": "Duplicated the researcher's search work. Only then analyzed the options."
+        },
+        "responder": {
+          "role": "Formulate and deliver the final answer",
+          "steps_taken": 2,
+          "tool_calls": ["verify_answer"],
+          "findings": "Ignored analyzer's recommendation, did own verification, selected correct answer but inefficiently"
+        }
+      },
+      "coordination_quality": {
+        "clear_role_separation": false,
+        "no_redundant_work": false,
+        "effective_handoffs": false,
+        "consensus_reached": true
+      },
+      "final_answer": "D",
+      "ground_truth": "D",
+      "total_steps": 9,
+      "total_tool_calls": 7,
+      "goal_achieved": true
+    }
+  ],
+  "coding_agent_traces": [
+    {
+      "trace_id": "code_001",
+      "task": "Write a Python function to calculate the diffraction angle for a single slit",
+      "generated_code": "import math\n\ndef diffraction_angle(wavelength_m, slit_width_m, order=1):\n    \"\"\"Calculate the diffraction angle for a single slit.\n    \n    Args:\n        wavelength_m: Wavelength of light in meters\n        slit_width_m: Width of the slit in meters  \n        order: Diffraction order (default 1)\n    \n    Returns:\n        Angle in radians\n    \"\"\"\n    if slit_width_m <= 0:\n        raise ValueError(\"Slit width must be positive\")\n    if wavelength_m <= 0:\n        raise ValueError(\"Wavelength must be positive\")\n    \n    sin_theta = order * wavelength_m / slit_width_m\n    if abs(sin_theta) > 1:\n        raise ValueError(f\"No solution: sin(theta) = {sin_theta} > 1\")\n    \n    return math.asin(sin_theta)\n",
+      "test_results": {"passed": 5, "failed": 0, "total": 5},
+      "code_quality": {
+        "has_docstring": true,
+        "has_type_hints": false,
+        "has_error_handling": true,
+        "follows_naming_conventions": true,
+        "no_unused_imports": true,
+        "code_complexity": "low"
+      }
+    },
+    {
+      "trace_id": "code_002",
+      "task": "Write a Python function to calculate the diffraction angle for a single slit",
+      "generated_code": "from math import *\nimport numpy as np\nimport scipy\n\ndef calc(w, s, o=1):\n    x = o * w / s\n    return asin(x)\n",
+      "test_results": {"passed": 3, "failed": 2, "total": 5},
+      "code_quality": {
+        "has_docstring": false,
+        "has_type_hints": false,
+        "has_error_handling": false,
+        "follows_naming_conventions": false,
+        "no_unused_imports": false,
+        "code_complexity": "low"
+      }
+    }
+  ],
+  "browser_agent_traces": [
+    {
+      "trace_id": "browser_001",
+      "task": "Find the Wikipedia article about Modified Newtonian Dynamics and extract the key formula",
+      "steps": [
+        {"action": "navigate", "target": "https://en.wikipedia.org/wiki/Modified_Newtonian_dynamics", "success": true},
+        {"action": "scroll_to", "target": "section:Formula", "success": true},
+        {"action": "extract_text", "target": "formula_section", "success": true}
+      ],
+      "total_steps": 3,
+      "total_navigation_actions": 1,
+      "total_interaction_actions": 2,
+      "task_completed": true,
+      "errors": [],
+      "dead_ends": 0
+    },
+    {
+      "trace_id": "browser_002",
+      "task": "Find the Wikipedia article about Modified Newtonian Dynamics and extract the key formula",
+      "steps": [
+        {"action": "navigate", "target": "https://www.google.com", "success": true},
+        {"action": "type_text", "target": "search_box", "value": "MOND physics", "success": true},
+        {"action": "click", "target": "search_button", "success": true},
+        {"action": "click", "target": "wrong_result_link", "success": true},
+        {"action": "navigate_back", "target": "google_results", "success": true},
+        {"action": "click", "target": "wikipedia_link", "success": true},
+        {"action": "scroll_to", "target": "page_bottom", "success": true},
+        {"action": "scroll_to", "target": "page_top", "success": true},
+        {"action": "scroll_to", "target": "section:Formula", "success": true},
+        {"action": "extract_text", "target": "formula_section", "success": true}
+      ],
+      "total_steps": 10,
+      "total_navigation_actions": 4,
+      "total_interaction_actions": 6,
+      "task_completed": true,
+      "errors": ["Clicked wrong search result"],
+      "dead_ends": 2
+    }
+  ]
+}

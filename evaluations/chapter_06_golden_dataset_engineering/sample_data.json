@@ -1,0 +1,447 @@
+{
+  "metadata": {
+    "description": "Golden dataset for science MCQ evaluation - Chapter 6",
+    "source": "Curated from Kaggle LLM Science Exam dataset (train.csv)",
+    "version": "1.0.0",
+    "created_date": "2026-06-15",
+    "last_updated": "2026-06-15",
+    "task_type": "multiple_choice_qa",
+    "domain": "STEM",
+    "total_items": 15,
+    "annotation_guidelines_version": "1.0",
+    "quality_tier": "gold"
+  },
+  "versioning": {
+    "current_version": "1.0.0",
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-06-15",
+        "author": "evaluation_team",
+        "changes": "Initial golden dataset creation from train.csv stratified sample",
+        "items_added": 15,
+        "items_removed": 0,
+        "items_modified": 0
+      }
+    ]
+  },
+  "annotation_guidelines": {
+    "task_description": "For each science MCQ, annotators must select the single best answer from 5 options (A-E)",
+    "quality_criteria": [
+      "Answer must be factually correct based on scientific consensus",
+      "If multiple answers seem plausible, choose the most precise/complete one",
+      "Mark difficulty level: easy, medium, hard",
+      "Flag ambiguous questions for review"
+    ],
+    "rubric": {
+      "correctness": "Is the selected answer factually accurate? (required)",
+      "completeness": "Does the answer fully address the question? (1-5)",
+      "clarity": "Is the question unambiguous? (1-5)",
+      "difficulty": "How hard is this for a domain expert? (easy/medium/hard)"
+    }
+  },
+  "items": [
+    {
+      "id": "golden_001",
+      "source_id": 0,
+      "prompt": "Which of the following statements accurately describes the impact of Modified Newtonian Dynamics (MOND) on the observed 'missing baryonic mass' discrepancy in galaxy clusters?",
+      "choices": {
+        "A": "MOND postulates the existence of fuzzy dark matter.",
+        "B": "MOND increases the discrepancy from a factor of 10 to 20.",
+        "C": "MOND explains the mass is in the form of neutrinos and axions.",
+        "D": "MOND reduces the discrepancy from a factor of 10 to about 2.",
+        "E": "MOND eliminates the missing mass entirely."
+      },
+      "ground_truth": "D",
+      "category": "physics",
+      "subcategory": "astrophysics",
+      "difficulty": "hard",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "D", "confidence": 0.95, "time_seconds": 45},
+        {"annotator_id": "ann_02", "answer": "D", "confidence": 0.90, "time_seconds": 60},
+        {"annotator_id": "ann_03", "answer": "D", "confidence": 0.85, "time_seconds": 55}
+      ],
+      "quality_scores": {"clarity": 4, "completeness": 5, "ambiguity_flag": false},
+      "tags": ["astrophysics", "MOND", "dark-matter", "galaxy-clusters"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_002",
+      "source_id": 1,
+      "prompt": "Which of the following is an accurate definition of dynamic scaling in self-similar systems?",
+      "choices": {
+        "A": "Evolution of self-similar systems with time-dependent similarity.",
+        "B": "Non-evolution with time-dependent similarity.",
+        "C": "Evolution with time-independent dissimilarity.",
+        "D": "Non-evolution with time-independent dissimilarity.",
+        "E": "Evolution with time-dependent independence."
+      },
+      "ground_truth": "A",
+      "category": "physics",
+      "subcategory": "statistical_mechanics",
+      "difficulty": "hard",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "A", "confidence": 0.90, "time_seconds": 40},
+        {"annotator_id": "ann_02", "answer": "A", "confidence": 0.88, "time_seconds": 50},
+        {"annotator_id": "ann_03", "answer": "A", "confidence": 0.92, "time_seconds": 35}
+      ],
+      "quality_scores": {"clarity": 3, "completeness": 4, "ambiguity_flag": true},
+      "tags": ["statistical-mechanics", "self-similarity", "scaling"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_003",
+      "source_id": 8,
+      "prompt": "What is the term used in astrophysics to describe light-matter interactions resulting in energy shifts in the radiation field?",
+      "choices": {
+        "A": "Blueshifting",
+        "B": "Redshifting",
+        "C": "Reddening",
+        "D": "Whitening",
+        "E": "Yellowing"
+      },
+      "ground_truth": "C",
+      "category": "physics",
+      "subcategory": "astrophysics",
+      "difficulty": "medium",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "C", "confidence": 0.80, "time_seconds": 30},
+        {"annotator_id": "ann_02", "answer": "B", "confidence": 0.60, "time_seconds": 45},
+        {"annotator_id": "ann_03", "answer": "C", "confidence": 0.75, "time_seconds": 40}
+      ],
+      "quality_scores": {"clarity": 3, "completeness": 4, "ambiguity_flag": true},
+      "tags": ["astrophysics", "light-matter", "radiation", "tricky"],
+      "edge_case": true,
+      "failure_history": [
+        {"model": "gpt-4", "date": "2026-05-01", "predicted": "B", "reason": "Confused reddening with redshifting"}
+      ]
+    },
+    {
+      "id": "golden_004",
+      "source_id": 4,
+      "prompt": "Which of the following statements accurately describes the relationship between the dimensions of a diffracting object and the angular spacing of features in the diffraction pattern?",
+      "choices": {
+        "A": "Indirectly proportional, smaller object = narrower pattern.",
+        "B": "Directly proportional, smaller object = narrower pattern.",
+        "C": "Independent of dimensions.",
+        "D": "Inversely proportional, smaller object = wider pattern.",
+        "E": "Proportional to square root, smaller = slightly narrower."
+      },
+      "ground_truth": "D",
+      "category": "physics",
+      "subcategory": "optics",
+      "difficulty": "medium",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "D", "confidence": 0.95, "time_seconds": 25},
+        {"annotator_id": "ann_02", "answer": "D", "confidence": 0.92, "time_seconds": 30},
+        {"annotator_id": "ann_03", "answer": "D", "confidence": 0.97, "time_seconds": 20}
+      ],
+      "quality_scores": {"clarity": 5, "completeness": 5, "ambiguity_flag": false},
+      "tags": ["optics", "diffraction", "wave-physics"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_005",
+      "source_id": 189,
+      "prompt": "What is the difference between active and passive transport in cells?",
+      "choices": {
+        "A": "Both require energy input from the cell.",
+        "B": "Passive transport is powered by osmosis and electric field; active requires energy input.",
+        "C": "Passive requires energy; active is powered by osmosis and electric field.",
+        "D": "Both are powered by osmosis and electric field.",
+        "E": "Active is powered by osmosis and electric field; passive requires energy."
+      },
+      "ground_truth": "B",
+      "category": "biology",
+      "subcategory": "cell_biology",
+      "difficulty": "easy",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "B", "confidence": 0.98, "time_seconds": 15},
+        {"annotator_id": "ann_02", "answer": "B", "confidence": 0.95, "time_seconds": 20},
+        {"annotator_id": "ann_03", "answer": "B", "confidence": 0.97, "time_seconds": 18}
+      ],
+      "quality_scores": {"clarity": 5, "completeness": 5, "ambiguity_flag": false},
+      "tags": ["biology", "cell-transport", "membrane"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_006",
+      "source_id": 191,
+      "prompt": "What is the difference between natural convection and forced convection?",
+      "choices": {
+        "A": "Same phenomenon involving fans and density.",
+        "B": "Unrelated phenomena.",
+        "C": "Natural = density-driven displacement; forced = fans/pumps drive flow.",
+        "D": "Natural = fans/pumps; forced = density-driven.",
+        "E": "Same phenomenon with both density and fans."
+      },
+      "ground_truth": "C",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "easy",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "C", "confidence": 0.99, "time_seconds": 12},
+        {"annotator_id": "ann_02", "answer": "C", "confidence": 0.97, "time_seconds": 15},
+        {"annotator_id": "ann_03", "answer": "C", "confidence": 0.98, "time_seconds": 14}
+      ],
+      "quality_scores": {"clarity": 5, "completeness": 5, "ambiguity_flag": false},
+      "tags": ["thermodynamics", "heat-transfer", "convection"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_007",
+      "source_id": 192,
+      "prompt": "What is magnetic susceptibility?",
+      "choices": {
+        "A": "Measure of how much a material absorbs magnetization.",
+        "B": "Measure of how much a material becomes magnetized in an applied field.",
+        "C": "Measure of how much a material resists magnetization.",
+        "D": "Measure of how much a material conducts magnetization.",
+        "E": "Measure of how much a material reflects magnetization."
+      },
+      "ground_truth": "B",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "medium",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "B", "confidence": 0.90, "time_seconds": 25},
+        {"annotator_id": "ann_02", "answer": "B", "confidence": 0.85, "time_seconds": 30},
+        {"annotator_id": "ann_03", "answer": "A", "confidence": 0.55, "time_seconds": 40}
+      ],
+      "quality_scores": {"clarity": 4, "completeness": 4, "ambiguity_flag": false},
+      "tags": ["electromagnetism", "magnetism", "material-science"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_008",
+      "source_id": 3,
+      "prompt": "What is the significance of regularization in terms of renormalization problems in physics?",
+      "choices": {
+        "A": "Simplifies calculations involving infinities.",
+        "B": "Allows breakdown of a theory with infinite radius.",
+        "C": "Demonstrates a system below certain size without further calculations.",
+        "D": "Provides highly accurate description under specific conditions with infinite radius.",
+        "E": "Explains system operation below certain size with infinite radius."
+      },
+      "ground_truth": "C",
+      "category": "physics",
+      "subcategory": "quantum_field_theory",
+      "difficulty": "hard",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "C", "confidence": 0.70, "time_seconds": 65},
+        {"annotator_id": "ann_02", "answer": "A", "confidence": 0.60, "time_seconds": 70},
+        {"annotator_id": "ann_03", "answer": "C", "confidence": 0.65, "time_seconds": 75}
+      ],
+      "quality_scores": {"clarity": 3, "completeness": 3, "ambiguity_flag": true},
+      "tags": ["QFT", "renormalization", "regularization", "tricky"],
+      "edge_case": true,
+      "failure_history": [
+        {"model": "gpt-4", "date": "2026-05-01", "predicted": "A", "reason": "Plausible distractor"},
+        {"model": "claude-3", "date": "2026-05-10", "predicted": "A", "reason": "Same confusion"}
+      ]
+    },
+    {
+      "id": "golden_009",
+      "source_id": 7,
+      "prompt": "Which of the following statements accurately describes the blocking temperature of an antiferromagnetic layer in a spin valve?",
+      "choices": {
+        "A": "Temperature at which magnetization aligns with field, higher than Neel.",
+        "B": "Temperature below which layer loses ability to pin, higher than Neel.",
+        "C": "Temperature at which ferromagnetic layer demagnetizes, higher than Neel.",
+        "D": "Temperature at or above which layer ceases pinning, lower than Neel.",
+        "E": "Temperature at which ferromagnetic loses pinning ability, higher than Neel."
+      },
+      "ground_truth": "D",
+      "category": "physics",
+      "subcategory": "condensed_matter",
+      "difficulty": "hard",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "D", "confidence": 0.80, "time_seconds": 50},
+        {"annotator_id": "ann_02", "answer": "D", "confidence": 0.75, "time_seconds": 55},
+        {"annotator_id": "ann_03", "answer": "B", "confidence": 0.55, "time_seconds": 70}
+      ],
+      "quality_scores": {"clarity": 3, "completeness": 4, "ambiguity_flag": true},
+      "tags": ["condensed-matter", "spin-valve", "magnetism"],
+      "edge_case": true,
+      "failure_history": [
+        {"model": "mistral-7b", "date": "2026-05-15", "predicted": "B", "reason": "Subtle distinction between B and D"}
+      ]
+    },
+    {
+      "id": "golden_010",
+      "source_id": 198,
+      "prompt": "What is the relationship between mass, force, and acceleration, according to Sir Isaac Newton's laws of motion?",
+      "choices": {
+        "A": "Mass determines weight; 1kg accelerates at 1 m/s^2 with 1N.",
+        "B": "Mass is inertial; 1kg accelerates at 10 m/s^2 with 1N.",
+        "C": "Mass is inertial; 1kg accelerates at 10 m/s^2 with 10N.",
+        "D": "Mass is inertial; 1kg accelerates at 1 m/s^2 with 1N.",
+        "E": "Mass determines size; 1kg accelerates at 1 m/s^2 with 10N."
+      },
+      "ground_truth": "D",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "easy",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "D", "confidence": 0.99, "time_seconds": 10},
+        {"annotator_id": "ann_02", "answer": "D", "confidence": 0.99, "time_seconds": 12},
+        {"annotator_id": "ann_03", "answer": "D", "confidence": 0.99, "time_seconds": 11}
+      ],
+      "quality_scores": {"clarity": 5, "completeness": 5, "ambiguity_flag": false},
+      "tags": ["classical-mechanics", "newton", "F=ma", "foundational"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_011",
+      "source_id": 196,
+      "prompt": "What is the throttling process, and why is it important?",
+      "choices": {
+        "A": "Steady flow through resistance; causes pressure increase in refrigerators.",
+        "B": "Steady adiabatic flow through resistance; causes temperature drop in refrigerators.",
+        "C": "Steady adiabatic flow through resistance; causes pressure drop in refrigerators.",
+        "D": "Steady flow through resistance; causes temperature increase in refrigerators.",
+        "E": "Steady adiabatic flow; not used in refrigeration cycle."
+      },
+      "ground_truth": "B",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "medium",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "B", "confidence": 0.85, "time_seconds": 30},
+        {"annotator_id": "ann_02", "answer": "B", "confidence": 0.80, "time_seconds": 35},
+        {"annotator_id": "ann_03", "answer": "C", "confidence": 0.50, "time_seconds": 45}
+      ],
+      "quality_scores": {"clarity": 4, "completeness": 5, "ambiguity_flag": false},
+      "tags": ["thermodynamics", "refrigeration", "throttling"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_012",
+      "source_id": 190,
+      "prompt": "What is the Heisenberg uncertainty principle and how does it relate to angular momentum in quantum mechanics?",
+      "choices": {
+        "A": "Axis undefined; particles have spin; tensorial operator in relativistic QM.",
+        "B": "Total angular momentum equals sum; centre of mass defined.",
+        "C": "Total angular momentum subject to quantization; expressed as operators.",
+        "D": "Axis undefined; only one projection measurable; quantized eigenvalues.",
+        "E": "Only one projection measurable; expressed as operator with quantized eigenvalues."
+      },
+      "ground_truth": "E",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "difficulty": "hard",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "E", "confidence": 0.75, "time_seconds": 60},
+        {"annotator_id": "ann_02", "answer": "D", "confidence": 0.65, "time_seconds": 65},
+        {"annotator_id": "ann_03", "answer": "E", "confidence": 0.70, "time_seconds": 70}
+      ],
+      "quality_scores": {"clarity": 3, "completeness": 4, "ambiguity_flag": true},
+      "tags": ["quantum-mechanics", "uncertainty-principle", "angular-momentum", "tricky"],
+      "edge_case": true,
+      "failure_history": [
+        {"model": "gpt-4", "date": "2026-05-01", "predicted": "D", "reason": "D and E are very similar; subtle distinction"}
+      ]
+    },
+    {
+      "id": "golden_013",
+      "source_id": 6,
+      "prompt": "Which of the following statements accurately describes the dimension of an object in a CW complex?",
+      "choices": {
+        "A": "Largest n for which n-skeleton is nontrivial; empty set has dimension -1.",
+        "B": "Determined by number of critical points; discrete boundary has dimension 1.",
+        "C": "Smallest n for which n-skeleton is nontrivial; empty set has dimension -1.",
+        "D": "Counting cells of all dimensions; empty set has dimension 0.",
+        "E": "Depends on number of singularities; both empty set and boundary have dimension 0."
+      },
+      "ground_truth": "A",
+      "category": "mathematics",
+      "subcategory": "topology",
+      "difficulty": "hard",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "A", "confidence": 0.85, "time_seconds": 45},
+        {"annotator_id": "ann_02", "answer": "A", "confidence": 0.80, "time_seconds": 50},
+        {"annotator_id": "ann_03", "answer": "C", "confidence": 0.50, "time_seconds": 60}
+      ],
+      "quality_scores": {"clarity": 4, "completeness": 4, "ambiguity_flag": false},
+      "tags": ["topology", "CW-complex", "algebraic-topology"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_014",
+      "source_id": 194,
+      "prompt": "What is a uniform tiling in the hyperbolic plane?",
+      "choices": {
+        "A": "Tessellation with irregular polygons; not vertex-transitive.",
+        "B": "Tessellation with regular polygons; not vertex-transitive.",
+        "C": "Tessellation with irregular polygons; vertex-transitive.",
+        "D": "Edge-to-edge filling with regular polygons; vertex-transitive and isogonal.",
+        "E": "Edge-to-edge filling with irregular polygons; vertex-transitive."
+      },
+      "ground_truth": "D",
+      "category": "mathematics",
+      "subcategory": "geometry",
+      "difficulty": "medium",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "D", "confidence": 0.90, "time_seconds": 25},
+        {"annotator_id": "ann_02", "answer": "D", "confidence": 0.88, "time_seconds": 30},
+        {"annotator_id": "ann_03", "answer": "D", "confidence": 0.92, "time_seconds": 22}
+      ],
+      "quality_scores": {"clarity": 5, "completeness": 5, "ambiguity_flag": false},
+      "tags": ["geometry", "hyperbolic", "tiling", "tessellation"],
+      "edge_case": false,
+      "failure_history": []
+    },
+    {
+      "id": "golden_015",
+      "source_id": 197,
+      "prompt": "What happens to excess base metal as a solution cools from the upper transformation temperature towards an insoluble state?",
+      "choices": {
+        "A": "Solidifies as proeutectoid until eutectoid level.",
+        "B": "Crystallizes-out as proeutectoid until eutectoid level.",
+        "C": "Dissolves as proeutectoid until eutectoid level.",
+        "D": "Liquefies as proeutectoid until eutectoid level.",
+        "E": "Evaporates as proeutectoid until eutectoid level."
+      },
+      "ground_truth": "B",
+      "category": "chemistry",
+      "subcategory": "materials_science",
+      "difficulty": "hard",
+      "annotations": [
+        {"annotator_id": "ann_01", "answer": "B", "confidence": 0.80, "time_seconds": 40},
+        {"annotator_id": "ann_02", "answer": "B", "confidence": 0.75, "time_seconds": 50},
+        {"annotator_id": "ann_03", "answer": "A", "confidence": 0.55, "time_seconds": 55}
+      ],
+      "quality_scores": {"clarity": 3, "completeness": 4, "ambiguity_flag": true},
+      "tags": ["materials-science", "metallurgy", "phase-transitions", "tricky"],
+      "edge_case": true,
+      "failure_history": [
+        {"model": "claude-3", "date": "2026-05-20", "predicted": "A", "reason": "Solidify vs crystallize-out distinction"}
+      ]
+    }
+  ],
+  "dataset_statistics": {
+    "category_distribution": {
+      "physics": 11,
+      "biology": 1,
+      "mathematics": 2,
+      "chemistry": 1
+    },
+    "difficulty_distribution": {
+      "easy": 3,
+      "medium": 5,
+      "hard": 7
+    },
+    "edge_case_count": 5,
+    "avg_annotator_agreement": 0.87,
+    "items_with_failure_history": 5
+  }
+}

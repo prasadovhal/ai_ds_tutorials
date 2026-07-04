@@ -1,0 +1,304 @@
+{
+  "version": "v1",
+  "created": "2026-07-04T18:05:50.767334",
+  "total_entries": 25,
+  "seed_count": 20,
+  "synthetic_count": 5,
+  "seed_analysis": {
+    "total_questions": 200,
+    "answer_distribution": {
+      "D": 38,
+      "A": 37,
+      "C": 44,
+      "B": 48,
+      "E": 33
+    },
+    "avg_prompt_length_words": 11.4,
+    "topics_detected": [
+      "astronomy",
+      "chemistry",
+      "history",
+      "math",
+      "physics"
+    ],
+    "balance_score": 0.688
+  },
+  "checksum": "b5821aaa3d7043a6c4cedd80e85af769",
+  "entries": [
+    {
+      "id": "9",
+      "prompt": "What is the role of axioms in a formal theory?",
+      "A": "Basis statements called axioms form the foundation of a formal theory and, together with the deducing rules, help in deriving a set of statements called theorems using proof theory.",
+      "B": "Axioms are supplementary statements added to a formal theory that break down otherwise complex statements into more simple ones.",
+      "C": "Axioms are redundant statements that can be derived from other statements in a formal theory, providing additional perspective to theorems derived from the theory.",
+      "D": "The axioms in a theory are used for experimental validation of the theorems derived from the statements in the theory.",
+      "E": "The axioms in a formal theory are added to prove that the statements derived from the theory are true, irrespective of their validity in the real world.",
+      "answer": "A",
+      "source": "seed"
+    },
+    {
+      "id": "180",
+      "prompt": "What is the origin of the radio emission observed from supernova remnants?",
+      "A": "The radio emission from supernova remnants originates from the rebound of gas falling inward during the supernova explosion. This emission is a form of non-thermal emission called synchrotron emission.",
+      "B": "The radio emission from supernova remnants originates from high-velocity electrons oscillating within magnetic fields. This emission is a form of non-thermal emission called synchrotron emission.",
+      "C": "The radio emission from supernova remnants originates from the fusion of hydrogen and helium in the core of the star. This emission is a form of non-thermal emission called synchrotron emission.",
+      "D": "The radio emission from supernova remnants originates from the expansion of the shell of gas during the supernova explosion. This emission is a form of thermal emission called synchrotron emission.",
+      "E": "The radio emission from supernova remnants originates from the ionized gas present in the remnants. This emission is a form of thermal emission called synchrotron emission.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "91",
+      "prompt": "What is Minkowski space?",
+      "A": "Minkowski space is a physical space where objects move in a straight line unless acted upon by a force.",
+      "B": "Minkowski space is a mathematical model that combines inertial space and time manifolds with a non-inertial reference frame of space and time into a four-dimensional model relating a position to the field.",
+      "C": "Minkowski space is a mathematical model that combines space and time into a two-dimensional model relating a position to the field.",
+      "D": "Minkowski space is a mathematical model that combines space and time into a three-dimensional model relating a position to the field.",
+      "E": "Minkowski space is a physical space where objects move in a curved line unless acted upon by a force.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "59",
+      "prompt": "What are the Navier-Stokes equations?",
+      "A": "The Navier-Stokes equations are partial differential equations that describe the motion of viscous fluid substances, expressing momentum balance and conservation of mass for Newtonian fluids.",
+      "B": "The Navier-Stokes equations are partial differential equations that describe the motion of viscous fluid substances, expressing momentum balance and conservation of mass for non-Newtonian fluids.",
+      "C": "The Navier-Stokes equations are partial differential equations that describe the motion of non-viscous fluid substances, expressing momentum balance and conservation of mass for Newtonian fluids.",
+      "D": "The Navier-Stokes equations are algebraic equations that describe the motion of non-viscous fluid substances, expressing momentum balance and conservation of mass for Newtonian fluids.",
+      "E": "The Navier-Stokes equations are algebraic equations that describe the motion of viscous fluid substances, expressing momentum balance and conservation of mass for Newtonian fluids.",
+      "answer": "A",
+      "source": "seed"
+    },
+    {
+      "id": "90",
+      "prompt": "What is the Ramsauer-Townsend effect?",
+      "A": "The Ramsauer-Townsend effect is a physical phenomenon that involves the scattering of low-energy electrons by atoms of a non-noble gas. It can be explained by classical mechanics.",
+      "B": "The Ramsauer-Townsend effect is a physical phenomenon that involves the scattering of low-energy electrons by atoms of a noble gas. It requires the wave theory of quantum mechanics to be explained.",
+      "C": "The Ramsauer-Townsend effect is a physical phenomenon that involves the scattering of high-energy electrons by atoms of a noble gas. It can be explained by classical mechanics.",
+      "D": "The Ramsauer-Townsend effect is a physical phenomenon that involves the scattering of high-energy electrons by atoms of a non-noble gas. It requires the wave theory of quantum mechanics to be explained.",
+      "E": "The Ramsauer-Townsend effect is a physical phenomenon that involves the scattering of electrons by atoms of any gas. It can be explained by classical mechanics.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "197",
+      "prompt": "What happens to excess base metal as a solution cools from the upper transformation temperature towards an insoluble state?",
+      "A": "The excess base metal will often solidify, becoming the proeutectoid until the remaining concentration of solutes reaches the eutectoid level, which will then crystallize as a separate microstructure.",
+      "B": "The excess base metal will often crystallize-out, becoming the proeutectoid until the remaining concentration of solutes reaches the eutectoid level, which will then crystallize as a separate microstructure.",
+      "C": "The excess base metal will often dissolve, becoming the proeutectoid until the remaining concentration of solutes reaches the eutectoid level, which will then crystallize as a separate microstructure.",
+      "D": "The excess base metal will often liquefy, becoming the proeutectoid until the remaining concentration of solutes reaches the eutectoid level, which will then crystallize as a separate microstructure.",
+      "E": "The excess base metal will often evaporate, becoming the proeutectoid until the remaining concentration of solutes reaches the eutectoid level, which will then crystallize as a separate microstructure.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "10",
+      "prompt": "What did Fresnel predict and verify with regards to total internal reflections?",
+      "A": "Fresnel predicted and verified that three total internal reflections at 75°27' would give a precise circular polarization if two of the reflections had water as the external medium and the third had air, but not if the reflecting surfaces were all wet or all dry.",
+      "B": "Fresnel predicted and verified that eight total internal reflections at 68°27' would give an accurate circular polarization if four of the reflections had water as the external medium while the other four had air, but not if the reflecting surfaces were all wet or all dry.",
+      "C": "Fresnel predicted and verified that four total internal reflections at 30°27' would result in circular polarization if two of the reflections had water as the external medium while the other two had air, regardless if the reflecting surfaces were all wet or all dry.",
+      "D": "Fresnel predicted and verified that two total internal reflections at 68°27' would give an accurate linear polarization if one of the reflections had water as the external medium and the other had air, but not if the reflecting surfaces were all wet or all dry.",
+      "E": "Fresnel predicted and verified that four total internal reflections at 68°27' would give a precise circular polarization if two of the reflections had water as the external medium while the other two had air, but not if the reflecting surfaces were all wet or all dry.",
+      "answer": "E",
+      "source": "seed"
+    },
+    {
+      "id": "103",
+      "prompt": "What is the reason for the sun appearing slightly yellowish when viewed from Earth?",
+      "A": "The sun appears yellowish due to a reflection of the Earth's atmosphere.",
+      "B": "The longer wavelengths of light, such as red and yellow, are not scattered away and are directly visible when looking towards the sun.",
+      "C": "The sun appears yellowish due to the scattering of all colors of light, mainly blue and green, in the Earth's atmosphere.",
+      "D": "The sun emits a yellow light due to its own spectrum, which is visible when viewed from Earth.",
+      "E": "The atmosphere absorbs the shorter wavelengths of light, such as blue and red, leaving only the longer wavelengths of light, such as green and yellow, visible when looking towards the sun.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "142",
+      "prompt": "What is radiometric dating?",
+      "A": "Radiometric dating is a method of measuring geological time using geological sedimentation, discovered in the early 20th century.",
+      "B": "Radiometric dating is a method of measuring geological time using radioactive decay, discovered in the early 20th century.",
+      "C": "Radiometric dating is a method of measuring geological time using the position of rocks, discovered in the early 20th century.",
+      "D": "Radiometric dating is a method of measuring geological time using the age of fossils, discovered in the early 20th century.",
+      "E": "Radiometric dating is a method of measuring geological time using the cooling of the earth, discovered in the early 20th century.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "12",
+      "prompt": "What is one of the examples of the models proposed by cosmologists and theoretical physicists without the cosmological or Copernican principles that can be used to address specific issues in the Lambda-CDM model and distinguish between current models and other possible models?",
+      "A": "The Copernican principle, which proposes that Earth, the Solar System, and the Milky Way are not at the centre of the universe, but instead, the universe is expanding equally in all directions. This principle is a modification of the Lambda-CDM model and has been shown to explain several observational results.",
+      "B": "Inhomogeneous cosmology, which states that the universe is entirely homogeneous and isotropic, directly proportional to the density of matter and radiation. This model proposes that everything in the universe is completely uniform, but it does not match observations.",
+      "C": "Inhomogeneous cosmology, which models the universe as an extremely large, low-density void, instead of using the concept of dark energy. According to the model, this theory can match the observed accelerating universe and cosmological constant, but it contradicts the Copernican principle.",
+      "D": "The cosmological principle, which proposes that Earth, the Solar System, and the Milky Way are at the centre of the universe. This principle is a modification of the Lambda-CDM model and has been shown to explain several observational results.",
+      "E": "The principle of dark energy, which proposes that a new form of energy, not previously detected, is responsible for the acceleration of the expansion of the universe. This principle is a modification of the Lambda-CDM model and has been shown to explain several observational results.",
+      "answer": "C",
+      "source": "seed"
+    },
+    {
+      "id": "116",
+      "prompt": "What is the reason for the stochastic nature of all observed resistance-switching processes?",
+      "A": "The free-energy barriers for the transition {i} → {j} are not high enough, and the memory device can switch without having to do anything.",
+      "B": "The device is subjected to random thermal fluctuations, which trigger the switching event, but it is impossible to predict when it will occur.",
+      "C": "The memory device is found to be in a distinct resistance state {j}, and there exists no physical one-to-one relationship between its present state and its foregoing voltage history.",
+      "D": "The device is subjected to biases below the threshold value, which still allows for a finite probability of switching, but it is possible to predict when it will occur.",
+      "E": "The external bias is set to a value above a certain threshold value, which reduces the free-energy barrier for the transition {i} → {j} to zero.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "168",
+      "prompt": "What is Lorentz symmetry or Lorentz invariance in relativistic physics?",
+      "A": "Lorentz symmetry or Lorentz invariance is a property of the underlying spacetime manifold that describes the feature of nature that says experimental results are independent of the orientation or the boost velocity of the laboratory through space.",
+      "B": "Lorentz symmetry or Lorentz invariance is a measure of the curvature of spacetime caused by the presence of massive objects, which describes the feature of nature that says experimental results are independent of the orientation or the boost velocity of the laboratory through space.",
+      "C": "Lorentz symmetry or Lorentz invariance is a physical quantity that transforms under a given representation of the Lorentz group, built out of scalars, four-vectors, four-tensors, and spinors.",
+      "D": "Lorentz symmetry or Lorentz invariance is a measure of the time dilation and length contraction effects predicted by special relativity, which states that the laws of physics stay the same for all observers that are moving with respect to one another within an inertial frame.",
+      "E": "Lorentz symmetry or Lorentz invariance is an equivalence of observation or observational symmetry due to special relativity implying that the laws of physics stay the same for all observers that are moving with respect to one another within an inertial frame.",
+      "answer": "E",
+      "source": "seed"
+    },
+    {
+      "id": "149",
+      "prompt": "What is the role of IL-10 in the formation of Tr1 cells and tolerogenic DCs?",
+      "A": "IL-10 inhibits the formation of Tr1 cells and tolerogenic DCs, which are dependent on TGF-β and Tregs. Tr1 cells produce low levels of IL-10 and TGF-β, while tolerogenic DCs produce TGF-β that is important for Tr1 formation.",
+      "B": "IL-10 induces the formation of Tr1 cells and tolerogenic DCs, which are dependent on IL-10 and TGF-β, but differ from Tregs by lacking expression of Foxp3. Tr1 cells produce high levels of IL-10 and TGF-β, while tolerogenic DCs produce IL-10 that is important for Tr1 formation.",
+      "C": "IL-10 has no role in the formation of Tr1 cells and tolerogenic DCs. TGF-β and Tregs are the only factors involved in the formation of Tr1 cells and tolerogenic DCs.",
+      "D": "IL-10 induces the formation of Tr1 cells and tolerogenic DCs, which are dependent on IL-10 and Tregs, but differ from Tregs by expressing Foxp3. Tr1 cells produce low levels of IL-10 and TGF-β, while tolerogenic DCs produce IL-10 that is important for Tr1 formation.",
+      "E": "IL-10 induces the formation of Tregs, which are dependent on TGF-β and Foxp3. Tr1 cells and tolerogenic DCs are not involved in this process.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "73",
+      "prompt": "What is the estimated redshift of CEERS-93316, a candidate high-redshift galaxy observed by the James Webb Space Telescope?",
+      "A": "Approximately z = 6.0, corresponding to 1 billion years after the Big Bang.",
+      "B": "Approximately z = 16.7, corresponding to 235.8 million years after the Big Bang.",
+      "C": "Approximately z = 3.0, corresponding to 5 billion years after the Big Bang.",
+      "D": "Approximately z = 10.0, corresponding to 13 billion years after the Big Bang.",
+      "E": "Approximately z = 13.0, corresponding to 30 billion light-years away from Earth.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "53",
+      "prompt": "What did Newton adopt after his correspondence with Hooke in 1679-1680?",
+      "A": "The language of inward or centripetal force.",
+      "B": "The language of gravitational force.",
+      "C": "The language of outward or centrifugal force.",
+      "D": "The language of tangential and radial displacements.",
+      "E": "The language of electromagnetic force.",
+      "answer": "A",
+      "source": "seed"
+    },
+    {
+      "id": "111",
+      "prompt": "What is the role of CYCLOIDEA genes in the evolution of bilateral symmetry?",
+      "A": "CYCLOIDEA genes are responsible for the selection of symmetry in the evolution of animals.",
+      "B": "CYCLOIDEA genes are responsible for the evolution of specialized pollinators in plants, which in turn led to the transition of radially symmetrical flowers to bilaterally symmetrical flowers.",
+      "C": "CYCLOIDEA genes are responsible for the expression of dorsal petals in Antirrhinum majus, which control their size and shape.",
+      "D": "CYCLOIDEA genes are responsible for the expression of transcription factors that control the expression of other genes, allowing their expression to influence developmental pathways relating to symmetry.",
+      "E": "CYCLOIDEA genes are responsible for mutations that cause a reversion to radial symmetry.",
+      "answer": "D",
+      "source": "seed"
+    },
+    {
+      "id": "156",
+      "prompt": "What is the Evans balance?",
+      "A": "The Evans balance is a system used to measure the change in weight of a sample when an electromagnet is turned on, which is proportional to the susceptibility.",
+      "B": "The Evans balance is a system used to measure the dependence of the NMR frequency of a liquid sample on its shape or orientation to determine its susceptibility.",
+      "C": "The Evans balance is a system used to measure the magnetic field distortion around a sample immersed in water inside an MR scanner to determine its susceptibility.",
+      "D": "The Evans balance is a system used to measure the susceptibility of a sample by measuring the force change on a strong compact magnet upon insertion of the sample.",
+      "E": "The Evans balance is a system used to measure the magnetic susceptibility of most crystals, which is not a scalar quantity.",
+      "answer": "D",
+      "source": "seed"
+    },
+    {
+      "id": "133",
+      "prompt": "What is the Erlangen program?",
+      "A": "The Erlangen program is a method of characterizing geometries based on statistics and probability, published by Felix Klein in 1872 as Vergleichende Betrachtungen über neuere geometrische Forschungen.",
+      "B": "The Erlangen program is a method of characterizing geometries based on group theory and projective geometry, published by Felix Klein in 1872 as Vergleichende Betrachtungen über neuere geometrische Forschungen.",
+      "C": "The Erlangen program is a method of characterizing geometries based on algebra and trigonometry, published by Felix Klein in 1872 as Vergleichende Betrachtungen über neuere geometrische Forschungen.",
+      "D": "The Erlangen program is a method of characterizing geometries based on geometry and topology, published by Felix Klein in 1872 as Vergleichende Betrachtungen über neuere geometrische Forschungen.",
+      "E": "The Erlangen program is a method of characterizing geometries based on calculus and differential equations, published by Felix Klein in 1872 as Vergleichende Betrachtungen über neuere geometrische Forschungen.",
+      "answer": "B",
+      "source": "seed"
+    },
+    {
+      "id": "171",
+      "prompt": "What are permutation-inversion groups?",
+      "A": "Permutation-inversion groups are groups of symmetry operations that are energetically feasible inversions of identical nuclei or rotation with respect to the center of mass.",
+      "B": "Permutation-inversion groups are groups of symmetry operations that are energetically feasible inversions of identical nuclei or rotation with respect to the center of mass, or a combination of both.",
+      "C": "Permutation-inversion groups are groups of symmetry operations that are energetically feasible rotations of the entire molecule about the C3 axis.",
+      "D": "Permutation-inversion groups are groups of symmetry operations that are energetically feasible inversions of the entire molecule about the C3 axis.",
+      "E": "Permutation-inversion groups are groups of symmetry operations that are energetically feasible permutations of identical nuclei or inversion with respect to the center of mass, or a combination of both.",
+      "answer": "E",
+      "source": "seed"
+    },
+    {
+      "id": "11",
+      "prompt": "What is the relationship between the Wigner function and the density matrix operator?",
+      "A": "The Wigner function W(x, p) is the Wigner transform of the density matrix operator ρ̂, and the trace of an operator with the density matrix Wigner-transforms to the equivalent phase-space integral overlap of g(x,p) with the Wigner function.",
+      "B": "The Wigner function W(x, p) is a source function used for the density matrix operator ρ̂ and the product of these two functions creates the phase space wave function g(x, p).",
+      "C": "The Wigner function W(x, p) is the derivative of the density matrix operator ρ̂ with respect to the phase space coordinate.",
+      "D": "The Wigner function W(x, p) represents the Hamiltonian H(x,p) of the density matrix operator ρ̂, while the Moyal bracket {{⋅, ⋅}} represents the Poisson bracket in the phase space.",
+      "E": "The Wigner function W(x, p) is the time derivative of the density matrix operator ρ̂ with respect to the phase space coordinate.",
+      "answer": "A",
+      "source": "seed"
+    },
+    {
+      "prompt": "In the context of cosmology, what is the role of Neutrino Oscillations (NOs) in understanding the universe?",
+      "A": "They provide evidence for dark matter",
+      "B": "They are used to determine the age of the universe",
+      "C": "They help measure the expansion rate of the universe",
+      "D": "They contribute to the formation of galaxies",
+      "E": "They are a source of gravitational waves",
+      "answer": "C",
+      "source": "ollama",
+      "id": "syn_0"
+    },
+    {
+      "prompt": "What is the International Organization for Standardization (ISO) density scale most commonly used for liquids like crude oil and gasoline?",
+      "A": "API gravity",
+      "B": "Specific gravity",
+      "C": "Density in kg/m³",
+      "D": "Refractive index",
+      "E": "Standard temperature and pressure (STP)",
+      "answer": "B",
+      "source": "ollama",
+      "id": "syn_1"
+    },
+    {
+      "prompt": "In the context of computer science, which statement about quantum entanglement is most accurate?",
+      "A": "The scientifically accurate statement",
+      "B": "A common misconception",
+      "C": "An outdated theory",
+      "D": "A partially correct observation",
+      "E": "An unrelated claim",
+      "answer": "A",
+      "source": "template",
+      "id": "syn_2"
+    },
+    {
+      "prompt": "What causes the strongest electrostatic attraction between two charged objects that are not in contact?",
+      "A": "Increased surface area of the objects",
+      "B": "Presence of a dielectric material between the objects",
+      "C": "Distance between the objects",
+      "D": "Temperature difference between the objects",
+      "E": "Polarity of the objects",
+      "answer": "E",
+      "source": "ollama",
+      "id": "syn_3"
+    },
+    {
+      "prompt": "Which experiment best demonstrates quantum entanglement?",
+      "A": "The classic well-known experiment",
+      "B": "An experiment that tests something else",
+      "C": "A thought experiment only",
+      "D": "A disproven experimental setup",
+      "E": "An experiment from a different field",
+      "answer": "A",
+      "source": "template",
+      "id": "syn_4"
+    }
+  ]
+}

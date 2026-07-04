@@ -1,0 +1,148 @@
+{
+  "metadata": {
+    "description": "Sample LLM evaluation data for Chapter 1 - Foundations",
+    "source": "Derived from Kaggle LLM Science Exam dataset",
+    "total_questions": 10,
+    "task_type": "multiple_choice_qa"
+  },
+  "questions": [
+    {
+      "id": 0,
+      "prompt": "Which of the following statements accurately describes the impact of Modified Newtonian Dynamics (MOND) on the observed 'missing baryonic mass' discrepancy in galaxy clusters?",
+      "choices": {
+        "A": "MOND postulates the existence of fuzzy dark matter.",
+        "B": "MOND increases the discrepancy from a factor of 10 to 20.",
+        "C": "MOND explains the mass is in the form of neutrinos and axions.",
+        "D": "MOND reduces the discrepancy from a factor of 10 to about 2.",
+        "E": "MOND eliminates the missing mass entirely."
+      },
+      "ground_truth": "D"
+    },
+    {
+      "id": 1,
+      "prompt": "Which of the following is an accurate definition of dynamic scaling in self-similar systems?",
+      "choices": {
+        "A": "Evolution of self-similar systems with time-dependent similarity.",
+        "B": "Non-evolution with time-dependent similarity.",
+        "C": "Evolution with time-independent dissimilarity.",
+        "D": "Non-evolution with time-independent dissimilarity.",
+        "E": "Evolution with time-dependent independence."
+      },
+      "ground_truth": "A"
+    },
+    {
+      "id": 2,
+      "prompt": "What is the term used in astrophysics to describe light-matter interactions resulting in energy shifts in the radiation field?",
+      "choices": {
+        "A": "Blueshifting",
+        "B": "Redshifting",
+        "C": "Reddening",
+        "D": "Whitening",
+        "E": "Yellowing"
+      },
+      "ground_truth": "C"
+    },
+    {
+      "id": 3,
+      "prompt": "What is the role of axioms in a formal theory?",
+      "choices": {
+        "A": "Axioms form the foundation and help derive theorems using proof theory.",
+        "B": "Axioms break down complex statements into simpler ones.",
+        "C": "Axioms are redundant and can be derived from other statements.",
+        "D": "Axioms are used for experimental validation.",
+        "E": "Axioms prove statements are true irrespective of real-world validity."
+      },
+      "ground_truth": "A"
+    },
+    {
+      "id": 4,
+      "prompt": "What is the Roche limit?",
+      "choices": {
+        "A": "Distance at which tidal effects cause rotation.",
+        "B": "Distance at which tidal effects cause unification.",
+        "C": "Distance at which tidal effects disintegrate a planet.",
+        "D": "Distance at which tidal effects disintegrate an object due to differential force.",
+        "E": "Distance depending on object density and planet mass."
+      },
+      "ground_truth": "D"
+    },
+    {
+      "id": 5,
+      "prompt": "What is the 'ultraviolet catastrophe'?",
+      "choices": {
+        "A": "A phenomenon in multi-mode vibration.",
+        "B": "The misbehavior of a formula for higher frequencies.",
+        "C": "A standing wave in harmonic resonance.",
+        "D": "A flaw in classical physics with energy misallocation.",
+        "E": "A disproven theory about electromagnetic radiation."
+      },
+      "ground_truth": "B"
+    },
+    {
+      "id": 6,
+      "prompt": "What is the butterfly effect?",
+      "choices": {
+        "A": "A physical cause from unstable equilibrium.",
+        "B": "A distributed causality concept.",
+        "C": "A proportionality between cause and effect.",
+        "D": "A small push needed for motion.",
+        "E": "A phenomenon highlighting causality differences."
+      },
+      "ground_truth": "E"
+    },
+    {
+      "id": 7,
+      "prompt": "What is the propagation constant in sinusoidal waves?",
+      "choices": {
+        "A": "A measure of amplitude varying with distance.",
+        "B": "A real constant due to phase change.",
+        "C": "A real number varying with distance.",
+        "D": "A complex number varying with distance due to phase change.",
+        "E": "A complex constant due to phase change."
+      },
+      "ground_truth": "D"
+    },
+    {
+      "id": 8,
+      "prompt": "What is the gravitomagnetic interaction?",
+      "choices": {
+        "A": "Force from rotating atoms in linear materials.",
+        "B": "Force against gravity from nonlinear materials.",
+        "C": "New force from rotating matter proportional to spin rate.",
+        "D": "Force in neutron stars producing Meissner analogue.",
+        "E": "Force from rotation in varying gravitational permeability."
+      },
+      "ground_truth": "C"
+    },
+    {
+      "id": 9,
+      "prompt": "What is Hesse's principle of transfer in geometry?",
+      "choices": {
+        "A": "Transfer of genetic information in biology.",
+        "B": "Transfer of electrons in chemistry.",
+        "C": "Transfer of energy in physics.",
+        "D": "Transfer of wealth in economics.",
+        "E": "Projective transformations preserving rational normal curves."
+      },
+      "ground_truth": "E"
+    }
+  ],
+  "simulated_llm_responses": {
+    "good_model": {
+      "description": "A well-tuned LLM that gets most answers right",
+      "predictions": ["D", "A", "C", "A", "D", "B", "E", "D", "C", "E"]
+    },
+    "mediocre_model": {
+      "description": "An average LLM with some errors",
+      "predictions": ["D", "A", "B", "A", "E", "D", "E", "D", "B", "E"]
+    },
+    "poor_model": {
+      "description": "A weak LLM that mostly guesses",
+      "predictions": ["A", "C", "A", "B", "A", "A", "C", "A", "A", "D"]
+    },
+    "random_baseline": {
+      "description": "Random guessing baseline",
+      "predictions": ["B", "D", "E", "C", "B", "C", "A", "E", "D", "A"]
+    }
+  }
+}

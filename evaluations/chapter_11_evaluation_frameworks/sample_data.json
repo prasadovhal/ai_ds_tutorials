@@ -1,0 +1,228 @@
+{
+  "metadata": {
+    "description": "Sample data for Chapter 11 - Evaluation Frameworks comparison",
+    "source": "Derived from Kaggle LLM Science Exam dataset + synthetic RAG examples",
+    "purpose": "Demonstrate how different frameworks evaluate the same data"
+  },
+  "rag_examples": [
+    {
+      "id": "rag_001",
+      "question": "What is the primary function of mitochondria in eukaryotic cells?",
+      "context": [
+        "Mitochondria are membrane-bound organelles found in the cytoplasm of eukaryotic cells. They are often referred to as the powerhouses of the cell because they generate most of the cell's supply of adenosine triphosphate (ATP), which is used as a source of chemical energy.",
+        "The number of mitochondria in a cell varies depending on the organism, tissue, and cell type. Red blood cells have no mitochondria, whereas liver cells can have more than 2000."
+      ],
+      "generated_answer": "Mitochondria are the powerhouses of eukaryotic cells, responsible for generating most of the cell's ATP (adenosine triphosphate) through cellular respiration, providing the chemical energy needed for various cellular processes.",
+      "reference_answer": "The primary function of mitochondria is to generate ATP through oxidative phosphorylation, serving as the main energy source for eukaryotic cells.",
+      "expected_scores": {
+        "faithfulness": 0.95,
+        "answer_relevancy": 0.92,
+        "context_precision": 0.90,
+        "context_recall": 0.85
+      }
+    },
+    {
+      "id": "rag_002",
+      "question": "How does CRISPR-Cas9 gene editing work?",
+      "context": [
+        "CRISPR-Cas9 is a revolutionary gene-editing technology adapted from a natural defense mechanism found in bacteria. The system uses a guide RNA (gRNA) to direct the Cas9 protein to a specific location in the genome.",
+        "Once at the target site, the Cas9 protein acts like molecular scissors, cutting both strands of the DNA double helix. The cell then repairs the break, and researchers can use this process to add, remove, or alter genetic material."
+      ],
+      "generated_answer": "CRISPR-Cas9 works by using a guide RNA to direct the Cas9 protein to a specific DNA location, where it cuts both strands of the DNA. The cell's repair mechanisms then fix the break, allowing scientists to modify genetic material. This technology was originally discovered in bacteria as a defense against viruses and was developed by Jennifer Doudna and Emmanuelle Charpentier in 2012.",
+      "reference_answer": "CRISPR-Cas9 uses a guide RNA to direct the Cas9 enzyme to a specific genomic location, where it creates a double-strand break. The cell's DNA repair mechanisms then allow for gene insertion, deletion, or modification.",
+      "expected_scores": {
+        "faithfulness": 0.70,
+        "answer_relevancy": 0.90,
+        "context_precision": 0.85,
+        "context_recall": 0.80
+      }
+    },
+    {
+      "id": "rag_003",
+      "question": "What causes the Northern Lights (Aurora Borealis)?",
+      "context": [
+        "The Aurora Borealis, or Northern Lights, is a natural light display predominantly seen in high-latitude regions. It is caused by the interaction between the solar wind and the Earth's magnetosphere.",
+        "When charged particles from the Sun enter the Earth's atmosphere, they collide with gas molecules such as oxygen and nitrogen, causing them to emit photons of light at characteristic wavelengths."
+      ],
+      "generated_answer": "The Northern Lights are caused by charged particles from the Sun interacting with Earth's atmosphere. When solar wind particles enter the magnetosphere, they collide with oxygen and nitrogen molecules, causing these gases to emit light.",
+      "reference_answer": "Aurora Borealis is caused by solar wind particles colliding with atmospheric gases after being channeled by Earth's magnetic field, producing characteristic light emissions.",
+      "expected_scores": {
+        "faithfulness": 0.98,
+        "answer_relevancy": 0.95,
+        "context_precision": 0.95,
+        "context_recall": 0.92
+      }
+    },
+    {
+      "id": "rag_004",
+      "question": "What is the difference between Type 1 and Type 2 diabetes?",
+      "context": [
+        "Type 1 diabetes is an autoimmune condition where the immune system attacks and destroys insulin-producing beta cells in the pancreas. It typically develops in childhood or adolescence.",
+        "Type 2 diabetes is characterized by insulin resistance, where cells do not respond effectively to insulin. It is more common in adults and is often associated with obesity and sedentary lifestyle."
+      ],
+      "generated_answer": "Type 1 diabetes is an autoimmune disease where the body attacks its insulin-producing cells, typically diagnosed in children. Type 2 diabetes involves insulin resistance and is usually linked to lifestyle factors like obesity. Type 2 can often be managed with diet and exercise, while Type 1 always requires insulin injections. About 90% of diabetes cases worldwide are Type 2.",
+      "reference_answer": "Type 1 diabetes is an autoimmune condition destroying insulin-producing beta cells, requiring insulin therapy. Type 2 involves insulin resistance, is typically associated with lifestyle factors, and may be managed with diet, exercise, and medication.",
+      "expected_scores": {
+        "faithfulness": 0.65,
+        "answer_relevancy": 0.88,
+        "context_precision": 0.82,
+        "context_recall": 0.78
+      }
+    },
+    {
+      "id": "rag_005",
+      "question": "How do black holes form?",
+      "context": [
+        "Stellar black holes form when massive stars (at least 20-25 times the mass of our Sun) exhaust their nuclear fuel and undergo gravitational collapse. The core collapses inward while the outer layers are expelled in a supernova explosion.",
+        "If the remaining core is sufficiently massive (above the Tolman-Oppenheimer-Volkoff limit of about 2-3 solar masses), no known force can prevent further collapse, and a black hole forms."
+      ],
+      "generated_answer": "Black holes form when massive stars run out of fuel and collapse under their own gravity. Stars at least 20-25 times the mass of the Sun undergo a supernova explosion, and if the remaining core exceeds 2-3 solar masses, it collapses into a black hole. The boundary of no return is called the event horizon.",
+      "reference_answer": "Black holes form from the gravitational collapse of massive stellar cores after supernova explosions, when the remaining mass exceeds the Tolman-Oppenheimer-Volkoff limit.",
+      "expected_scores": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 0.93,
+        "context_precision": 0.88,
+        "context_recall": 0.90
+      }
+    }
+  ],
+  "mcq_examples": [
+    {
+      "id": 0,
+      "prompt": "Which of the following statements accurately describes the impact of Modified Newtonian Dynamics (MOND) on the observed 'missing baryonic mass' discrepancy in galaxy clusters?",
+      "choices": {
+        "A": "MOND postulates the existence of fuzzy dark matter.",
+        "B": "MOND increases the discrepancy from a factor of 10 to 20.",
+        "C": "MOND explains the mass is in the form of neutrinos and axions.",
+        "D": "MOND reduces the discrepancy from a factor of 10 to about 2.",
+        "E": "MOND eliminates the missing mass entirely."
+      },
+      "ground_truth": "D"
+    },
+    {
+      "id": 1,
+      "prompt": "Which of the following is an accurate definition of dynamic scaling in self-similar systems?",
+      "choices": {
+        "A": "Evolution of self-similar systems with time-dependent similarity.",
+        "B": "Non-evolution with time-dependent similarity.",
+        "C": "Evolution with time-independent dissimilarity.",
+        "D": "Non-evolution with time-independent dissimilarity.",
+        "E": "Evolution with time-dependent independence."
+      },
+      "ground_truth": "A"
+    },
+    {
+      "id": 2,
+      "prompt": "What is the primary mechanism by which penicillin kills bacteria?",
+      "choices": {
+        "A": "Disrupting cell membrane permeability.",
+        "B": "Inhibiting cell wall synthesis by blocking transpeptidase.",
+        "C": "Interfering with DNA replication.",
+        "D": "Blocking ribosomal protein synthesis.",
+        "E": "Inhibiting RNA polymerase activity."
+      },
+      "ground_truth": "B"
+    },
+    {
+      "id": 3,
+      "prompt": "What is the approximate age of the universe according to current cosmological estimates?",
+      "choices": {
+        "A": "4.5 billion years",
+        "B": "10.2 billion years",
+        "C": "13.8 billion years",
+        "D": "15.7 billion years",
+        "E": "20.1 billion years"
+      },
+      "ground_truth": "C"
+    },
+    {
+      "id": 4,
+      "prompt": "In quantum mechanics, what does the Heisenberg Uncertainty Principle state?",
+      "choices": {
+        "A": "Energy is always conserved in closed systems.",
+        "B": "Particles can tunnel through potential barriers.",
+        "C": "The position and momentum of a particle cannot both be precisely determined simultaneously.",
+        "D": "Wave functions always collapse upon measurement.",
+        "E": "Electrons orbit the nucleus in fixed circular paths."
+      },
+      "ground_truth": "C"
+    }
+  ],
+  "agent_traces": [
+    {
+      "id": "agent_001",
+      "task": "Find the boiling point of water at sea level and convert it to Fahrenheit",
+      "trace": [
+        {"step": 1, "action": "search", "input": "boiling point of water at sea level", "output": "100 degrees Celsius"},
+        {"step": 2, "action": "calculate", "input": "Convert 100C to Fahrenheit: (100 * 9/5) + 32", "output": "212 degrees Fahrenheit"},
+        {"step": 3, "action": "respond", "input": null, "output": "The boiling point of water at sea level is 100 degrees Celsius, which equals 212 degrees Fahrenheit."}
+      ],
+      "expected_answer": "212 degrees Fahrenheit",
+      "tool_calls_expected": 2,
+      "is_correct": true
+    },
+    {
+      "id": "agent_002",
+      "task": "What is the population of Tokyo and how does it compare to New York City?",
+      "trace": [
+        {"step": 1, "action": "search", "input": "population of Tokyo", "output": "Approximately 13.96 million (city proper)"},
+        {"step": 2, "action": "search", "input": "population of New York City", "output": "Approximately 8.34 million"},
+        {"step": 3, "action": "calculate", "input": "13.96 / 8.34", "output": "1.67"},
+        {"step": 4, "action": "respond", "input": null, "output": "Tokyo has approximately 13.96 million people, about 1.67 times the population of New York City (8.34 million)."}
+      ],
+      "expected_answer": "Tokyo ~14 million, NYC ~8.3 million, Tokyo is about 1.7x larger",
+      "tool_calls_expected": 3,
+      "is_correct": true
+    }
+  ],
+  "framework_test_cases": {
+    "description": "Standard test cases used to compare framework evaluation approaches",
+    "cases": [
+      {
+        "id": "tc_001",
+        "type": "faithfulness",
+        "input": "What causes rain?",
+        "context": "Rain forms when water vapor in the atmosphere condenses into water droplets that become heavy enough to fall.",
+        "output": "Rain is caused by water vapor condensing into droplets in the atmosphere that fall due to gravity.",
+        "expected_label": "faithful",
+        "expected_score": 0.95
+      },
+      {
+        "id": "tc_002",
+        "type": "hallucination",
+        "input": "What causes rain?",
+        "context": "Rain forms when water vapor in the atmosphere condenses into water droplets that become heavy enough to fall.",
+        "output": "Rain is caused by water vapor condensing. Interestingly, it rains diamonds on Jupiter and Saturn due to extreme pressure converting carbon into diamond crystals.",
+        "expected_label": "partially_hallucinated",
+        "expected_score": 0.50
+      },
+      {
+        "id": "tc_003",
+        "type": "relevancy",
+        "input": "What is photosynthesis?",
+        "context": "Photosynthesis is the process by which green plants use sunlight, water, and carbon dioxide to create oxygen and energy in the form of sugar.",
+        "output": "Photosynthesis is the biological process where plants convert sunlight, water, and CO2 into glucose and oxygen using chlorophyll in their chloroplasts.",
+        "expected_label": "relevant",
+        "expected_score": 0.92
+      },
+      {
+        "id": "tc_004",
+        "type": "irrelevant_answer",
+        "input": "What is photosynthesis?",
+        "context": "Photosynthesis is the process by which green plants use sunlight, water, and carbon dioxide to create oxygen and energy in the form of sugar.",
+        "output": "The Eiffel Tower is 330 meters tall and was built in 1889 for the World's Fair in Paris.",
+        "expected_label": "irrelevant",
+        "expected_score": 0.05
+      },
+      {
+        "id": "tc_005",
+        "type": "toxicity",
+        "input": "Tell me about renewable energy.",
+        "context": "Renewable energy comes from sources that are naturally replenished, such as solar, wind, and hydroelectric power.",
+        "output": "Renewable energy includes solar, wind, hydroelectric, and geothermal sources. These are sustainable alternatives to fossil fuels that help reduce carbon emissions.",
+        "expected_label": "not_toxic",
+        "expected_score": 0.02
+      }
+    ]
+  }
+}
