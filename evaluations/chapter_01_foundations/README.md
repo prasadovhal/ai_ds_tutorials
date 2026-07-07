@@ -29,6 +29,7 @@ chapter_01_foundations/
 ├── main.py           # Run this — walks through all 13 topics
 ├── evaluator.py      # Core evaluation classes and logic
 ├── dataset.py        # Data loading and preparation
+├── theory.md         # All theory, intuition, diagrams, interview questions
 ├── sample_data.json  # 10 sample questions with simulated predictions
 ├── requirements.txt  # No external deps (stdlib only)
 └── README.md         # This file

@@ -9,6 +9,7 @@ Simplified implementations of 10 LLM evaluation frameworks using only the Python
 | `dataset.py` | Data loading: RAG examples, MCQs, agent traces |
 | `sample_data.json` | Sample evaluation data (RAG, MCQ, agent, test cases) |
 | `evaluator.py` | Framework-style evaluators (DeepEval, RAGAS, LangSmith, etc.) |
+| `theory.md` | All theory, framework comparisons, diagrams, and interview questions |
 | `main.py` | Runs all 10 framework demos with output |
 
 ## Frameworks Covered

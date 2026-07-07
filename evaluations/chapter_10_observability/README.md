@@ -9,6 +9,7 @@ Observability tools for monitoring LLM pipelines: tracing, logging, latency anal
 | `dataset.py` | Data loading, token estimation, simulated LLM responses and traces |
 | `sample_data.json` | Pre-built sample traces, logs, metrics, pricing, and prompt versions |
 | `evaluator.py` | Observability tool implementations (8 classes) |
+| `theory.md` | All theory, intuition, diagrams, and interview questions |
 | `main.py` | Demonstrates all tools with output |
 
 ## Evaluator Classes

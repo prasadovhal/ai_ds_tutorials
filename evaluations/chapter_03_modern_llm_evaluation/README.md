@@ -28,9 +28,10 @@ This chapter implements heuristic/rule-based evaluators for **17 evaluation dime
 
 ## Files
 
-- **main.py** - Entry point that demonstrates all 17 dimensions with explanations, sample evaluations, advantages/limitations, a summary table, and interview questions.
+- **main.py** - Entry point that demonstrates all 17 dimensions with sample evaluations.
 - **evaluator.py** - All 17 evaluator classes plus a `MultiDimensionEvaluator` orchestrator.
 - **dataset.py** - Data loading utilities for sample data, wiki contexts, and simulated LLM responses.
+- **theory.md** - All theory, intuition, formulas, diagrams, and interview questions.
 - **sample_data.json** - Curated good/bad LLM responses for demonstration.
 - **requirements.txt** - Dependencies (standard library only).
 

@@ -12,6 +12,7 @@ python main.py
 | main.py | Demonstrates all 17 metrics with examples |
 | evaluator.py | All metric implementations from scratch |
 | dataset.py | Data loading and text generation samples |
+| theory.md | All theory, formulas, intuition, diagrams, interview questions |
 | sample_data.json | Sample evaluation pairs |
 
 ## Metrics Covered

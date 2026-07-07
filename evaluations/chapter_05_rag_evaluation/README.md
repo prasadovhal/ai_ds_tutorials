@@ -43,6 +43,7 @@ This chapter implements **17 RAG evaluation metrics** across three tiers:
 | `sample_data.json` | 10 curated RAG examples with varied quality labels |
 | `evaluator.py` | All metric implementations (RetrievalMetrics, GenerationMetrics, EndToEndMetrics, RAGEvaluationPipeline) |
 | `main.py` | Entry point demonstrating every metric with sample data |
+| `theory.md` | All theory, formulas, intuition, diagrams, and interview questions |
 | `requirements.txt` | Dependencies (standard library only; optional frameworks listed) |
 
 ## Quick Start

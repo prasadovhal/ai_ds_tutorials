@@ -9,6 +9,7 @@ Demonstrates how to maintain LLM quality **after** deployment: regression testin
 | `main.py` | Imports and demonstrates all production evaluation systems |
 | `evaluator.py` | Core classes: RegressionTestSuite, CanaryDeployer, ShadowEvaluator, DriftDetector, ProductionMonitor, AlertManager, PromptVersionManager, DeploymentPipeline, ContinuousBenchmark |
 | `dataset.py` | Data loading and simulation: production traffic, drift scenarios, canary splits, golden datasets |
+| `theory.md` | All theory, intuition, diagrams, and interview questions |
 | `sample_data.json` | Simulated production logs, model/prompt versions, alert history, deployment gates |
 
 ## Run

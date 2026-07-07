@@ -9,6 +9,7 @@ Evaluation framework for LLM-based agents covering task completion, trajectory a
 | `sample_data.json` | Agent traces: single-agent, multi-agent, coding, and browser |
 | `dataset.py` | Data loading + synthetic trace generation |
 | `evaluator.py` | All evaluation metrics (10 evaluator classes + Elo) |
+| `theory.md` | All theory, intuition, diagrams, and interview questions |
 | `main.py` | Demonstrations with output for every evaluator |
 
 ## Run

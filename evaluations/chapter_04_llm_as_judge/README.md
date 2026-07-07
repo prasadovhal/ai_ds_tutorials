@@ -35,6 +35,7 @@ chapter_04_llm_as_judge/
     main.py            - Entry point demonstrating all 21 techniques
     evaluator.py       - All judge implementations, prompt templates, and evaluation logic
     dataset.py         - Data loading and preparation utilities
+    theory.md          - All theory, intuition, diagrams, and interview questions
     sample_data.json   - Curated evaluation dataset (10 science questions, 3 models)
     requirements.txt   - Dependencies (standard library only; optional extras listed)
     README.md          - This file

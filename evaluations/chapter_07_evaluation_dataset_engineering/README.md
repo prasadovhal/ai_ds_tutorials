@@ -8,6 +8,7 @@ Building and validating evaluation datasets that reliably measure LLM performanc
 |------|-------------|
 | `dataset.py` | Data loading, topic/difficulty detection, duplicate finding, simulated predictions |
 | `evaluator.py` | Quality checks, coverage analysis, contamination detection, label noise, Cohen's/Fleiss' Kappa, meta-evaluation |
+| `theory.md` | All theory, formulas, intuition, diagrams, and interview questions |
 | `sample_data.json` | 20 MCQ questions with intentional quality issues (duplicates, noise, imbalance) |
 | `main.py` | End-to-end demonstration of all topics |
 

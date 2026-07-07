@@ -12,6 +12,7 @@ python main.py
 | main.py | Demonstrates golden dataset creation, curation, and management |
 | evaluator.py | Dataset quality evaluation tools |
 | dataset.py | Golden dataset builder, annotator, versioning tools |
+| theory.md | All theory, intuition, diagrams, and interview questions |
 | sample_data.json | Sample golden dataset with annotations |
 
 ## Topics Covered

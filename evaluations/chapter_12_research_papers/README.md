@@ -12,6 +12,7 @@ python main.py
 | main.py | Explains and demonstrates key evaluation research papers |
 | evaluator.py | Simplified implementations of paper techniques |
 | dataset.py | Data loading |
+| theory.md | All paper summaries, key ideas, and interview questions |
 | sample_data.json | Sample data for paper demonstrations |
 
 ## Papers Covered
