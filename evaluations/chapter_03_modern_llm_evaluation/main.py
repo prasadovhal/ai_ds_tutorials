@@ -3,10 +3,6 @@ import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8
 Chapter 3 - Modern LLM Evaluation: All 17 Dimensions Demonstrated
 =================================================================
 
-This script walks through every evaluation dimension implemented in
-evaluator.py, using curated data from sample_data.json and synthetic
-data from dataset.py.
-
 Dimensions covered:
   1. Correctness           10. Fluency
   2. Relevance             11. Coherence
@@ -66,7 +62,6 @@ def sub_banner(title: str) -> None:
 
 
 def print_result(result: dict, indent: int = 2) -> None:
-    """Pretty-print a result dict, skipping very long nested lists."""
     prefix = " " * indent
     for key, value in result.items():
         if isinstance(value, list) and len(value) > 5:
@@ -78,23 +73,6 @@ def print_result(result: dict, indent: int = 2) -> None:
             print_result(value, indent + 4)
         else:
             print(f"{prefix}{key}: {value}")
-
-
-def show_dimension_header(number: int, name: str, problem: str,
-                          intuition: str) -> None:
-    banner(f"DIMENSION {number}: {name}")
-    print(f"\n  PROBLEM   : {problem}")
-    print(f"  INTUITION : {intuition}")
-
-
-def show_advantages_limitations(advantages: list[str],
-                                 limitations: list[str]) -> None:
-    print("\n  ADVANTAGES:")
-    for a in advantages:
-        print(f"    + {a}")
-    print("\n  LIMITATIONS:")
-    for l in limitations:
-        print(f"    - {l}")
 
 
 # ---------------------------------------------------------------------------
@@ -115,11 +93,7 @@ def load_all_data() -> dict:
 # DIMENSION 1: CORRECTNESS
 # ===================================================================
 def demo_correctness(data: dict) -> float:
-    show_dimension_header(
-        1, "CORRECTNESS",
-        "Is the model's answer factually correct?",
-        "Like grading a test -- compare the student's answer to the answer key.",
-    )
+    banner("DIMENSION 1: CORRECTNESS")
 
     evaluator = CorrectnessEvaluator()
     sample = data["sample"]
@@ -152,18 +126,6 @@ def demo_correctness(data: dict) -> float:
     print(f"\n  Good response score : {res_good['score']}  (overlap={res_good['word_overlap']}, cosine={res_good['cosine_similarity']}, facts={res_good['fact_coverage']})")
     print(f"  Bad  response score : {res_bad['score']}  (overlap={res_bad['word_overlap']}, cosine={res_bad['cosine_similarity']}, facts={res_bad['fact_coverage']})")
 
-    show_advantages_limitations(
-        [
-            "Simple and interpretable for MCQ/classification tasks",
-            "No external dependencies -- pure string comparison",
-            "Batch evaluation gives quick accuracy overview",
-        ],
-        [
-            "Exact match is too strict for open-ended answers",
-            "Keyword overlap misses paraphrases and synonyms",
-            "Cannot evaluate novel correct answers not in reference",
-        ],
-    )
     return res_good["score"]
 
 
@@ -171,11 +133,7 @@ def demo_correctness(data: dict) -> float:
 # DIMENSION 2: RELEVANCE
 # ===================================================================
 def demo_relevance(data: dict) -> float:
-    show_dimension_header(
-        2, "RELEVANCE",
-        "Does the response address the question that was actually asked?",
-        "Like asking a waiter for the dessert menu and getting a wine list.",
-    )
+    banner("DIMENSION 2: RELEVANCE")
 
     evaluator = RelevanceEvaluator()
     sample = data["sample"]
@@ -202,18 +160,6 @@ def demo_relevance(data: dict) -> float:
     print(f"  Response : The stock market crashed in 1929 ... (off-topic)")
     print(f"  Score    : {off_topic['score']}")
 
-    show_advantages_limitations(
-        [
-            "Fast keyword-based check before deeper evaluation",
-            "Catches completely off-topic responses",
-            "Works without reference answers",
-        ],
-        [
-            "Cannot detect semantic relevance (only keyword overlap)",
-            "Paraphrased questions may score low",
-            "Cannot distinguish relevant-but-wrong from relevant-and-right",
-        ],
-    )
     return res_good["score"]
 
 
@@ -221,18 +167,12 @@ def demo_relevance(data: dict) -> float:
 # DIMENSION 3: HELPFULNESS
 # ===================================================================
 def demo_helpfulness(data: dict) -> float:
-    show_dimension_header(
-        3, "HELPFULNESS",
-        "Is the response actually useful to the person who asked?",
-        "Like getting 'go that way' vs turn-by-turn directions with landmarks.",
-    )
+    banner("DIMENSION 3: HELPFULNESS")
 
     evaluator = HelpfulnessEvaluator()
     sample = data["sample"]
     sq = sample["science_questions"][0]
     good_resp = sample["llm_responses"]["good_responses"][0]["response"]
-
-    # Minimal unhelpful answer
     unhelpful = "It is a concept in astronomy."
 
     res_good = evaluator.evaluate(sq["question"], good_resp)
@@ -244,18 +184,6 @@ def demo_helpfulness(data: dict) -> float:
     print(f"\n  Unhelpful response: '{unhelpful}'")
     print(f"    score={res_bad['score']}, words={res_bad['word_count']}, explanations={res_bad['explanation_score']}, structure={res_bad['structure_score']}")
 
-    show_advantages_limitations(
-        [
-            "Captures surface signals of helpfulness (length, structure, explanations)",
-            "No reference answer needed",
-            "Fast heuristic pre-filter",
-        ],
-        [
-            "Length is a poor proxy (longer != more helpful)",
-            "Cannot measure whether the user's actual need was met",
-            "Helpfulness is inherently subjective",
-        ],
-    )
     return res_good["score"]
 
 
@@ -263,11 +191,7 @@ def demo_helpfulness(data: dict) -> float:
 # DIMENSION 4: COMPLETENESS
 # ===================================================================
 def demo_completeness(data: dict) -> float:
-    show_dimension_header(
-        4, "COMPLETENESS",
-        "Does the response cover ALL aspects of the question?",
-        "Like ordering a combo meal and only getting the burger -- no fries or drink.",
-    )
+    banner("DIMENSION 4: COMPLETENESS")
 
     evaluator = CompletenessEvaluator()
 
@@ -280,7 +204,6 @@ def demo_completeness(data: dict) -> float:
         "reforestation, and international policy agreements like the Paris Accord."
     )
     incomplete = "Climate change is caused by pollution from factories and cars."
-
     aspects = ["causes of climate change", "effects of climate change", "potential solutions"]
 
     res_complete = evaluator.evaluate(question, complete, aspects)
@@ -299,18 +222,6 @@ def demo_completeness(data: dict) -> float:
         for a in res_incomplete["aspects_detail"]:
             print(f"      [{'+' if a['covered'] else 'X'}] {a['aspect']}")
 
-    show_advantages_limitations(
-        [
-            "Explicit aspect checking when aspects are known",
-            "Catches answers that only address part of a multi-part question",
-            "Length ratio heuristic catches very short answers",
-        ],
-        [
-            "Heuristic aspect extraction misses implicit sub-questions",
-            "Cannot assess depth of coverage for each aspect",
-            "Some questions have unbounded scope",
-        ],
-    )
     return res_complete["score"]
 
 
@@ -318,16 +229,11 @@ def demo_completeness(data: dict) -> float:
 # DIMENSION 5: CONSISTENCY
 # ===================================================================
 def demo_consistency(data: dict) -> float:
-    show_dimension_header(
-        5, "CONSISTENCY",
-        "Does the model give the same answer when asked the same question multiple times?",
-        "Like asking a witness the same question three times -- if the story changes, trust drops.",
-    )
+    banner("DIMENSION 5: CONSISTENCY")
 
     evaluator = ConsistencyEvaluator()
     sample = data["sample"]
 
-    # Consistent set
     consistent = sample["llm_responses"]["consistency_examples"][0]
     res_con = evaluator.evaluate(consistent["responses"])
     print(f"\n  Question: {consistent['question']}")
@@ -335,7 +241,6 @@ def demo_consistency(data: dict) -> float:
     print(f"  Consistency score  : {res_con['score']}")
     print(f"  Avg pairwise sim   : {res_con['avg_pairwise_similarity']}")
 
-    # Inconsistent set
     inconsistent = sample["llm_responses"]["consistency_examples"][1]
     res_inc = evaluator.evaluate(inconsistent["responses"])
     print(f"\n  Question: {inconsistent['question']}")
@@ -343,18 +248,6 @@ def demo_consistency(data: dict) -> float:
     print(f"  Consistency score  : {res_inc['score']}")
     print(f"  Avg pairwise sim   : {res_inc['avg_pairwise_similarity']}")
 
-    show_advantages_limitations(
-        [
-            "Detects unreliable models that give different answers each time",
-            "Pairwise similarity captures overall agreement",
-            "Numerical consistency check catches contradictory numbers",
-        ],
-        [
-            "Consistent wrong answers still score high",
-            "Some variation (paraphrasing) is healthy and expected",
-            "Cannot distinguish good variation from bad contradiction",
-        ],
-    )
     return res_con["score"]
 
 
@@ -362,11 +255,7 @@ def demo_consistency(data: dict) -> float:
 # DIMENSION 6: HALLUCINATION DETECTION
 # ===================================================================
 def demo_hallucination(data: dict) -> float:
-    show_dimension_header(
-        6, "HALLUCINATION DETECTION",
-        "Did the model fabricate information not present in the source?",
-        "Like a student making up quotes and attributing them to real authors.",
-    )
+    banner("DIMENSION 6: HALLUCINATION DETECTION")
 
     evaluator = HallucinationEvaluator()
     simulated = data["simulated"]
@@ -375,14 +264,12 @@ def demo_hallucination(data: dict) -> float:
     sub_banner(f"Topic: {entry['page_title']}")
     print(f"  Source: {entry['source_text'][:100]}...")
 
-    # Faithful response
     res_faithful = evaluator.evaluate(entry["source_text"], entry["faithful_response"])
     print(f"\n  Faithful response:")
     print(f"    Hallucination score: {res_faithful['score']} (1.0 = no hallucination)")
     print(f"    Hallucination rate : {res_faithful['hallucination_rate']}")
     print(f"    Sentences checked  : {res_faithful['total_sentences']}")
 
-    # Hallucinated response
     res_halluc = evaluator.evaluate(entry["source_text"], entry["hallucinated_response"])
     print(f"\n  Hallucinated response:")
     print(f"    Hallucination score: {res_halluc['score']}")
@@ -392,7 +279,6 @@ def demo_hallucination(data: dict) -> float:
             flag = "HALLUCINATED" if sa["likely_hallucinated"] else "grounded"
             print(f"    [{flag}] {sa['sentence'][:70]}...")
 
-    # Also test from sample_data hallucinated examples
     sub_banner("Curated Hallucination Example (Froude Number)")
     sample = data["sample"]
     hall_ex = sample["llm_responses"]["hallucinated_responses"][0]
@@ -400,18 +286,6 @@ def demo_hallucination(data: dict) -> float:
     print(f"  Score: {res_hall['score']}  (rate={res_hall['hallucination_rate']})")
     print(f"  Known hallucinated claims: {hall_ex['hallucinated_claims'][:2]}")
 
-    show_advantages_limitations(
-        [
-            "Catches fabricated statistics, dates, and attributions",
-            "Pattern-based detection for common hallucination types",
-            "Per-sentence analysis pinpoints where hallucinations occur",
-        ],
-        [
-            "Cannot detect hallucinations without a reference source",
-            "Word overlap misses paraphrased faithful content",
-            "Some 'hallucinated' content might be correct common knowledge",
-        ],
-    )
     return res_faithful["score"]
 
 
@@ -419,11 +293,7 @@ def demo_hallucination(data: dict) -> float:
 # DIMENSION 7: FAITHFULNESS
 # ===================================================================
 def demo_faithfulness(data: dict) -> float:
-    show_dimension_header(
-        7, "FAITHFULNESS",
-        "Does the response accurately represent what the source material says?",
-        "Like a journalist quoting a source -- faithful journalism vs distorted quotes.",
-    )
+    banner("DIMENSION 7: FAITHFULNESS")
 
     evaluator = FaithfulnessEvaluator()
     simulated = data["simulated"]
@@ -445,18 +315,6 @@ def demo_faithfulness(data: dict) -> float:
     print("    Hallucination asks: 'Did the model make things UP?'")
     print("    Faithfulness  asks: 'Did the model stay TRUE to the source?'")
 
-    show_advantages_limitations(
-        [
-            "Measures fidelity at token, bigram, and sentence levels",
-            "Essential for RAG (retrieval-augmented generation) systems",
-            "Multi-granularity scoring gives nuanced picture",
-        ],
-        [
-            "Cannot detect subtle distortions (changing 'may' to 'definitely')",
-            "Paraphrased faithful content may score low",
-            "Cannot evaluate logical inferences drawn from source",
-        ],
-    )
     return res_faith["score"]
 
 
@@ -464,11 +322,7 @@ def demo_faithfulness(data: dict) -> float:
 # DIMENSION 8: GROUNDEDNESS
 # ===================================================================
 def demo_groundedness(data: dict) -> float:
-    show_dimension_header(
-        8, "GROUNDEDNESS",
-        "Can every claim in the response be traced back to the provided context?",
-        "Like a lawyer who can only cite evidence admitted to court.",
-    )
+    banner("DIMENSION 8: GROUNDEDNESS")
 
     evaluator = GroundednessEvaluator()
     simulated = data["simulated"]
@@ -494,18 +348,6 @@ def demo_groundedness(data: dict) -> float:
     print("    Faithfulness  : Does the response REPRESENT the context accurately?")
     print("    Hallucination : Did the response ADD things NOT in the context?")
 
-    show_advantages_limitations(
-        [
-            "Strictest source-fidelity check -- every claim must have a source",
-            "Claim-level analysis pinpoints exactly which claims lack support",
-            "Essential for high-stakes RAG systems (legal, medical)",
-        ],
-        [
-            "Cannot detect valid inferences from context",
-            "Misses paraphrased grounded content",
-            "Too strict for responses that legitimately add common knowledge",
-        ],
-    )
     return res_grounded["score"]
 
 
@@ -513,11 +355,7 @@ def demo_groundedness(data: dict) -> float:
 # DIMENSION 9: INSTRUCTION FOLLOWING
 # ===================================================================
 def demo_instruction_following(data: dict) -> float:
-    show_dimension_header(
-        9, "INSTRUCTION FOLLOWING",
-        "Did the model follow the specific instructions given?",
-        "Like a contractor who builds a beautiful kitchen when you asked for a bathroom.",
-    )
+    banner("DIMENSION 9: INSTRUCTION FOLLOWING")
 
     evaluator = InstructionFollowingEvaluator()
     sample = data["sample"]
@@ -543,18 +381,6 @@ def demo_instruction_following(data: dict) -> float:
             status = "PASS" if check["passed"] else "FAIL"
             print(f"    [{status}] {check['constraint']}")
 
-    show_advantages_limitations(
-        [
-            "Checks verifiable constraints (length, format, bullet points)",
-            "Works for structured output requirements (JSON, lists)",
-            "Catches common instruction violations automatically",
-        ],
-        [
-            "Can only check instructions with detectable patterns",
-            "Cannot verify semantic compliance (e.g., 'be creative')",
-            "May miss implicit instructions",
-        ],
-    )
     return sum(scores) / len(scores) if scores else 0.0
 
 
@@ -562,18 +388,12 @@ def demo_instruction_following(data: dict) -> float:
 # DIMENSION 10: FLUENCY
 # ===================================================================
 def demo_fluency(data: dict) -> float:
-    show_dimension_header(
-        10, "FLUENCY",
-        "Is the language natural, grammatical, and easy to read?",
-        "Like listening to someone speak -- broken grammar reduces trust.",
-    )
+    banner("DIMENSION 10: FLUENCY")
 
     evaluator = FluencyEvaluator()
     sample = data["sample"]
 
-    # Fluent response
     fluent = sample["llm_responses"]["good_responses"][2]["response"]
-    # Non-fluent response
     nonfluent = sample["llm_responses"]["bad_responses"][2]["response"]
 
     res_fluent = evaluator.evaluate(fluent)
@@ -585,18 +405,6 @@ def demo_fluency(data: dict) -> float:
     print(f"\n  Non-fluent response (first 100 chars): '{nonfluent[:100]}...'")
     print(f"    score={res_nonfluent['score']}, capitalization={res_nonfluent['capitalization_score']}, repetition={res_nonfluent['repetition_score']}, punctuation={res_nonfluent['punctuation_score']}")
 
-    show_advantages_limitations(
-        [
-            "Catches basic fluency issues (capitalization, repetition, garbled text)",
-            "No external model needed -- pure heuristic",
-            "Fast pre-filter for obviously broken outputs",
-        ],
-        [
-            "Cannot detect subtle grammar errors",
-            "Rule-based approach misses many fluency issues",
-            "Non-English text may score incorrectly",
-        ],
-    )
     return res_fluent["score"]
 
 
@@ -604,11 +412,7 @@ def demo_fluency(data: dict) -> float:
 # DIMENSION 11: COHERENCE
 # ===================================================================
 def demo_coherence(data: dict) -> float:
-    show_dimension_header(
-        11, "COHERENCE",
-        "Does the response flow logically from start to finish?",
-        "Like chapters in a book -- each can be well-written, but if unrelated, the book fails.",
-    )
+    banner("DIMENSION 11: COHERENCE")
 
     evaluator = CoherenceEvaluator()
 
@@ -638,18 +442,6 @@ def demo_coherence(data: dict) -> float:
     print(f"    score={res_inc['score']}, adj_similarity={res_inc['avg_adjacent_similarity']}, topic_shifts={res_inc['topic_shifts_detected']}")
     print(f"    Discourse markers: {res_inc['discourse_markers_found']}")
 
-    show_advantages_limitations(
-        [
-            "Detects topic shifts and lack of logical flow",
-            "Discourse marker analysis reveals structural quality",
-            "Adjacent sentence similarity captures local coherence",
-        ],
-        [
-            "Cannot detect logical contradictions within text",
-            "Topic shift detection is approximate with keywords",
-            "Some responses legitimately cover multiple topics",
-        ],
-    )
     return res_coh["score"]
 
 
@@ -657,11 +449,7 @@ def demo_coherence(data: dict) -> float:
 # DIMENSION 12: SAFETY
 # ===================================================================
 def demo_safety(data: dict) -> float:
-    show_dimension_header(
-        12, "SAFETY",
-        "Is the response free from dangerous or harmful content?",
-        "Like a pharmacist who will not explain how to make drugs from prescriptions.",
-    )
+    banner("DIMENSION 12: SAFETY")
 
     evaluator = SafetyEvaluator()
     sample = data["sample"]
@@ -680,18 +468,6 @@ def demo_safety(data: dict) -> float:
     for cat, matches in res_unsafe["flagged_categories"].items():
         print(f"    Category '{cat}': {matches}")
 
-    show_advantages_limitations(
-        [
-            "Catches explicit dangerous content (chemicals, weapons, harm)",
-            "Category-level reporting shows what type of safety issue exists",
-            "Fast pre-filter before deployment",
-        ],
-        [
-            "Keyword matching produces many false positives",
-            "Sophisticated harmful content evades keyword detection",
-            "Cannot distinguish educational content from harmful instructions",
-        ],
-    )
     return res_safe["score"]
 
 
@@ -699,11 +475,7 @@ def demo_safety(data: dict) -> float:
 # DIMENSION 13: TOXICITY
 # ===================================================================
 def demo_toxicity(data: dict) -> float:
-    show_dimension_header(
-        13, "TOXICITY",
-        "Does the response contain toxic, hateful, or offensive language?",
-        "Like a content moderator reviewing posts for hostile or harmful language.",
-    )
+    banner("DIMENSION 13: TOXICITY")
 
     evaluator = ToxicityEvaluator()
 
@@ -729,18 +501,6 @@ def demo_toxicity(data: dict) -> float:
     for cat, matches in res_toxic["flagged_categories"].items():
         print(f"    Category '{cat}': {matches}")
 
-    show_advantages_limitations(
-        [
-            "Catches explicit insults, threats, and demeaning language",
-            "Category breakdown (profanity, threats, hate speech) aids analysis",
-            "Works without external APIs",
-        ],
-        [
-            "Keyword lists are always incomplete",
-            "Context determines toxicity (quoting vs using)",
-            "Cannot detect coded language or dog whistles",
-        ],
-    )
     return res_clean["score"]
 
 
@@ -748,11 +508,7 @@ def demo_toxicity(data: dict) -> float:
 # DIMENSION 14: BIAS
 # ===================================================================
 def demo_bias(data: dict) -> float:
-    show_dimension_header(
-        14, "BIAS",
-        "Does the response show unfair bias (gender, racial, cultural, elitism)?",
-        "Like a hiring manager who unconsciously favors certain university graduates.",
-    )
+    banner("DIMENSION 14: BIAS")
 
     evaluator = BiasEvaluator()
     sample = data["sample"]
@@ -780,18 +536,6 @@ def demo_bias(data: dict) -> float:
         print(f"    Gender: male={gb2['male_terms']}, female={gb2['female_terms']}, ratio={gb2['ratio']}")
         print(f"    Inclusive markers: {res_unbiased['inclusive_markers']}")
 
-    show_advantages_limitations(
-        [
-            "Detects gender-skewed language and stereotypical patterns",
-            "Checks for inclusive language signals",
-            "Catches elitism bias (top-tier, prestigious, innate talent)",
-        ],
-        [
-            "Keyword detection cannot measure implicit bias",
-            "Context matters enormously -- some topics legitimately focus on specific groups",
-            "'Balanced' does not always mean '50/50'",
-        ],
-    )
     return sum(scores) / len(scores) if scores else 0.0
 
 
@@ -799,11 +543,7 @@ def demo_bias(data: dict) -> float:
 # DIMENSION 15: CREATIVITY
 # ===================================================================
 def demo_creativity(data: dict) -> float:
-    show_dimension_header(
-        15, "CREATIVITY",
-        "Does the response use creative elements where appropriate?",
-        "Like the difference between a dry lecture and a TED talk with stories and analogies.",
-    )
+    banner("DIMENSION 15: CREATIVITY")
 
     evaluator = CreativityEvaluator()
     sample = data["sample"]
@@ -821,18 +561,6 @@ def demo_creativity(data: dict) -> float:
     print(f"\n  Uncreative response: '{creativity_ex['uncreative_response']}'")
     print(f"    score={res_dry['score']}, analogies={res_dry['analogies_found']}, storytelling={res_dry['storytelling_elements_found']}")
 
-    show_advantages_limitations(
-        [
-            "Detects analogy/metaphor usage and storytelling elements",
-            "Vocabulary richness (type-token ratio) measures lexical diversity",
-            "Sentence variety score captures writing dynamism",
-        ],
-        [
-            "Cannot judge quality of creativity (bad analogies still score high)",
-            "Creativity is inherently subjective",
-            "What is creative in one context is inappropriate in another",
-        ],
-    )
     return res_creative["score"]
 
 
@@ -840,11 +568,7 @@ def demo_creativity(data: dict) -> float:
 # DIMENSION 16: READABILITY
 # ===================================================================
 def demo_readability(data: dict) -> float:
-    show_dimension_header(
-        16, "READABILITY",
-        "How easy is the response to understand for the target audience?",
-        "Like the difference between a research paper and a Wikipedia article.",
-    )
+    banner("DIMENSION 16: READABILITY")
 
     evaluator = ReadabilityEvaluator()
     sample = data["sample"]
@@ -868,18 +592,6 @@ def demo_readability(data: dict) -> float:
     print(f"    Grade level        : {res_unreadable['flesch_kincaid_grade']} ({res_unreadable['reading_level']})")
     print(f"    Complex word ratio  : {res_unreadable['complex_word_ratio']}")
 
-    show_advantages_limitations(
-        [
-            "Uses established readability formulas (Flesch, Flesch-Kincaid)",
-            "Provides grade-level interpretation",
-            "Objective, reproducible metric",
-        ],
-        [
-            "Readability formulas are crude approximations",
-            "Technical terms may be necessary and appropriate",
-            "Cannot assess conceptual difficulty, only surface features",
-        ],
-    )
     return res_readable["score"]
 
 
@@ -887,11 +599,7 @@ def demo_readability(data: dict) -> float:
 # DIMENSION 17: REASONING QUALITY
 # ===================================================================
 def demo_reasoning(data: dict) -> float:
-    show_dimension_header(
-        17, "REASONING QUALITY",
-        "Does the response demonstrate sound logical reasoning?",
-        "Like a math teacher checking not just the answer but the work shown.",
-    )
+    banner("DIMENSION 17: REASONING QUALITY")
 
     evaluator = ReasoningEvaluator()
 
@@ -930,18 +638,6 @@ def demo_reasoning(data: dict) -> float:
     print(f"    Causal reasoning : count={res_poor['causal_reasoning']['count']}")
     print(f"    Anti-patterns    : {res_poor['antipatterns_found']}")
 
-    show_advantages_limitations(
-        [
-            "Detects causal connectives, evidence usage, and counter-arguments",
-            "Catches reasoning anti-patterns (circular reasoning, absolute claims)",
-            "Multi-level assessment: depth, structure, and evidence",
-        ],
-        [
-            "Cannot verify logical validity of arguments",
-            "Presence of reasoning words does not guarantee good reasoning",
-            "Cannot detect subtle logical fallacies",
-        ],
-    )
     return res_good["score"]
 
 
@@ -1044,13 +740,11 @@ def print_summary_table(scores: dict) -> None:
 
     dim_keys = list(scores.keys())
     for i, (name, question, method) in enumerate(dimensions_info, 1):
-        # Find matching score key
         key_match = None
         for k in dim_keys:
             if name.lower().replace(" ", "_").startswith(k.lower().replace("_", "")[:6]):
                 key_match = k
                 break
-        # Fallback: try simpler matching
         if key_match is None:
             name_lower = name.lower().replace(" ", "")
             for k in dim_keys:
@@ -1066,104 +760,10 @@ def print_summary_table(scores: dict) -> None:
 
 
 # ===================================================================
-# INTERVIEW QUESTIONS
-# ===================================================================
-def print_interview_questions() -> None:
-    banner("INTERVIEW QUESTIONS: MODERN LLM EVALUATION")
-
-    questions = [
-        (
-            "What is the difference between hallucination, faithfulness, and groundedness?",
-            "Hallucination asks 'did the model invent facts?'. Faithfulness asks "
-            "'does the response accurately represent the source?'. Groundedness asks "
-            "'can every claim be traced to the context?'. Groundedness is the strictest; "
-            "hallucination detection focuses on fabrication; faithfulness focuses on "
-            "accurate representation.",
-        ),
-        (
-            "Why is correctness not sufficient as the only evaluation dimension?",
-            "A response can be correct but unhelpful (too brief), irrelevant (off-topic), "
-            "incomplete (misses aspects), biased, unsafe, or poorly written. Modern LLM "
-            "evaluation requires multiple dimensions because LLMs are used for open-ended "
-            "tasks where quality is multi-faceted.",
-        ),
-        (
-            "How would you evaluate an LLM in a RAG (retrieval-augmented generation) pipeline?",
-            "Key dimensions: faithfulness (does it stick to retrieved context?), groundedness "
-            "(can every claim be traced?), hallucination (does it add fabricated info?), "
-            "relevance (does it answer the question?), and completeness (does it use all "
-            "relevant retrieved information?). LLM-as-Judge (Chapter 4) is often used for "
-            "these evaluations.",
-        ),
-        (
-            "What are the limitations of heuristic-based evaluation vs LLM-as-Judge?",
-            "Heuristic methods (keyword matching, readability formulas) are fast and "
-            "reproducible but shallow -- they miss semantic understanding, paraphrases, "
-            "and nuanced quality. LLM-as-Judge can assess semantics and reasoning but is "
-            "expensive, potentially biased, and less reproducible. The best approach combines both.",
-        ),
-        (
-            "How do you evaluate LLM safety beyond keyword matching?",
-            "Production systems use: (1) dedicated safety classifiers (e.g., Perspective API, "
-            "LlamaGuard), (2) red-teaming with adversarial prompts, (3) LLM-as-Judge with "
-            "safety rubrics, (4) human evaluation with content policy guidelines, and "
-            "(5) multi-turn conversation testing for jailbreak resistance.",
-        ),
-        (
-            "What is the difference between fluency and coherence?",
-            "Fluency measures whether individual sentences are grammatical and natural. "
-            "Coherence measures whether the response flows logically as a whole. A response "
-            "can have perfectly fluent sentences that are incoherent together (random facts "
-            "on different topics).",
-        ),
-        (
-            "How would you detect bias in LLM outputs at scale?",
-            "Approaches include: (1) counterfactual testing (swap demographic terms, check if "
-            "output changes), (2) representation audits across large output corpora, "
-            "(3) stereotype association tests, (4) disaggregated evaluation across demographic "
-            "groups, and (5) human evaluation with diverse annotator pools.",
-        ),
-        (
-            "When should you NOT use creativity as an evaluation dimension?",
-            "Creativity should not be evaluated for factual Q&A (precision matters more), "
-            "technical documentation, legal or medical content, or any task where accuracy "
-            "and precision are paramount. Creative elements like analogies can introduce "
-            "inaccuracy in these contexts.",
-        ),
-        (
-            "How do Flesch-Kincaid readability scores work and what are their limitations?",
-            "Flesch-Kincaid uses average words per sentence and average syllables per word to "
-            "estimate reading difficulty. Flesch Reading Ease gives 0-100 (higher = easier). "
-            "Limitations: it only measures surface features, not conceptual difficulty; "
-            "technical jargon may be necessary and appropriate; it does not account for "
-            "audience expertise.",
-        ),
-        (
-            "Design an evaluation pipeline for a customer-support chatbot.",
-            "Prioritize: (1) Safety/Toxicity -- must never be harmful, (2) Correctness -- "
-            "answers must be right, (3) Relevance -- must address the customer's question, "
-            "(4) Helpfulness -- must be actionable, (5) Instruction Following -- must follow "
-            "company guidelines, (6) Readability -- accessible to all customers, "
-            "(7) Consistency -- same question should get consistent answers. Use automated "
-            "heuristics for pre-filtering, LLM-as-Judge for deeper evaluation, and human "
-            "review for edge cases.",
-        ),
-    ]
-
-    for i, (question, answer) in enumerate(questions, 1):
-        print(f"\n  Q{i}: {question}")
-        print(f"  A{i}: {answer}")
-
-
-# ===================================================================
 # MAIN
 # ===================================================================
 def main() -> None:
     banner("CHAPTER 3: MODERN LLM EVALUATION - ALL 17 DIMENSIONS")
-    print("\n  This script demonstrates every evaluation dimension implemented")
-    print("  in evaluator.py using curated sample data and synthetic examples.")
-    print("  Each dimension shows: problem, intuition, evaluation run, results,")
-    print("  advantages, and limitations.\n")
 
     data = load_all_data()
     all_scores: dict[str, float] = {}
@@ -1189,14 +789,10 @@ def main() -> None:
 
     # Multi-dimension combined evaluation
     multi_scores = demo_multi_dimension(data)
-    # Merge multi-dimension scores (they override individual where available)
     combined_scores = {**all_scores, **multi_scores}
 
     # Summary table
     print_summary_table(combined_scores)
-
-    # Interview questions
-    print_interview_questions()
 
     # Final wrap-up
     banner("CHAPTER 3 COMPLETE")
@@ -1204,9 +800,7 @@ def main() -> None:
     print(f"  Dimensions evaluated : {len(all_scores)}")
     print(f"  Average score (good) : {sum(all_scores.values()) / len(all_scores):.4f}")
     print(f"\n  Key takeaway: Modern LLM evaluation is MULTI-DIMENSIONAL.")
-    print(f"  No single metric captures output quality. Production systems")
-    print(f"  combine heuristic baselines (this chapter) with LLM-as-Judge")
-    print(f"  (Chapter 4) and human evaluation for comprehensive assessment.")
+    print(f"  No single metric captures output quality.")
     print(f"\n{SEPARATOR}\n")
 
 

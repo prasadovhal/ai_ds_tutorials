@@ -42,12 +42,10 @@ print("Chapter 8: Agent Evaluation")
 print(f"Loaded {len(traces)} agent traces, {len(multi_traces)} multi-agent, "
       f"{len(code_traces)} coding, {len(browser_traces)} browser traces")
 
-
 # ===================================================================
 # 1. Task Completion Evaluation
 # ===================================================================
 sep("1. Task Completion Evaluation")
-# Binary completion checks if the agent finished; partial scoring weights goal achievement.
 tc_eval = TaskCompletionEvaluator()
 batch_result = tc_eval.evaluate_batch(traces)
 print(f"Completion rate: {batch_result['completion_rate']:.2%}")
@@ -62,12 +60,10 @@ for i, (t, r) in enumerate(zip(traces, batch_result["individual"])):
           f"answer={r['final_answer']} truth={r['ground_truth']} [{status}] | "
           f"partial={r['partial_score']:.2f}")
 
-
 # ===================================================================
 # 2. Goal Achievement Evaluation
 # ===================================================================
 sep("2. Goal Achievement Evaluation")
-# Measures whether the agent met its stated goal, including sub-goal analysis.
 ga_eval = GoalAchievementEvaluator()
 for t in traces:
     r = ga_eval.evaluate(t)
@@ -77,12 +73,10 @@ for t in traces:
         for m in r["missed_requirements"]:
             print(f"    - missed: {m}")
 
-
 # ===================================================================
 # 3. Planning Quality Evaluation
 # ===================================================================
 sep("3. Planning Quality Evaluation")
-# Scores plan coherence, specificity, adherence, and whether it led to success.
 pq_eval = PlanQualityEvaluator()
 for t in traces:
     r = pq_eval.evaluate(t)
@@ -91,12 +85,10 @@ for t in traces:
           f"feasibility={r['feasibility_score']:.1f})")
     print(f"    plan({r['plan_length']} steps): {r['plan_steps']}")
 
-
 # ===================================================================
 # 4. Trace / Trajectory Evaluation
 # ===================================================================
 sep("4. Trace / Trajectory Evaluation")
-# Measures step efficiency, waste ratio, loops, and cost for the agent's execution path.
 traj_eval = TrajectoryEvaluator(optimal_steps=3)
 for t in traces:
     r = traj_eval.evaluate(t)
@@ -107,12 +99,10 @@ for t in traces:
           f"cost=${r['cost']:.2f}, "
           f"latency={r['latency_ms']}ms{loop_flag}")
 
-
 # ===================================================================
-# 5. Tool Selection, Correctness, Arguments & Efficiency
+# 5. Tool Use Evaluation
 # ===================================================================
 sep("5. Tool Use Evaluation")
-# Checks tool selection accuracy, argument quality, diversity, cost, and error rates.
 tu_eval = ToolUseEvaluator(tools_catalog)
 for t in traces:
     r = tu_eval.evaluate(t)
@@ -125,12 +115,10 @@ for t in traces:
           f"cost=${r['estimated_cost']:.2f}")
     print(f"    tools used: {r['tool_frequency']}")
 
-
 # ===================================================================
 # 6. Memory Evaluation
 # ===================================================================
 sep("6. Memory Evaluation")
-# Assesses how well the agent reuses information from earlier steps and avoids redundant queries.
 mem_eval = MemoryEvaluator()
 for t in traces:
     r = mem_eval.evaluate(t)
@@ -138,12 +126,10 @@ for t in traces:
           f"redundant_queries={r['redundant_queries']}, "
           f"efficiency={r['memory_efficiency']:.3f}")
 
-
 # ===================================================================
 # 7. Reflection Evaluation
 # ===================================================================
 sep("7. Reflection Evaluation")
-# Measures the agent's capacity for self-correction and verification of its own reasoning.
 ref_eval = ReflectionEvaluator()
 for t in traces:
     r = ref_eval.evaluate(t)
@@ -153,12 +139,10 @@ for t in traces:
           f"verification_steps={r['verification_steps']}, "
           f"errors={r['errors_encountered']}")
 
-
 # ===================================================================
 # 8. Multi-Agent Evaluation
 # ===================================================================
 sep("8. Multi-Agent Evaluation")
-# Evaluates coordination quality, role separation, and redundancy in multi-agent systems.
 ma_eval = MultiAgentEvaluator()
 for mt in multi_traces:
     r = ma_eval.evaluate(mt)
@@ -171,12 +155,10 @@ for mt in multi_traces:
     for name, stats in r["per_agent_stats"].items():
         print(f"      {name}: {stats['role'][:50]} | steps={stats['steps']}, tools={stats['tool_calls']}")
 
-
 # ===================================================================
 # 9. Coding Agent Evaluation
 # ===================================================================
 sep("9. Coding Agent Evaluation")
-# Scores generated code on test pass rate, docstrings, error handling, naming, and imports.
 ca_eval = CodingAgentEvaluator()
 for ct in code_traces:
     r = ca_eval.evaluate(ct)
@@ -191,12 +173,10 @@ for ct in code_traces:
     print(f"    present: {flags}")
     print(f"    missing: {missing}")
 
-
 # ===================================================================
 # 10. Browser Agent Evaluation
 # ===================================================================
 sep("10. Browser Agent Evaluation")
-# Measures navigation efficiency, dead ends, and error rate for browser-based agents.
 ba_eval = BrowserAgentEvaluator()
 for bt in browser_traces:
     r = ba_eval.evaluate(bt)
@@ -210,15 +190,12 @@ for bt in browser_traces:
         for e in r["errors"]:
             print(f"      error: {e}")
 
-
 # ===================================================================
 # 11. Elo Rating Tournament
 # ===================================================================
 sep("11. Elo Rating - Agent Comparison Tournament")
-# Elo ratings rank agents via pairwise comparisons, like chess rankings for AI systems.
 elo = EloRating(k=32, initial_rating=1500)
 
-# Simulate scores for different "agent variants" across the 6 tasks
 agent_scores = {
     "AgentV1_Efficient": [],
     "AgentV2_Verbose": [],
@@ -228,11 +205,8 @@ agent_scores = {
 
 for t in traces:
     correct = 1 if t["final_answer"] == t["ground_truth"] else 0
-    eff = 1 if t["unnecessary_steps"] == 0 else 0
-    combined = correct  # primary metric: correctness
     agent_scores["AgentV1_Efficient"].append(correct)
 
-# Simulate other agents with varying performance
 import random
 random.seed(42)
 n_tasks = len(traces)
@@ -250,84 +224,45 @@ for rank, (name, rating) in enumerate(leaderboard, 1):
 
 print(f"\nTotal matches played: {len(elo.match_history)}")
 
-
 # ===================================================================
-# 12. Full Evaluation Pipeline (all evaluators on one trace)
+# 12. Full Evaluation Pipeline
 # ===================================================================
 sep("12. Full Evaluation Pipeline")
-# Running every evaluator on a single trace shows the complete evaluation picture.
 trace_good = traces[0]
 trace_bad = traces[4]
 
-print(f"--- Full evaluation: {trace_good['trace_id']} ({trace_good['trace_type']}) ---")
-full_good = full_evaluation(trace_good, tools_catalog)
-for evaluator_name, result in full_good.items():
-    print(f"\n  [{evaluator_name}]")
-    for k, v in result.items():
-        if isinstance(v, dict):
-            print(f"    {k}:")
-            for kk, vv in v.items():
-                print(f"      {kk}: {vv}")
-        elif isinstance(v, list) and len(v) > 3:
-            print(f"    {k}: [{len(v)} items]")
-        else:
-            print(f"    {k}: {v}")
-
-print(f"\n--- Full evaluation: {trace_bad['trace_id']} ({trace_bad['trace_type']}) ---")
-full_bad = full_evaluation(trace_bad, tools_catalog)
-for evaluator_name, result in full_bad.items():
-    print(f"\n  [{evaluator_name}]")
-    for k, v in result.items():
-        if isinstance(v, dict):
-            print(f"    {k}:")
-            for kk, vv in v.items():
-                print(f"      {kk}: {vv}")
-        elif isinstance(v, list) and len(v) > 3:
-            print(f"    {k}: [{len(v)} items]")
-        else:
-            print(f"    {k}: {v}")
-
+for label, trace in [("GOOD", trace_good), ("BAD", trace_bad)]:
+    print(f"\n--- {label}: {trace['trace_id']} ({trace['trace_type']}) ---")
+    results = full_evaluation(trace, tools_catalog)
+    for evaluator_name, result in results.items():
+        print(f"\n  [{evaluator_name}]")
+        for k, v in result.items():
+            if isinstance(v, dict):
+                print(f"    {k}:")
+                for kk, vv in v.items():
+                    print(f"      {kk}: {vv}")
+            elif isinstance(v, list) and len(v) > 3:
+                print(f"    {k}: [{len(v)} items]")
+            else:
+                print(f"    {k}: {v}")
 
 # ===================================================================
 # 13. Benchmarks Overview
 # ===================================================================
 sep("13. Agent Benchmarks Overview")
-# Major benchmarks provide standardized comparisons across agent capabilities.
 benchmarks = {
-    "AgentBench": {
-        "description": "Multi-dimensional benchmark testing agents across OS, DB, KG, web, and lateral-thinking tasks.",
-        "metrics": ["success_rate", "task_completion", "efficiency"],
-        "url": "https://github.com/THUDM/AgentBench",
-    },
-    "SWE-Bench": {
-        "description": "Real GitHub issues from popular repos; agents must generate patches that pass existing test suites.",
-        "metrics": ["resolve_rate", "patch_correctness", "test_pass_rate"],
-        "url": "https://www.swebench.com/",
-    },
-    "GAIA": {
-        "description": "General AI Assistants benchmark with multi-step real-world questions requiring tool use and reasoning.",
-        "metrics": ["exact_match_accuracy", "tool_use_efficiency"],
-        "url": "https://huggingface.co/gaia-benchmark",
-    },
-    "WebArena": {
-        "description": "Realistic web-browsing tasks on self-hosted sites (shopping, forums, maps, GitLab, Wikipedia).",
-        "metrics": ["task_success_rate", "step_efficiency", "navigation_accuracy"],
-        "url": "https://webarena.dev/",
-    },
+    "AgentBench": ("OS/DB/KG/web/lateral-thinking", ["success_rate", "task_completion", "efficiency"]),
+    "SWE-Bench": ("Real GitHub issue patches", ["resolve_rate", "patch_correctness", "test_pass_rate"]),
+    "GAIA": ("Multi-step real-world + tools", ["exact_match_accuracy", "tool_use_efficiency"]),
+    "WebArena": ("Web browsing on self-hosted sites", ["task_success_rate", "step_efficiency"]),
 }
-
-for name, info in benchmarks.items():
-    print(f"\n  {name}")
-    print(f"    {info['description']}")
-    print(f"    Metrics: {', '.join(info['metrics'])}")
-    print(f"    URL: {info['url']}")
-
+for name, (desc, metrics) in benchmarks.items():
+    print(f"  {name}: {desc} | Metrics: {', '.join(metrics)}")
 
 # ===================================================================
 # 14. Synthetic Batch Evaluation
 # ===================================================================
 sep("14. Synthetic Batch Evaluation")
-# Generating synthetic traces lets us stress-test evaluators at scale.
 synth = generate_synthetic_batch(10, seed=123)
 synth_batch = TaskCompletionEvaluator().evaluate_batch(synth)
 print(f"Synthetic batch ({len(synth)} traces):")
@@ -336,38 +271,10 @@ print(f"  Goal rate: {synth_batch['goal_rate']:.2%}")
 print(f"  Accuracy: {synth_batch['accuracy']:.2%}")
 print(f"  Avg partial score: {synth_batch['avg_partial_score']:.3f}")
 
-
 # ===================================================================
 # Summary
 # ===================================================================
 sep("Summary")
-print("""
-Agent evaluation spans multiple dimensions:
-  - Task completion & goal achievement (did it work?)
-  - Trajectory & planning quality (was the path sensible?)
-  - Tool use correctness & efficiency (right tools, right args?)
-  - Memory & reflection (does it learn from its own trace?)
-  - Multi-agent coordination (do agents collaborate or duplicate?)
-  - Domain-specific: coding quality, browser navigation
-  - Comparative ranking via Elo tournaments
-
-Standard benchmarks (AgentBench, SWE-Bench, GAIA, WebArena) provide
-cross-system comparisons on curated, reproducible task suites.
-
-WHY USE LANGGRAPH, LANGFUSE & TRACING FOR AGENTS?
-
-LangGraph: Agents are inherently stateful -- they think, call tools, observe results,
-and decide what to do next. LangGraph's create_react_agent handles this loop natively
-with built-in state management, tool binding, and message history. Without it, you
-write fragile while-loops that break when the agent takes unexpected paths.
-
-Langfuse: Agent traces are complex (5-20 steps). Langfuse captures the full trajectory
-as nested spans, so you can see exactly which tool call failed, which reasoning step was
-wrong, and how much each step cost. Attach scores (accuracy, efficiency, trajectory)
-to each trace and filter by low-performing runs in the dashboard.
-
-Tracing: Agents make multiple LLM calls per task. Without tracing, you can't tell if a
-slow response was caused by the reasoning step, a tool timeout, or the final synthesis.
-Tracing gives you per-step latency, token counts, and error attribution -- essential for
-debugging agent failures in production.
-""")
+print("Agent evaluation dimensions: task completion, goal achievement, trajectory,")
+print("tool use, planning, memory, reflection, multi-agent, coding, browser, Elo.")
+print("Benchmarks: AgentBench, SWE-Bench, GAIA, WebArena.")

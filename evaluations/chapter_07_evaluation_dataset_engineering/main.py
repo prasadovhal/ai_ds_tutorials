@@ -1,6 +1,6 @@
 """
 Chapter 7 - Evaluation Dataset Engineering
-Main demonstration: benchmark design, dataset quality, coverage, contamination,
+Benchmark design, dataset quality, coverage, contamination,
 label noise, Cohen's/Fleiss' Kappa, and meta-evaluation.
 """
 
@@ -36,23 +36,15 @@ from evaluator import (
 )
 
 
-# ============================================================================
-# Helpers
-# ============================================================================
-
 def banner(title: str) -> None:
-    width = 72
-    print("\n" + "=" * width)
+    print("\n" + "=" * 72)
     print(f"  {title}")
-    print("=" * width)
-
+    print("=" * 72)
 
 def sub(title: str) -> None:
     print(f"\n--- {title} ---")
 
-
 def dump(obj, indent: int = 2) -> None:
-    """Pretty-print a dict/list, skipping long nested lists."""
     def _trim(o, depth=0):
         if isinstance(o, dict):
             return {k: _trim(v, depth + 1) for k, v in o.items()}
@@ -67,54 +59,37 @@ def dump(obj, indent: int = 2) -> None:
 # ============================================================================
 # Load data
 # ============================================================================
-
 banner("LOADING SAMPLE DATA")
-
 data = load_sample_data()
 questions = data["questions"]
 contamination_test = data["contamination_test_set"]
 fleiss_annotations = data["annotation_simulation"]["annotations"]
 fleiss_categories = data["annotation_simulation"]["categories"]
-
 print(f"Loaded {len(questions)} questions, "
       f"{len(contamination_test)} contamination-test items, "
       f"{len(fleiss_annotations)} annotation rows for Fleiss' Kappa")
 
-
 # ============================================================================
 # 1. BENCHMARK DESIGN
 # ============================================================================
-
 banner("1. BENCHMARK DESIGN")
-# A benchmark is a structured, balanced subset of questions designed for fair evaluation.
-
 designer = BenchmarkDesigner(
-    questions=questions,
-    topic_fn=detect_topic,
-    difficulty_fn=estimate_difficulty,
+    questions=questions, topic_fn=detect_topic, difficulty_fn=estimate_difficulty,
 )
-
 benchmark = designer.design_benchmark(
     target_size=15,
     difficulty_distribution={"easy": 0.4, "medium": 0.4, "hard": 0.2},
     seed=42,
 )
-
 sub("Benchmark metadata")
 dump(benchmark["metadata"])
-
 sub("Benchmark validation")
-validation = designer.validate_benchmark(benchmark)
-dump(validation)
-
+dump(designer.validate_benchmark(benchmark))
 
 # ============================================================================
 # 2. DATASET QUALITY CHECKS
 # ============================================================================
-
 banner("2. DATASET QUALITY CHECKS")
-# Quality checks verify completeness, correctness, and consistency of every item.
-
 checker = DatasetQualityChecker(questions)
 quality = checker.run_all_checks()
 
@@ -127,36 +102,27 @@ sub("Completeness")
 comp = quality["completeness"]
 print(f"  Score : {comp['completeness_score']}")
 print(f"  Issues: {comp['issues_found']}")
-if comp["issues"]:
-    for issue in comp["issues"][:5]:
-        print(f"    [{issue['severity']}] id={issue['id']}: {issue['issue']}")
+for issue in comp["issues"][:5]:
+    print(f"    [{issue['severity']}] id={issue['id']}: {issue['issue']}")
 
 sub("Correctness")
 corr = quality["correctness"]
 print(f"  Issues: {corr['issues_found']}")
-if corr["issues"]:
-    for issue in corr["issues"][:5]:
-        print(f"    [{issue['severity']}] id={issue['id']}: {issue['issue']}")
+for issue in corr["issues"][:5]:
+    print(f"    [{issue['severity']}] id={issue['id']}: {issue['issue']}")
 
 sub("Consistency")
 cons = quality["consistency"]
 print(f"  Issues: {cons['issues_found']}")
 print(f"  Prompt lengths: {cons['prompt_length_stats']}")
 
-
 # ============================================================================
 # 3. COVERAGE METRICS
 # ============================================================================
-
 banner("3. COVERAGE METRICS")
-# Coverage measures how well the dataset spans topics, difficulties, and answer options.
-
 coverage_analyzer = CoverageAnalyzer(
-    questions=questions,
-    topic_fn=detect_topic,
-    difficulty_fn=estimate_difficulty,
+    questions=questions, topic_fn=detect_topic, difficulty_fn=estimate_difficulty,
 )
-
 expected_topics = ["physics", "chemistry", "biology", "astronomy",
                    "mathematics", "earth_science"]
 overall_cov = coverage_analyzer.overall_coverage(expected_topics)
@@ -185,13 +151,10 @@ print(f"  Balance : {ac['balance_score']}")
 print(f"  Counts  : {ac['counts']}")
 print(f"  Missing : {ac['missing']}")
 
-
 # ============================================================================
 # 4. FAILURE-MODE COVERAGE & DATASET BALANCING
 # ============================================================================
-
 banner("4. FAILURE-MODE COVERAGE & DATASET BALANCING")
-# Failure-mode coverage checks for duplicates, prompt anomalies, and answer skew.
 
 sub("Duplicate detection")
 dupes = find_duplicates(questions, threshold=0.6)
@@ -201,70 +164,45 @@ for d in dupes:
     print(f"      Q1: {d['prompt_1']}")
     print(f"      Q2: {d['prompt_2']}")
 
-sub("Answer distribution analysis (balance check)")
+sub("Answer distribution analysis")
 ans_dist = analyze_answer_distribution(questions)
-print(f"  Total: {ans_dist['total']}")
-print(f"  Expected if balanced: {ans_dist['expected_pct_if_balanced']}%")
-print(f"  Max deviation: {ans_dist['max_deviation_from_expected']}%")
-print(f"  Chi-squared: {ans_dist['chi_squared']}")
+print(f"  Total: {ans_dist['total']}, Expected: {ans_dist['expected_pct_if_balanced']}%")
+print(f"  Max deviation: {ans_dist['max_deviation_from_expected']}%, Chi-sq: {ans_dist['chi_squared']}")
 for label, info in ans_dist["distribution"].items():
     bar = "#" * int(info["percentage"] / 2)
     print(f"    {label}: {info['count']:2d} ({info['percentage']:5.1f}%)  {bar}")
 
 sub("Prompt length analysis")
-lengths = analyze_prompt_lengths(questions)
-wl = lengths["word_lengths"]
-print(f"  Words  -> min={wl['min']}, max={wl['max']}, "
+wl = analyze_prompt_lengths(questions)["word_lengths"]
+print(f"  Words -> min={wl['min']}, max={wl['max']}, "
       f"mean={wl['mean']}, median={wl['median']}, std={wl['std']}")
-
 
 # ============================================================================
 # 5. CONTAMINATION DETECTION & DATA LEAKAGE
 # ============================================================================
-
 banner("5. CONTAMINATION DETECTION & DATA LEAKAGE")
-# Contamination = test data leaking into training data, inflating scores artificially.
-
-detector = ContaminationDetector(
-    train_data=questions,         # treat main questions as "train"
-    test_data=contamination_test, # test set from sample_data
-)
+detector = ContaminationDetector(train_data=questions, test_data=contamination_test)
 report = detector.full_contamination_report(near_dup_threshold=0.5)
 
 sub("Contamination summary")
-print(f"  Rate      : {report['contamination_rate']}")
-print(f"  Risk level: {report['risk_level']}")
-print(f"  Exact     : {len(report['exact_matches'])}")
-print(f"  Near-dupes: {len(report['near_duplicates'])}")
+print(f"  Rate: {report['contamination_rate']}, Risk: {report['risk_level']}")
+print(f"  Exact: {len(report['exact_matches'])}, Near-dupes: {len(report['near_duplicates'])}")
 
-if report["exact_matches"]:
-    sub("Exact matches")
-    for m in report["exact_matches"]:
-        print(f"    test_id={m['test_id']} <-> train_id={m['train_id']}  "
-              f"[{m['severity']}]")
-
-if report["near_duplicates"]:
-    sub("Near duplicates")
-    for m in report["near_duplicates"]:
-        print(f"    test_id={m['test_id']} <-> train_id={m['train_id']}  "
-              f"score={m['combined_score']}")
+for m in report["exact_matches"]:
+    print(f"    test_id={m['test_id']} <-> train_id={m['train_id']}  [{m['severity']}]")
+for m in report["near_duplicates"]:
+    print(f"    test_id={m['test_id']} <-> train_id={m['train_id']}  score={m['combined_score']}")
 
 sub("Answer leakage analysis")
 leak = report["answer_leakage_analysis"]
 print(f"  Train dist: {leak['train_distribution']}")
 print(f"  Test dist : {leak['test_distribution']}")
 
-
 # ============================================================================
 # 6. LABEL NOISE DETECTION
 # ============================================================================
-
 banner("6. LABEL NOISE DETECTION")
-# Label noise = incorrect ground-truth labels that silently corrupt evaluation scores.
-
-# Extract annotator labels embedded in sample_data
 annotator_labels = [q.get("annotator_labels", []) for q in questions]
-
 noise_detector = LabelNoiseDetector(questions)
 
 sub("Noise rate estimate (annotator disagreement)")
@@ -275,15 +213,13 @@ sub("Suspicious items (annotator disagreement)")
 suspicious = noise_detector.detect_by_annotator_disagreement(
     annotator_labels, disagreement_threshold=0.5,
 )
-if suspicious:
-    for s in suspicious:
-        print(f"  id={s['id']}: ground_truth={s['ground_truth']}, "
-              f"majority={s['majority_vote']}, dist={s['label_distribution']}")
-else:
+for s in suspicious:
+    print(f"  id={s['id']}: ground_truth={s['ground_truth']}, "
+          f"majority={s['majority_vote']}, dist={s['label_distribution']}")
+if not suspicious:
     print("  None found at threshold=0.5")
 
 sub("Suspicious items (model consensus)")
-# Simulate 3 models with different accuracy
 model_preds = [
     simulate_llm_predictions(questions, accuracy=0.85, seed=10),
     simulate_llm_predictions(questions, accuracy=0.80, seed=20),
@@ -292,32 +228,24 @@ model_preds = [
 model_suspicious = noise_detector.detect_by_model_consensus(
     model_preds, consensus_threshold=0.66,
 )
-if model_suspicious:
-    for s in model_suspicious[:5]:
-        print(f"  id={s['id']}: ground_truth={s['ground_truth']}, "
-              f"models_say={s['model_consensus']}, "
-              f"rate={s['consensus_rate']}, votes={s['model_votes']}")
-else:
+for s in model_suspicious[:5]:
+    print(f"  id={s['id']}: ground_truth={s['ground_truth']}, "
+          f"models_say={s['model_consensus']}, "
+          f"rate={s['consensus_rate']}, votes={s['model_votes']}")
+if not model_suspicious:
     print("  No model-consensus noise detected")
-
 
 # ============================================================================
 # 7. COHEN'S KAPPA (from scratch)
 # ============================================================================
-
 banner("7. COHEN'S KAPPA -- Inter-Rater Agreement (2 Raters)")
-# Kappa = (observed_agreement - chance_agreement) / (1 - chance_agreement).
 
 sub("Scenario A: Two annotators on our 20 questions")
 rater_1 = [q["ground_truth"] for q in questions]
 rater_2 = simulate_llm_predictions(questions, accuracy=0.80, seed=99)
-
 cohen_result = CohenKappaCalculator.compute(rater_1, rater_2)
-print(f"  Kappa              : {cohen_result['kappa']}")
-print(f"  Observed agreement : {cohen_result['observed_agreement']}")
-print(f"  Expected (chance)  : {cohen_result['expected_agreement']}")
-print(f"  Interpretation     : {cohen_result['interpretation']}")
-print(f"  Categories         : {cohen_result['categories']}")
+print(f"  Kappa: {cohen_result['kappa']}, Observed: {cohen_result['observed_agreement']}, "
+      f"Expected: {cohen_result['expected_agreement']}, {cohen_result['interpretation']}")
 
 sub("Scenario B: Perfect agreement")
 perfect = CohenKappaCalculator.compute(rater_1, rater_1)
@@ -328,64 +256,42 @@ random_rater = [random.choice(["A", "B", "C"]) for _ in rater_1]
 rand_result = CohenKappaCalculator.compute(rater_1, random_rater)
 print(f"  Kappa = {rand_result['kappa']}  ({rand_result['interpretation']})")
 
-
 # ============================================================================
 # 8. FLEISS' KAPPA (from scratch)
 # ============================================================================
-
 banner("8. FLEISS' KAPPA -- Inter-Rater Agreement (Multiple Raters)")
-# Generalises Cohen's Kappa to N >= 2 raters on the same set of items.
 
 sub("Scenario A: 5 raters on 10 items (from sample_data)")
-fleiss_result = FleissKappaCalculator.compute(
-    fleiss_annotations, categories=fleiss_categories,
-)
-print(f"  Kappa              : {fleiss_result['kappa']}")
-print(f"  P_bar (observed)   : {fleiss_result['p_bar']}")
-print(f"  P_e_bar (expected) : {fleiss_result['p_e_bar']}")
-print(f"  Interpretation     : {fleiss_result['interpretation']}")
-print(f"  Category proportions:")
+fleiss_result = FleissKappaCalculator.compute(fleiss_annotations, categories=fleiss_categories)
+print(f"  Kappa: {fleiss_result['kappa']}, P_bar: {fleiss_result['p_bar']}, "
+      f"P_e_bar: {fleiss_result['p_e_bar']}, {fleiss_result['interpretation']}")
 for cat, prop in fleiss_result["category_proportions"].items():
     print(f"    {cat:20s}: {prop}")
 
 sub("Scenario B: 3 annotators on our 20 questions")
-ann_labels = generate_annotator_labels(questions, n_annotators=3,
-                                       agreement_rate=0.85, seed=7)
+ann_labels = generate_annotator_labels(questions, n_annotators=3, agreement_rate=0.85, seed=7)
 fleiss_q = FleissKappaCalculator.compute(ann_labels)
-print(f"  Kappa          : {fleiss_q['kappa']}")
-print(f"  Interpretation : {fleiss_q['interpretation']}")
+print(f"  Kappa: {fleiss_q['kappa']}  ({fleiss_q['interpretation']})")
 
-sub("Scenario C: Perfect agreement (all raters identical)")
+sub("Scenario C: Perfect agreement")
 perfect_ann = [[q["ground_truth"]] * 4 for q in questions]
 fleiss_perf = FleissKappaCalculator.compute(perfect_ann)
 print(f"  Kappa = {fleiss_perf['kappa']}  ({fleiss_perf['interpretation']})")
 
-
 # ============================================================================
 # 9. META-EVALUATION -- Evaluating the Evaluator
 # ============================================================================
-
-banner("9. META-EVALUATION -- Evaluating the Evaluator")
-# Meta-evaluation asks: "Is our evaluation dataset itself good enough to trust?"
-
+banner("9. META-EVALUATION")
 meta = MetaEvaluator(
-    quality_checker=checker,
-    coverage_analyzer=coverage_analyzer,
+    quality_checker=checker, coverage_analyzer=coverage_analyzer,
     label_noise_detector=noise_detector,
 )
-
-scorecard = meta.evaluate(
-    annotations=annotator_labels,
-    expected_topics=expected_topics,
-)
+scorecard = meta.evaluate(annotations=annotator_labels, expected_topics=expected_topics)
 
 sub("Scorecard")
-print(f"  Overall score : {scorecard['overall_score']}")
-print(f"  Overall grade : {scorecard['overall_grade']}")
-
-sub("Dimension scores")
+print(f"  Overall: {scorecard['overall_score']} (Grade {scorecard['overall_grade']})")
 for dim, info in scorecard["dimensions"].items():
-    print(f"  {dim:16s}: score={info['score']}")
+    print(f"  {dim:16s}: {info['score']}")
 
 sub("Recommendations")
 for rec in scorecard["recommendations"]:
@@ -394,32 +300,21 @@ for rec in scorecard["recommendations"]:
 sub("Evaluator reliability check")
 
 def mock_evaluator(qs, seed):
-    """Simulate an evaluator that scores the dataset with some randomness."""
-    rng = random.Random(seed)
     preds = simulate_llm_predictions(qs, accuracy=0.75, seed=seed)
     correct = sum(1 for p, q in zip(preds, qs) if p == q["ground_truth"])
     return correct / max(len(qs), 1)
 
 reliability = meta.evaluator_reliability_check(
-    questions=questions,
-    evaluator_fn=mock_evaluator,
-    n_runs=10,
-    seed_start=0,
+    questions=questions, evaluator_fn=mock_evaluator, n_runs=10, seed_start=0,
 )
-print(f"  Scores across 10 runs : {reliability['scores']}")
-print(f"  Mean                  : {reliability['mean']}")
-print(f"  Std dev               : {reliability['std_dev']}")
-print(f"  Coeff of variation    : {reliability['coefficient_of_variation']}")
-print(f"  Reliable?             : {reliability['is_reliable']}")
-print(f"  Interpretation        : {reliability['interpretation']}")
-
+print(f"  Mean: {reliability['mean']}, Std: {reliability['std_dev']}, "
+      f"CV: {reliability['coefficient_of_variation']}")
+print(f"  Reliable: {reliability['is_reliable']}, {reliability['interpretation']}")
 
 # ============================================================================
 # SUMMARY TABLE
 # ============================================================================
-
 banner("SUMMARY")
-
 rows = [
     ("Dataset quality score",       f"{quality['overall_quality_score']}"),
     ("Dataset quality grade",       quality["grade"]),
@@ -434,7 +329,6 @@ rows = [
     ("Meta-eval overall",           f"{scorecard['overall_score']}"),
     ("Evaluator reliability (CV)",  f"{reliability['coefficient_of_variation']}"),
 ]
-
 print(f"\n  {'Metric':<30s}  {'Value':>10s}")
 print(f"  {'-'*30}  {'-'*10}")
 for label, val in rows:

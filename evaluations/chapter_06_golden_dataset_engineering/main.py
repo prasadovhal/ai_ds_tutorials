@@ -57,27 +57,6 @@ def print_json(data, indent=2):
 def demo_why_golden_datasets():
     print_section("1. WHY GOLDEN DATASETS & DATASET TYPES")
 
-    print("""
-  Golden datasets are small, high-quality, human-verified evaluation sets
-  that serve as the ground truth benchmark for your LLM system.
-
-  DATASET TYPES COMPARISON:
-  +------------------+----------+----------+----------+-----------+
-  | Property         | Training | Test     | Golden   | Synthetic |
-  +------------------+----------+----------+----------+-----------+
-  | Size             | Large    | Medium   | Small    | Any       |
-  | Quality          | Variable | Good     | Highest  | Variable  |
-  | Human-reviewed   | Rarely   | Sometimes| Always   | Never     |
-  | Use case         | Learning | Eval     | Benchmark| Augment   |
-  | Update frequency | Rarely   | Rarely   | Often    | On-demand |
-  | Cost to create   | Low      | Medium   | High     | Low       |
-  +------------------+----------+----------+----------+-----------+
-
-  GOLDEN DATASET PIPELINE:
-    Raw Data --> Categorize --> Deduplicate --> Sample --> Annotate
-        --> Quality Check --> Version --> Deploy as Benchmark
-    """)
-
     sample = load_sample_data()
     meta = sample["metadata"]
     stats = sample["dataset_statistics"]
@@ -99,15 +78,8 @@ def demo_why_golden_datasets():
 def demo_dataset_creation():
     print_section("2. CREATING: SAMPLING, DEDUPLICATION, BALANCING")
 
-    print("""
-  Building a golden dataset involves stratified sampling to maintain
-  representation, deduplication to remove redundancy, and balancing
-  to prevent category bias.
-    """)
-
     builder = GoldenDatasetBuilder(name="science_golden_v1", seed=42)
 
-    # Use sample_data items as source (no train.csv dependency)
     sample = load_sample_data()
     source_items = []
     for item in sample["items"]:
@@ -140,7 +112,6 @@ def demo_dataset_creation():
     print(f"    Duplicates removed: {dedup['duplicates_found']}")
 
     # --- Stratified Sampling ---
-    # Categorize first for stratification
     for q in source_items:
         if "category" not in q:
             q["category"] = "general"
@@ -176,11 +147,6 @@ def demo_dataset_creation():
 
 def demo_annotation_workflow():
     print_section("3. ANNOTATION WORKFLOW, RUBRICS, INTER-ANNOTATOR AGREEMENT")
-
-    print("""
-  Annotation is the process of having humans label data. Multiple
-  annotators label the same items, and agreement metrics measure quality.
-    """)
 
     # --- Annotation Guidelines ---
     ann_mgr = AnnotationManager(num_annotators=3, seed=42)
@@ -261,14 +227,8 @@ def demo_annotation_workflow():
 def demo_regression_testing():
     print_section("4. REGRESSION TESTING & PROMPT COMPARISON")
 
-    print("""
-  Golden datasets are the benchmark for catching regressions when you
-  change prompts, models, or pipelines. Compare predictions side by side.
-    """)
-
     sample = load_sample_data()
     items = sample["items"]
-    rng = random.Random(42)
     choices = ["A", "B", "C", "D", "E"]
 
     # Simulate two model versions
@@ -278,12 +238,10 @@ def demo_regression_testing():
     r2 = random.Random(200)
     for item in items:
         gt = item["ground_truth"]
-        # v1: 73% accuracy
         if r1.random() < 0.73:
             preds_v1.append(gt)
         else:
             preds_v1.append(r1.choice([c for c in choices if c != gt]))
-        # v2: 87% accuracy
         if r2.random() < 0.87:
             preds_v2.append(gt)
         else:
@@ -347,11 +305,6 @@ def demo_regression_testing():
 def demo_versioning_and_maintenance():
     print_section("5. VERSIONING, DRIFT DETECTION, MAINTENANCE")
 
-    print("""
-  Golden datasets need versioning (track changes over time) and drift
-  detection (catch when production data diverges from the benchmark).
-    """)
-
     sample = load_sample_data()
 
     # --- Versioning ---
@@ -362,14 +315,13 @@ def demo_versioning_and_maintenance():
                                        description="Initial golden dataset")
 
     # Simulate v2: modify some items, add new ones
-    v2_items = sample["items"][:8]  # keep 8, drop 2
-    for item in sample["items"][10:13]:  # add 3 new
+    v2_items = sample["items"][:8]
+    for item in sample["items"][10:13]:
         v2_items.append(item)
-    # Modify one ground truth (simulated correction)
     import copy
     v2_items_copy = copy.deepcopy(v2_items)
     if v2_items_copy:
-        v2_items_copy[0]["ground_truth"] = "E"  # Simulated correction
+        v2_items_copy[0]["ground_truth"] = "E"
 
     v2_result = ver_mgr.create_version("2.0.0", v2_items_copy, author="reviewer",
                                        description="Corrected labels, added items")
@@ -396,12 +348,10 @@ def demo_versioning_and_maintenance():
     drift = DriftDetector()
 
     baseline = sample["items"]
-    # Simulate drifted data: shift category distribution
     drifted = []
     rng = random.Random(42)
     for item in sample["items"]:
         new_item = dict(item)
-        # Simulate: some items shift category
         if rng.random() < 0.3:
             new_item["category"] = rng.choice(["physics", "biology", "chemistry"])
         if rng.random() < 0.2:
@@ -441,14 +391,8 @@ def demo_versioning_and_maintenance():
 def demo_synthetic_data():
     print_section("6. SYNTHETIC DATA GENERATION")
 
-    print("""
-  Synthetic data augments golden datasets when real data is scarce.
-  All synthetic items MUST be human-reviewed before inclusion.
-    """)
-
     gen = SyntheticDataGenerator(seed=42)
 
-    # --- Generate ---
     result = gen.generate_synthetic_questions(n=8, categories=["physics", "biology", "chemistry"])
 
     print(f"  --- GENERATED QUESTIONS ---")
@@ -489,11 +433,6 @@ def demo_synthetic_data():
 
 def demo_quality_evaluation():
     print_section("7. FULL DATASET QUALITY EVALUATION")
-
-    print("""
-  The quality scorer combines coverage, balance, uniqueness, annotation
-  agreement, and edge case inclusion into a single composite score.
-    """)
 
     sample = load_sample_data()
     items = sample["items"]
@@ -560,44 +499,6 @@ def demo_quality_evaluation():
 
 
 # ===================================================================
-# SUMMARY
-# ===================================================================
-
-def print_final_summary():
-    print_section("CHAPTER 6 SUMMARY -- GOLDEN DATASET ENGINEERING")
-
-    print("""
-  KEY TAKEAWAYS:
-  1. Golden datasets are small, high-quality, human-verified benchmarks
-  2. Build them via: categorize -> deduplicate -> sample -> annotate -> version
-  3. Measure inter-annotator agreement with Cohen's and Fleiss' Kappa
-  4. Use for regression testing when changing prompts/models
-  5. Version everything -- track diffs, detect drift, maintain quality
-  6. Synthetic data augments but never replaces human-verified data
-
-  QUALITY CHECKLIST:
-  +---+----------------------------------+
-  |   | Check                            |
-  +---+----------------------------------+
-  | 1 | Coverage: all categories present |
-  | 2 | Balance: no extreme skew         |
-  | 3 | No duplicates                    |
-  | 4 | Annotator agreement > 0.6 kappa  |
-  | 5 | Edge cases included (10-30%)     |
-  | 6 | Versioned with changelog         |
-  | 7 | Regular drift checks             |
-  +---+----------------------------------+
-
-  INTERVIEW QUESTIONS:
-  Q1: How do you build a golden evaluation dataset from scratch?
-  Q2: What is Cohen's Kappa and why is percentage agreement insufficient?
-  Q3: How do you detect and handle dataset drift?
-  Q4: When should you use synthetic data for evaluation?
-  Q5: How do you version and maintain a golden dataset over time?
-    """)
-
-
-# ===================================================================
 # MAIN
 # ===================================================================
 
@@ -616,7 +517,6 @@ def main():
     demo_versioning_and_maintenance()
     demo_synthetic_data()
     demo_quality_evaluation()
-    print_final_summary()
 
     print("\n  Run complete! All 7 golden dataset engineering topics covered.")
     print("  Next: Chapter 7 -- Evaluation Dataset Engineering\n")

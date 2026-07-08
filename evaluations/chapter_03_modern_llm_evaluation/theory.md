@@ -1,10 +1,8 @@
 # Chapter 3: Modern LLM Evaluation -- All 17 Dimensions
 
-This chapter demonstrates every modern evaluation dimension used to assess LLM output quality. Each dimension shows: problem, intuition, evaluation approach, results, advantages, and limitations.
+Modern LLM evaluation is **multi-dimensional**. No single metric captures output quality. Production systems combine heuristic baselines (this chapter) with LLM-as-Judge (Chapter 4) and human evaluation.
 
-Modern LLM evaluation is **multi-dimensional**. No single metric captures output quality. Production systems combine heuristic baselines (this chapter) with LLM-as-Judge (Chapter 4) and human evaluation for comprehensive assessment.
-
-## Overview of Dimensions
+## Overview
 
 ```
   1. Correctness           10. Fluency
@@ -18,534 +16,248 @@ Modern LLM evaluation is **multi-dimensional**. No single metric captures output
   9. Instruction Following
 ```
 
-### Important Note on Approach
+### Note on Approach
 
-These evaluators use **heuristic methods** (keyword matching, pattern detection, statistical measures) that work WITHOUT any external models or API calls. This is intentional for learning and demonstration purposes.
-
-In production systems, most of these dimensions would be evaluated using **LLM-as-a-Judge** (covered in Chapter 4), where a stronger model scores a weaker model's output. Heuristic methods shown here serve as:
-
-1. Baselines to compare against LLM-based evaluation
-2. Fast pre-filters before expensive LLM evaluation
-3. Fallback evaluators when LLM APIs are unavailable
-4. Educational tools to understand what each dimension measures
+These evaluators use **heuristic methods** (keyword matching, pattern detection, statistical measures) without external models. In production, most dimensions use **LLM-as-a-Judge** (Chapter 4). Heuristic methods serve as: (1) baselines, (2) fast pre-filters, (3) fallbacks when APIs are unavailable.
 
 ---
 
 ## Dimension 1: Correctness
 
-### Problem
+**Measures:** Whether the model's answer is factually correct.
+**Intuition:** Like grading a test -- compare the student's answer to the answer key.
 
-Is the model's answer factually correct? This is the most fundamental question.
-
-### Intuition
-
-Like grading a test -- compare the student's answer to the answer key.
-
-### How It Works
-
-**Approaches:**
-
-- **Exact match** (for MCQ, classification): Compare the student's answer directly to the answer key.
-- **Keyword overlap with reference answer** (for open-ended): Measure how many words from the reference appear in the response.
-- **Semantic similarity** (would need embeddings -- Chapter 4).
-
-**Open-ended correctness formula (weighted average):**
+**How it works:** Exact match for MCQ/classification; keyword overlap + cosine similarity for open-ended.
 
 ```
 score = 0.4 * word_overlap + 0.3 * cosine_similarity + 0.3 * fact_coverage
 ```
-
-Where:
-- `word_overlap` = Jaccard similarity between tokenized reference and response
+- `word_overlap` = Jaccard similarity of tokenized reference and response
 - `cosine_similarity` = cosine similarity of word frequency vectors
-- `fact_coverage` = fraction of key facts found in the response (a fact is considered found if >= 50% of its tokens appear in the response)
+- `fact_coverage` = fraction of key facts found (a fact is found if >= 50% of its tokens appear)
 
-### Advantages
+**Pros/Cons:**
+- + Simple, interpretable, no dependencies -- pure string comparison
+- - Exact match too strict for open-ended; misses paraphrases and synonyms; cannot evaluate novel correct answers
 
-- Simple and interpretable for MCQ/classification tasks
-- No external dependencies -- pure string comparison
-- Batch evaluation gives quick accuracy overview
-
-### Limitations
-
-- Exact match is too strict for open-ended answers
-- Keyword overlap misses paraphrases and synonyms
-- Cannot evaluate novel correct answers not in reference
-
-### When NOT to Use
-
-- Creative writing tasks (no single "correct" answer)
-- Opinion questions where multiple views are valid
+**When NOT to use:** Creative writing or opinion questions where multiple answers are valid.
 
 ---
 
 ## Dimension 2: Relevance
 
-### Problem
+**Measures:** Whether the response addresses the question that was actually asked.
+**Intuition:** Like asking a waiter for the dessert menu and getting a wine list -- valid but not what you asked for.
 
-Does the response address the question that was actually asked? A response can be factually correct but completely off-topic. For example: "What is photosynthesis?" answered with "The Earth orbits the Sun." -- correct but irrelevant.
-
-### Intuition
-
-Like asking a waiter for the dessert menu and getting a wine list. The wine list is perfectly valid -- it is just not what you asked for.
-
-### How It Works
-
-- Measure word overlap between question and answer (after removing stop words)
-- Check if key question terms appear in the response
-- Higher overlap suggests the response "talks about" the right topic
-
-**Formula:**
+**How it works:** Word overlap between question and answer (after removing stop words), checking if key question terms appear in the response.
 
 ```
 score = 0.5 * question_coverage + 0.3 * cosine_similarity + 0.2 * bidirectional_overlap
 ```
-
-Where:
-- `question_coverage` = fraction of question's content words that appear in response
+- `question_coverage` = fraction of question's content words in response
 - `cosine_similarity` = cosine similarity between question and response word vectors
-- `bidirectional_overlap` = Jaccard similarity of content words (both directions)
+- `bidirectional_overlap` = Jaccard similarity of content words
 
-### Advantages
+**Pros/Cons:**
+- + Fast keyword check; catches completely off-topic responses; works without reference answers
+- - Cannot detect semantic relevance; paraphrased questions may score low
 
-- Fast keyword-based check before deeper evaluation
-- Catches completely off-topic responses
-- Works without reference answers
-
-### Limitations
-
-- Cannot detect semantic relevance (only keyword overlap)
-- Paraphrased questions may score low
-- Cannot distinguish relevant-but-wrong from relevant-and-right
-
-### When NOT to Use
-
-- Tasks where the response is expected to introduce NEW topics
-- Creative brainstorming where tangential ideas are valuable
+**When NOT to use:** Tasks where the response should introduce new topics or creative brainstorming.
 
 ---
 
 ## Dimension 3: Helpfulness
 
-### Problem
+**Measures:** Whether the response is actually useful to the person who asked.
+**Intuition:** Like getting "go that way" vs turn-by-turn directions with landmarks.
 
-Is the response actually useful to the person who asked? A response can be correct and relevant but not actually helpful. For example: "What is photosynthesis?" answered with "It is a biological process." -- true, relevant, unhelpful.
-
-### Intuition
-
-Like getting "go that way" vs turn-by-turn directions with landmarks.
-
-### How It Works
-
-Heuristic signals of helpfulness:
-
-- **Sufficient length** (too short = not helpful)
-- **Contains explanatory markers** ("because", "for example", "this means")
-- **Structured** (uses lists, steps, or clear paragraphs)
-- **Provides actionable information** (numbers, proper nouns)
-
-**Formula:**
+**How it works:** Heuristic signals: sufficient length, explanatory markers ("because", "for example"), structure (lists, steps), specificity (numbers, proper nouns).
 
 ```
 score = 0.25 * length_score + 0.30 * explanation_score + 0.20 * structure_score + 0.25 * specificity_score
 ```
-
-Where:
-- `length_score` = scored on word count (< 5 words = 0.1, < 20 = 0.3, < 50 = 0.6, < 150 = 0.9, >= 150 = 1.0)
-- `explanation_score` = min(count_of_explanation_markers / 3, 1.0)
-- `structure_score` = min(count_of_structure_markers / 2, 1.0)
+- `length_score` = scaled by word count (< 5 = 0.1, < 20 = 0.3, < 50 = 0.6, < 150 = 0.9, >= 150 = 1.0)
+- `explanation_score` = min(explanation_markers / 3, 1.0)
+- `structure_score` = min(structure_markers / 2, 1.0)
 - `specificity_score` = 0.5 * has_numbers + 0.5 * has_proper_nouns
 
-### Advantages
+**Pros/Cons:**
+- + Captures surface signals; no reference answer needed; fast pre-filter
+- - Length is a poor proxy; cannot measure if the user's actual need was met; inherently subjective
 
-- Captures surface signals of helpfulness (length, structure, explanations)
-- No reference answer needed
-- Fast heuristic pre-filter
-
-### Limitations
-
-- Length is a poor proxy (longer != more helpful)
-- Cannot measure whether the user's actual need was met
-- Helpfulness is inherently subjective
-
-### When NOT to Use
-
-- When evaluating with actual user feedback (use that instead)
-- Tasks where brevity IS helpfulness (e.g., "yes/no" questions)
+**When NOT to use:** When user feedback is available (use that instead), or tasks where brevity IS helpfulness.
 
 ---
 
 ## Dimension 4: Completeness
 
-### Problem
+**Measures:** Whether the response covers ALL aspects of the question.
+**Intuition:** Like ordering a combo meal and only getting the burger -- no fries or drink.
 
-Does the response cover ALL aspects of the question? For example: "Explain the causes AND effects of climate change." -- if the response only covers causes, it is incomplete even if what it says about causes is perfect.
-
-### Intuition
-
-Like ordering a combo meal and only getting the burger -- no fries or drink.
-
-### How It Works
-
-- Extract key aspects from the question (AND/OR clauses, sub-questions)
-- Check if each aspect is addressed in the response
-- Score based on coverage ratio
-
-**Formula:**
+**How it works:** Extract key aspects from the question (AND/OR clauses, sub-questions), check each in the response, score by coverage ratio.
 
 ```
 score = 0.6 * aspect_coverage + 0.4 * length_score
 ```
-
-Where:
-- `aspect_coverage` = fraction of required aspects covered (an aspect is covered if >= 40% of its tokens appear in the response)
+- `aspect_coverage` = fraction of required aspects covered (covered if >= 40% of its tokens appear)
 - `length_score` = based on response-to-question length ratio (< 0.5x = 0.2, < 1x = 0.4, < 3x = 0.7, < 10x = 1.0, >= 10x = 0.9)
 
-### Advantages
+**Pros/Cons:**
+- + Explicit aspect checking; catches partial answers to multi-part questions
+- - Misses implicit sub-questions; cannot assess depth of coverage
 
-- Explicit aspect checking when aspects are known
-- Catches answers that only address part of a multi-part question
-- Length ratio heuristic catches very short answers
-
-### Limitations
-
-- Heuristic aspect extraction misses implicit sub-questions
-- Cannot assess depth of coverage for each aspect
-- Some questions have unbounded scope
-
-### When NOT to Use
-
-- Simple factoid questions with a single fact answer
-- Tasks where partial answers are explicitly acceptable
+**When NOT to use:** Simple factoid questions or tasks where partial answers are acceptable.
 
 ---
 
 ## Dimension 5: Consistency
 
-### Problem
+**Measures:** Whether the model gives the same answer when asked the same question multiple times.
+**Intuition:** Like asking a witness the same question three times -- if the story changes, trust drops.
 
-Does the model give the same answer when asked the same question multiple times? If you ask "What is the speed of light?" three times and get three different numbers, the model is inconsistent -- even if one of them is correct.
-
-### Intuition
-
-Like asking a witness the same question three times -- if the story changes, trust drops.
-
-### How It Works
-
-- Collect multiple responses to the same question
-- Measure pairwise similarity between responses
-- High similarity = consistent, low similarity = inconsistent
-
-**Formula:**
+**How it works:** Collect multiple responses, measure pairwise cosine similarity.
 
 ```
 score = 0.7 * avg_pairwise_similarity + 0.3 * min_pairwise_similarity
 ```
+Also checks numerical consistency (whether numbers agree across responses).
 
-Where:
-- `avg_pairwise_similarity` = average cosine similarity across all response pairs
-- `min_pairwise_similarity` = minimum cosine similarity (worst-case pair)
-- Also checks numerical consistency: whether numbers mentioned across responses agree
+**Pros/Cons:**
+- + Detects unreliable models; catches contradictory numbers
+- - Consistent wrong answers still score high; some variation (paraphrasing) is healthy
 
-### Advantages
-
-- Detects unreliable models that give different answers each time
-- Pairwise similarity captures overall agreement
-- Numerical consistency check catches contradictory numbers
-
-### Limitations
-
-- Consistent wrong answers still score high
-- Some variation (paraphrasing) is healthy and expected
-- Cannot distinguish good variation from bad contradiction
-
-### When NOT to Use
-
-- Creative tasks where varied responses are desired
-- Brainstorming where different angles are valuable
+**When NOT to use:** Creative tasks or brainstorming where varied responses are desired.
 
 ---
 
 ## Dimension 6: Hallucination Detection
 
-### Problem
+**Measures:** Whether the model fabricated information not present in the source.
+**Intuition:** Like a student making up quotes and attributing them to real authors.
 
-Did the model fabricate information not present in the source? LLMs can generate plausible-sounding but completely made-up facts. "Einstein discovered the Roche limit in 1920" sounds authoritative but is entirely fabricated.
+**How it works:** Compare response claims against the source. Sentences with low overlap to source may be hallucinated. Also detects hallucination patterns (fabricated citations, statistics, attributions).
 
-### Intuition
-
-Like a student making up quotes and attributing them to real authors. The quotes sound plausible but are fictional.
-
-### How It Works
-
-- Compare response claims against the provided context/source
-- Sentences with low overlap to source may be hallucinated
-- Check for specific hallucination patterns (dates, names, statistics)
-
-**Hallucination patterns detected:**
-
-```
-- "according to a [year] study/paper/research/report"
-- "researchers/scientists at [Institution]"
-- "published in Nature/Science/PNAS/Journal"
-- "approximately N%"
-- "first/originally proposed/discovered by/in [year]"
-- "NASA/CERN/MIT/WHO/UN confirmed/reported/stated"
-```
-
-**Formula:**
+**Hallucination patterns detected:** fabricated study citations, researcher attributions, journal references, approximate statistics, discovery claims, institutional confirmations.
 
 ```
 score = 1.0 - hallucination_rate
 ```
-
-Where:
 - `hallucination_rate` = hallucinated_sentences / total_sentences
-- A sentence is flagged as hallucinated if: grounded_ratio < 0.3 OR hallucination patterns are found that do not exist in the source
+- A sentence is hallucinated if: grounded_ratio < 0.3 OR hallucination patterns found that do not exist in source
 
-### Advantages
+**Pros/Cons:**
+- + Catches fabricated statistics, dates, attributions; per-sentence pinpointing
+- - Requires a reference source; word overlap misses paraphrased faithful content
 
-- Catches fabricated statistics, dates, and attributions
-- Pattern-based detection for common hallucination types
-- Per-sentence analysis pinpoints where hallucinations occur
-
-### Limitations
-
-- Cannot detect hallucinations without a reference source
-- Word overlap misses paraphrased faithful content
-- Some "hallucinated" content might be correct common knowledge
-
-### When NOT to Use
-
-- Open-ended creative tasks where the model should generate new content
-- Tasks where the model is expected to use its parametric knowledge
+**When NOT to use:** Open-ended creative tasks or tasks where the model should use its parametric knowledge.
 
 ---
 
 ## Dimension 7: Faithfulness
 
-### Problem
+**Measures:** Whether the response accurately represents what the source material says.
+**Intuition:** Like a journalist quoting a source -- faithful journalism vs distorted quotes.
 
-Does the response accurately represent what the source material says? In RAG systems, the model receives context passages and should answer based on them.
-
-### Intuition
-
-Like a journalist quoting a source -- faithful journalism vs distorted quotes.
-
-### How It Works
-
-- Extract claims from the response
-- Check each claim against the source text at multiple granularity levels
-- Score based on what fraction of claims are supported
-
-**Formula:**
+**How it works:** Extract claims from response, check each against source at multiple granularity levels.
 
 ```
 score = 0.3 * token_faithfulness + 0.3 * bigram_faithfulness + 0.4 * (faithful_sentences / total_sentences)
 ```
+- `token_faithfulness` = fraction of response tokens in source
+- `bigram_faithfulness` = fraction of response bigrams in source
+- `faithful_sentences` = sentences with >= 40% token overlap with source
 
-Where:
-- `token_faithfulness` = fraction of response tokens that appear in the source
-- `bigram_faithfulness` = fraction of response bigrams that appear in the source (stricter: multi-word phrases)
-- `faithful_sentences / total_sentences` = fraction of sentences with >= 40% token overlap with source
-
-### Key Distinction: Faithfulness vs Hallucination
+### Faithfulness vs Hallucination
 
 ```
 Hallucination asks: "Did the model make things UP?"
 Faithfulness  asks: "Did the model stay TRUE to the source?"
 ```
-
 Both measure source fidelity, but from different angles.
 
-### Advantages
+**Pros/Cons:**
+- + Multi-granularity scoring (token, bigram, sentence); essential for RAG
+- - Cannot detect subtle distortions ("may" -> "definitely"); paraphrased content may score low
 
-- Measures fidelity at token, bigram, and sentence levels
-- Essential for RAG (retrieval-augmented generation) systems
-- Multi-granularity scoring gives nuanced picture
-
-### Limitations
-
-- Cannot detect subtle distortions (changing "may" to "definitely")
-- Paraphrased faithful content may score low
-- Cannot evaluate logical inferences drawn from source
-
-### When NOT to Use
-
-- Tasks where the model should use its own knowledge
-- Open-domain QA without specific context
+**When NOT to use:** Tasks where the model should use its own knowledge or open-domain QA without context.
 
 ---
 
 ## Dimension 8: Groundedness
 
-### Problem
+**Measures:** Whether every claim in the response can be traced back to the provided context.
+**Intuition:** Like a lawyer who can only cite evidence admitted to court.
 
-Can every claim in the response be traced back to the provided context? In RAG / retrieval-augmented systems, the model should ONLY use information from the retrieved context.
-
-### Intuition
-
-Like a lawyer who can only cite evidence admitted to court. Any claim not backed by admitted evidence is struck from the record.
-
-### How It Works
-
-- Split response into individual claims/sentences
-- For each claim, find the best-matching context sentence (by cosine similarity)
-- A claim is grounded if its best match score >= 0.3
-- Score based on the quality of the best match
-
-**Formula:**
+**How it works:** Split response into claims/sentences. For each, find best-matching context sentence by cosine similarity. A claim is grounded if best match >= 0.3.
 
 ```
 score = 0.6 * groundedness_ratio + 0.4 * token_grounding
 ```
-
-Where:
 - `groundedness_ratio` = grounded_claims / total_claims
-- `token_grounding` = fraction of response tokens found in the context
+- `token_grounding` = fraction of response tokens found in context
 
-### Key Distinction: Groundedness vs Faithfulness vs Hallucination
+### Groundedness vs Faithfulness vs Hallucination
 
 ```
 Groundedness  : Can every claim be TRACED to the context?  (strictest)
 Faithfulness  : Does the response REPRESENT the context accurately?
 Hallucination : Did the response ADD things NOT in the context?
 ```
+Groundedness is the strictest: every sentence must have a clear source.
 
-Groundedness is the strictest: it requires every sentence to have a clear source in the context.
+**Pros/Cons:**
+- + Strictest source-fidelity check; claim-level pinpointing; essential for high-stakes RAG
+- - Cannot detect valid inferences; too strict for responses that add common knowledge
 
-### Advantages
-
-- Strictest source-fidelity check -- every claim must have a source
-- Claim-level analysis pinpoints exactly which claims lack support
-- Essential for high-stakes RAG systems (legal, medical)
-
-### Limitations
-
-- Cannot detect valid inferences from context
-- Misses paraphrased grounded content
-- Too strict for responses that legitimately add common knowledge
-
-### When NOT to Use
-
-- Open-domain generation without specific context
-- Tasks where adding external knowledge is expected
+**When NOT to use:** Open-domain generation or tasks where adding external knowledge is expected.
 
 ---
 
 ## Dimension 9: Instruction Following
 
-### Problem
+**Measures:** Whether the model followed the specific instructions given.
+**Intuition:** Like a contractor who builds a beautiful kitchen when you asked for a bathroom.
 
-Did the model follow the specific instructions given? For example: "Answer in exactly 3 bullet points" but the model writes 5 paragraphs. The answer might be correct and helpful, but it did not follow the instructions.
-
-### Intuition
-
-Like a contractor who builds a beautiful kitchen when you asked for a bathroom.
-
-### How It Works
-
-Check for common instruction patterns:
-
-- **Length constraints** ("in one sentence", "in 3 bullet points")
-- **Format constraints** ("as a list", "in JSON", "as a table")
-- **Style constraints** ("simple language", "formal tone")
-- **Content constraints** ("only use information from the context")
-
-**Formula:**
+**How it works:** Check for common instruction patterns: length constraints ("in one sentence"), format constraints ("as JSON", "as a list"), style constraints ("simple language"), content constraints.
 
 ```
 score = constraints_passed / constraints_checked
 ```
+If no specific constraints detected, neutral score of 0.5.
 
-If no specific constraints are detected, a neutral score of 0.5 is given.
+**Pros/Cons:**
+- + Checks verifiable constraints (length, format, bullet points); works for structured output
+- - Can only check detectable patterns; cannot verify semantic compliance ("be creative")
 
-### Advantages
-
-- Checks verifiable constraints (length, format, bullet points)
-- Works for structured output requirements (JSON, lists)
-- Catches common instruction violations automatically
-
-### Limitations
-
-- Can only check instructions with detectable patterns
-- Cannot verify semantic compliance (e.g., "be creative")
-- May miss implicit instructions
-
-### When NOT to Use
-
-- Open-ended conversations without specific instructions
-- Tasks where creative interpretation of instructions is valued
+**When NOT to use:** Open-ended conversations without specific instructions.
 
 ---
 
 ## Dimension 10: Fluency
 
-### Problem
+**Measures:** Whether the language is natural, grammatical, and easy to read.
+**Intuition:** Like listening to someone speak -- broken grammar reduces trust.
 
-Is the language natural, grammatical, and easy to read? For example: "The photosynthesis is process which plants using for make food from sun light" -- the facts are roughly right, but the language is broken.
-
-### Intuition
-
-Like listening to someone speak -- broken grammar reduces trust.
-
-### How It Works
-
-Heuristic signals of fluency:
-
-- **Proper capitalization** (sentences start with uppercase)
-- **No excessive repetition** of content words
-- **Reasonable sentence length** (not all very short or very long)
-- **Proper punctuation usage** (~1 punctuation mark per 8-15 words is ideal)
-- **No garbled/malformed text patterns** (long non-ASCII sequences, character repetition, consonant clusters)
-
-**Formula:**
+**How it works:** Heuristic signals: proper capitalization, no excessive repetition, reasonable sentence length, proper punctuation, no garbled/malformed text.
 
 ```
-score = 0.25 * capitalization_score
-      + 0.20 * repetition_score
-      + 0.20 * sentence_length_score
-      + 0.20 * punctuation_score
-      + 0.15 * garbled_text_score
+score = 0.25 * capitalization + 0.20 * repetition + 0.20 * sentence_length + 0.20 * punctuation + 0.15 * garbled_text
 ```
 
-### Advantages
+**Pros/Cons:**
+- + Catches basic fluency issues; no external model needed; fast pre-filter
+- - Cannot detect subtle grammar errors; non-English text may score incorrectly
 
-- Catches basic fluency issues (capitalization, repetition, garbled text)
-- No external model needed -- pure heuristic
-- Fast pre-filter for obviously broken outputs
-
-### Limitations
-
-- Cannot detect subtle grammar errors
-- Rule-based approach misses many fluency issues
-- Non-English text may score incorrectly
-
-### When NOT to Use
-
-- Evaluating code or structured data output
-- When you have access to a grammar checker or LLM judge
+**When NOT to use:** Evaluating code/structured data, or when you have a grammar checker or LLM judge.
 
 ---
 
 ## Dimension 11: Coherence
 
-### Problem
+**Measures:** Whether the response flows logically from start to finish.
+**Intuition:** Like chapters in a book -- each can be well-written, but if unrelated, the book fails.
 
-Does the response flow logically from start to finish? A response can have individually fluent sentences that do not connect to each other logically. For example: "The sky is blue. Cats have four legs. Photosynthesis uses sunlight." -- each sentence is fluent but the response is incoherent.
-
-### Intuition
-
-Like chapters in a book -- each can be well-written, but if unrelated, the book fails.
-
-### How It Works
-
-- Measure topic continuity between consecutive sentences (adjacent cosine similarity)
-- Check for discourse markers ("however", "therefore", "additionally")
-- Verify the response maintains a consistent topic thread
-- Detect abrupt topic shifts (adjacent similarity < 0.05)
-
-**Formula:**
+**How it works:** Topic continuity between consecutive sentences (adjacent cosine similarity), discourse markers ("however", "therefore"), consistent topic thread, abrupt shift detection.
 
 ```
 score = 0.35 * min(avg_adjacent_similarity * 2, 1.0)
@@ -553,371 +265,161 @@ score = 0.35 * min(avg_adjacent_similarity * 2, 1.0)
       + 0.15 * min(first_last_similarity * 2, 1.0)
       + 0.25 * shift_score
 ```
+- `marker_score` = based on discourse marker density (ideal: 0.3-0.8 per sentence)
+- `shift_score` = max(1.0 - shift_ratio * 2, 0.0)
 
-Where:
-- `avg_adjacent_similarity` = average cosine similarity between consecutive sentence pairs
-- `marker_score` = scored based on discourse marker density (ideal: 0.3-0.8 markers per sentence)
-- `first_last_similarity` = cosine similarity between first and last sentence (topic consistency)
-- `shift_score` = max(1.0 - shift_ratio * 2, 0.0), penalizing abrupt topic changes
+**Pros/Cons:**
+- + Detects topic shifts; discourse marker analysis reveals structure quality
+- - Cannot detect logical contradictions; some responses legitimately cover multiple topics
 
-### Advantages
-
-- Detects topic shifts and lack of logical flow
-- Discourse marker analysis reveals structural quality
-- Adjacent sentence similarity captures local coherence
-
-### Limitations
-
-- Cannot detect logical contradictions within text
-- Topic shift detection is approximate with keywords
-- Some responses legitimately cover multiple topics
-
-### When NOT to Use
-
-- Multi-topic responses where topic shifts are expected
-- Very short responses (one sentence)
+**When NOT to use:** Multi-topic responses where topic shifts are expected, or very short (one sentence) responses.
 
 ---
 
 ## Dimension 12: Safety
 
-### Problem
+**Measures:** Whether the response is free from dangerous or harmful content.
+**Intuition:** Like a pharmacist who will not explain how to make drugs from prescriptions.
 
-Is the response free from dangerous or harmful content? An LLM might generate content that is dangerous, illegal, or harmful -- even when the user's question seems innocent.
-
-### Intuition
-
-Like a pharmacist who will not explain how to make drugs from prescriptions.
-
-### How It Works
-
-Keyword/pattern-based detection across unsafe categories:
-
-- **Dangerous instructions** (mix chemicals, make explosives, build weapons)
-- **Harmful substances** (drug synthesis, lethal dose information)
-- **Violence** (how to hurt/kill, assault instructions)
-- **Self-harm** (suicide, self-harm instructions)
-- **Illegal activity** (hacking, stealing, forging documents)
-
-**Formula:**
+**How it works:** Keyword/pattern detection across categories: dangerous instructions, harmful substances, violence, self-harm, illegal activity.
 
 ```
 score = max(1.0 - total_flags * 0.2, 0.0)
 ```
 
-Where `total_flags` = number of unsafe pattern matches found across all categories.
+**Pros/Cons:**
+- + Catches explicit dangerous content; category-level reporting; fast pre-filter
+- - Many false positives; sophisticated content evades detection; cannot distinguish educational from harmful
 
-### Advantages
-
-- Catches explicit dangerous content (chemicals, weapons, harm)
-- Category-level reporting shows what type of safety issue exists
-- Fast pre-filter before deployment
-
-### Limitations
-
-- Keyword matching produces many false positives
-- Sophisticated harmful content evades keyword detection
-- Cannot distinguish educational content from harmful instructions
-
-### When NOT to Use
-
-- Medical, legal, or security contexts where these terms are normal
-- When you have a dedicated content safety model (use that instead)
+**When NOT to use:** Medical/legal/security contexts where flagged terms are normal, or when you have a dedicated safety model.
 
 ---
 
 ## Dimension 13: Toxicity
 
-### Problem
+**Measures:** Whether the response contains toxic, hateful, or offensive language.
+**Intuition:** Like a content moderator reviewing posts for hostile language.
 
-Does the response contain toxic, hateful, or offensive language? Toxic content includes hate speech, insults, threats, profanity, and other language that creates a hostile or harmful environment.
-
-### Intuition
-
-Like a content moderator reviewing posts for hostile or harmful language.
-
-### How It Works
-
-Pattern matching across toxicity categories:
-
-- **Profanity** (mild words for educational purposes)
-- **Threatening language** ("I will destroy", "you will regret", "watch your back")
-- **Demeaning language** ("you're stupid", "you idiot", "how dumb", "you're worthless")
-- **Hate speech indicators** ("all [group] are", "those people are", "inferior race")
-
-**Formula:**
+**How it works:** Pattern matching: profanity, threatening language, demeaning language, hate speech indicators.
 
 ```
 toxicity_score = min(total_flags * 0.25, 1.0)    # 0 = not toxic, 1 = very toxic
 safety_score   = 1.0 - toxicity_score              # Inverted: 1 = safe
 ```
 
-### Advantages
+**Pros/Cons:**
+- + Catches explicit insults, threats, hate speech; category breakdown aids analysis
+- - Keyword lists always incomplete; context determines toxicity; cannot detect coded language
 
-- Catches explicit insults, threats, and demeaning language
-- Category breakdown (profanity, threats, hate speech) aids analysis
-- Works without external APIs
-
-### Limitations
-
-- Keyword lists are always incomplete
-- Context determines toxicity (quoting vs using)
-- Cannot detect coded language or dog whistles
-
-### When NOT to Use
-
-- Content moderation research (need specialized models like Perspective API)
-- When context makes flagged terms appropriate (medical, legal, historical)
+**When NOT to use:** Content moderation research (need Perspective API), or when context makes terms appropriate.
 
 ---
 
 ## Dimension 14: Bias
 
-### Problem
+**Measures:** Whether the response shows unfair bias (gender, racial, cultural, elitism).
+**Intuition:** Like a hiring manager who unconsciously favors certain university graduates.
 
-Does the response show unfair bias (gender, racial, cultural, elitism)? LLMs can perpetuate societal biases. A response about "great scientists" that only lists men shows gender bias.
-
-### Intuition
-
-Like a hiring manager who unconsciously favors certain university graduates.
-
-### How It Works
-
-Check for:
-
-- **Gender-skewed language** (only "he" pronouns, "men" in examples)
-- **Stereotypical associations** ("all men/women are", "naturally better/worse", "real men/women")
-- **Exclusionary language** ("only suited for", "best qualified for")
-- **Balanced representation** in examples
-- **Elitism detection** ("top-tier", "elite", "prestigious", "requires innate talent")
-- **Inclusivity markers** ("diverse", "inclusive", "regardless of", "all backgrounds")
-
-**Formula:**
+**How it works:** Check for gender-skewed language, stereotypical associations, exclusionary language, balanced representation, elitism, and inclusivity markers.
 
 ```
-score = 0.30 * gender_balance_score
-      + 0.30 * stereotype_score
-      + 0.20 * inclusivity_score
-      + 0.20 * elitism_score
+score = 0.30 * gender_balance + 0.30 * stereotype_score + 0.20 * inclusivity + 0.20 * elitism_score
 ```
-
-Where:
-- `gender_balance_score` = min(male_terms, female_terms) / max(male_terms, female_terms); 1.0 if no gendered language
-- `stereotype_score` = max(1.0 - stereotypes_found * 0.3, 0.0)
-- `inclusivity_score` = min(inclusive_markers_count / 3, 1.0)
+- `gender_balance` = min(male, female) / max(male, female); 1.0 if no gendered language
+- `stereotype_score` = max(1.0 - stereotypes * 0.3, 0.0)
+- `inclusivity` = min(inclusive_markers / 3, 1.0)
 - `elitism_score` = max(1.0 - elitism_flags * 0.25, 0.0)
 
-### Advantages
+**Pros/Cons:**
+- + Detects gender-skewed language, stereotypes, elitism
+- - Cannot measure implicit bias; context matters; "balanced" is not always "50/50"
 
-- Detects gender-skewed language and stereotypical patterns
-- Checks for inclusive language signals
-- Catches elitism bias (top-tier, prestigious, innate talent)
-
-### Limitations
-
-- Keyword detection cannot measure implicit bias
-- Context matters enormously -- some topics legitimately focus on specific groups
-- "Balanced" does not always mean "50/50"
-
-### When NOT to Use
-
-- Historical content where gender/cultural context is relevant
-- When discussing specific individuals
-- Topics that are inherently about specific groups
+**When NOT to use:** Historical content, discussions about specific individuals, or topics inherently about specific groups.
 
 ---
 
 ## Dimension 15: Creativity
 
-### Problem
+**Measures:** Whether the response uses creative elements where appropriate.
+**Intuition:** Like the difference between a dry lecture and a TED talk with stories and analogies.
 
-Does the response use creative elements where appropriate? For tasks like "explain X using an analogy" or "write a poem about Y," a dry, textbook-like response is technically correct but misses the point.
-
-### Intuition
-
-Like the difference between a dry lecture and a TED talk with stories and analogies.
-
-### How It Works
-
-Heuristic creativity signals:
-
-- **Analogy/metaphor usage** ("like a", "as if", "imagine", "think of it as", "similar to")
-- **Vocabulary richness** (type-token ratio: unique words / total words)
-- **Sentence structure variety** (variance in sentence lengths)
-- **Storytelling elements** ("once upon", "imagine you", "picture this", "consider this scenario")
-- **Vocabulary sophistication** (average word length as proxy)
-
-**Formula:**
+**How it works:** Heuristic signals: analogy/metaphor usage, vocabulary richness (type-token ratio), sentence structure variety, storytelling elements, vocabulary sophistication (avg word length).
 
 ```
-score = 0.30 * analogy_score
-      + 0.20 * vocab_richness_score
-      + 0.15 * sentence_variety_score
-      + 0.20 * storytelling_score
-      + 0.15 * sophistication_score
+score = 0.30 * analogy + 0.20 * vocab_richness + 0.15 * sentence_variety + 0.20 * storytelling + 0.15 * sophistication
 ```
 
-### Advantages
+**Pros/Cons:**
+- + Detects analogies, storytelling, lexical diversity
+- - Cannot judge quality of creativity; inherently subjective
 
-- Detects analogy/metaphor usage and storytelling elements
-- Vocabulary richness (type-token ratio) measures lexical diversity
-- Sentence variety score captures writing dynamism
-
-### Limitations
-
-- Cannot judge quality of creativity (bad analogies still score high)
-- Creativity is inherently subjective
-- What is creative in one context is inappropriate in another
-
-### When NOT to Use
-
-- Factual Q&A where precision matters more than creativity
-- Technical documentation
-- Legal or medical content
+**When NOT to use:** Factual Q&A, technical documentation, legal or medical content.
 
 ---
 
 ## Dimension 16: Readability
 
-### Problem
+**Measures:** How easy the response is to understand for the target audience.
+**Intuition:** Like the difference between a research paper and a Wikipedia article.
 
-How easy is the response to understand for the target audience? A response can be correct, complete, and well-structured but written at a PhD level when the audience is high school students.
+**How it works:** Flesch-Kincaid readability metrics.
 
-### Intuition
+**Flesch Reading Ease:** `FRE = 206.835 - 1.015 * (words/sentences) - 84.6 * (syllables/words)` (higher = easier, target 60-70)
 
-Like the difference between a research paper and a Wikipedia article. Both may be accurate, but Wikipedia is designed for general readers.
+**Flesch-Kincaid Grade:** `FK = 0.39 * (words/sentences) + 11.8 * (syllables/words) - 15.59`
 
-### How It Works
+| Grade | Level |
+|-------|-------|
+| <= 5 | Elementary |
+| 6-8 | Middle School |
+| 9-12 | High School |
+| 13-16 | College |
+| > 16 | Graduate |
 
-Implements **Flesch-Kincaid readability metrics**:
+Also measures complex word ratio (3+ syllables) and average words per sentence.
 
-**Flesch Reading Ease:**
+**Pros/Cons:**
+- + Established formulas; grade-level interpretation; objective and reproducible
+- - Crude approximation; cannot assess conceptual difficulty
 
-```
-FRE = 206.835 - 1.015 * (words / sentences) - 84.6 * (syllables / words)
-```
-
-- Higher score = easier to read
-- Target: 60-70 for general audience
-- Range: 0-100
-
-**Flesch-Kincaid Grade Level:**
-
-```
-FK_Grade = 0.39 * (words / sentences) + 11.8 * (syllables / words) - 15.59
-```
-
-**Grade level interpretation:**
-
-| Grade Level | Reading Level |
-|-------------|---------------|
-| <= 5        | Elementary    |
-| 6-8         | Middle School |
-| 9-12        | High School   |
-| 13-16       | College       |
-| > 16        | Graduate      |
-
-Also measures:
-- **Complex word ratio**: fraction of words with 3+ syllables
-- **Average words per sentence**
-
-### Advantages
-
-- Uses established readability formulas (Flesch, Flesch-Kincaid)
-- Provides grade-level interpretation
-- Objective, reproducible metric
-
-### Limitations
-
-- Readability formulas are crude approximations
-- Technical terms may be necessary and appropriate
-- Cannot assess conceptual difficulty, only surface features
-
-### When NOT to Use
-
-- Technical writing for domain experts
-- When jargon is required and audience expects it
+**When NOT to use:** Technical writing for domain experts where jargon is required.
 
 ---
 
 ## Dimension 17: Reasoning Quality
 
-### Problem
+**Measures:** Whether the response demonstrates sound logical reasoning.
+**Intuition:** Like a math teacher checking the work, not just the answer.
 
-Does the response demonstrate sound logical reasoning? For example: "The answer is C because C is the correct answer." -- this is circular reasoning. The conclusion may be right, but the reasoning is invalid.
+**How it works:**
 
-### Intuition
+*Reasoning indicators:* causal connectives ("because", "therefore"), evidence presentation ("studies show", "data suggests"), counter-argument acknowledgment ("however", "although").
 
-Like a math teacher checking not just the answer but the work shown. Getting the right answer with wrong reasoning is dangerous -- it means the student will fail on the next problem.
-
-### How It Works
-
-**Detect reasoning indicators:**
-
-- **Causal connectives**: "because", "therefore", "since", "thus", "hence", "as a result", "consequently", "due to"
-- **Evidence presentation**: "studies show", "research indicates", "data suggests", "evidence shows"
-- **Counter-argument acknowledgment**: "however", "on the other hand", "nevertheless", "although", "despite"
-
-**Detect reasoning anti-patterns:**
-
-- **Circular reasoning**: "the answer is X because X is the correct answer"
-- **Appeal to common sense**: "obviously", "clearly", "everyone knows"
-- **Absolute claims**: "it is always/never the case that"
-
-**Formula:**
+*Reasoning anti-patterns:* circular reasoning, appeal to common sense ("obviously"), absolute claims ("always/never").
 
 ```
-raw_score = 0.25 * causal_score
-          + 0.20 * evidence_score
-          + 0.15 * counter_argument_score
-          + 0.20 * depth_score
-          + 0.20 * structure_score
-
-score = max(raw_score - antipattern_penalty, 0.0)
+raw = 0.25 * causal + 0.20 * evidence + 0.15 * counter_argument + 0.20 * depth + 0.20 * structure
+score = max(raw - antipattern_penalty, 0.0)
 ```
+- `depth` = based on chain_length (>= 4 = 1.0, >= 2 = 0.7, >= 1 = 0.4, 0 = 0.1)
+- `structure` = 0.5 * has_premise + 0.5 * has_conclusion
+- `antipattern_penalty` = antipatterns * 0.2
 
-Where:
-- `causal_score` = min(causal_marker_count / 3, 1.0)
-- `evidence_score` = min(evidence_marker_count / 2, 1.0)
-- `counter_argument_score` = min(counter_argument_count / 2, 1.0)
-- `depth_score` = based on chain_length (causal + evidence markers): >= 4 = 1.0, >= 2 = 0.7, >= 1 = 0.4, 0 = 0.1
-- `structure_score` = 0.5 * has_premise + 0.5 * has_conclusion
-- `antipattern_penalty` = number_of_antipatterns * 0.2
+**Pros/Cons:**
+- + Detects causal reasoning, evidence, counter-arguments; catches anti-patterns
+- - Cannot verify logical validity; reasoning words do not guarantee good reasoning
 
-### Advantages
-
-- Detects causal connectives, evidence usage, and counter-arguments
-- Catches reasoning anti-patterns (circular reasoning, absolute claims)
-- Multi-level assessment: depth, structure, and evidence
-
-### Limitations
-
-- Cannot verify logical validity of arguments
-- Presence of reasoning words does not guarantee good reasoning
-- Cannot detect subtle logical fallacies
-
-### When NOT to Use
-
-- Simple factoid answers where reasoning is not needed
-- Creative writing where logic is not the point
+**When NOT to use:** Simple factoid answers or creative writing where logic is not the point.
 
 ---
 
 ## Multi-Dimension Evaluation
 
-The `MultiDimensionEvaluator` orchestrates evaluation across all 17 dimensions on a single question + response pair. It also supports **head-to-head comparison** of two responses across all dimensions.
-
-### How Comparison Works
-
-- Both responses are evaluated on all applicable dimensions
-- For each dimension, the winner is determined (difference > 0.05 threshold)
-- Overall winner = response that wins more dimensions
+The `MultiDimensionEvaluator` runs all 17 dimensions on a single question + response pair and supports **head-to-head comparison** (winner = response winning more dimensions, threshold > 0.05).
 
 ### Conditional Dimensions
 
-Not all dimensions apply to every evaluation:
-
-- **Always evaluated** (need only question + response): Relevance, Helpfulness, Completeness, Fluency, Coherence, Safety, Toxicity, Bias, Creativity, Readability, Reasoning
+- **Always evaluated** (question + response only): Relevance, Helpfulness, Completeness, Fluency, Coherence, Safety, Toxicity, Bias, Creativity, Readability, Reasoning
 - **Requires reference answer**: Correctness
 - **Requires context/source**: Hallucination, Faithfulness, Groundedness
 - **Requires instruction**: Instruction Following
@@ -925,7 +427,7 @@ Not all dimensions apply to every evaluation:
 
 ---
 
-## Summary Table: All 17 Evaluation Dimensions
+## Summary Table
 
 ```
   #   Dimension                Core Question                          Heuristic Method
@@ -954,83 +456,67 @@ Not all dimensions apply to every evaluation:
 ## Interview Questions
 
 **Q1: What is the difference between hallucination, faithfulness, and groundedness?**
-
-Hallucination asks "did the model invent facts?". Faithfulness asks "does the response accurately represent the source?". Groundedness asks "can every claim be traced to the context?". Groundedness is the strictest; hallucination detection focuses on fabrication; faithfulness focuses on accurate representation.
+Hallucination = "did the model invent facts?". Faithfulness = "does the response accurately represent the source?". Groundedness = "can every claim be traced to context?" (strictest).
 
 **Q2: Why is correctness not sufficient as the only evaluation dimension?**
+A response can be correct but unhelpful, irrelevant, incomplete, biased, unsafe, or poorly written. LLMs serve open-ended tasks where quality is multi-faceted.
 
-A response can be correct but unhelpful (too brief), irrelevant (off-topic), incomplete (misses aspects), biased, unsafe, or poorly written. Modern LLM evaluation requires multiple dimensions because LLMs are used for open-ended tasks where quality is multi-faceted.
+**Q3: How would you evaluate an LLM in a RAG pipeline?**
+Faithfulness, groundedness, hallucination detection, relevance, and completeness. LLM-as-Judge (Chapter 4) is typically used for these.
 
-**Q3: How would you evaluate an LLM in a RAG (retrieval-augmented generation) pipeline?**
-
-Key dimensions: faithfulness (does it stick to retrieved context?), groundedness (can every claim be traced?), hallucination (does it add fabricated info?), relevance (does it answer the question?), and completeness (does it use all relevant retrieved information?). LLM-as-Judge (Chapter 4) is often used for these evaluations.
-
-**Q4: What are the limitations of heuristic-based evaluation vs LLM-as-Judge?**
-
-Heuristic methods (keyword matching, readability formulas) are fast and reproducible but shallow -- they miss semantic understanding, paraphrases, and nuanced quality. LLM-as-Judge can assess semantics and reasoning but is expensive, potentially biased, and less reproducible. The best approach combines both.
+**Q4: Limitations of heuristic evaluation vs LLM-as-Judge?**
+Heuristics are fast and reproducible but shallow (miss paraphrases, semantics). LLM-as-Judge handles semantics but is expensive, potentially biased, less reproducible. Best approach combines both.
 
 **Q5: How do you evaluate LLM safety beyond keyword matching?**
+Dedicated safety classifiers (LlamaGuard), red-teaming, LLM-as-Judge with safety rubrics, human evaluation with content policies, multi-turn jailbreak testing.
 
-Production systems use: (1) dedicated safety classifiers (e.g., Perspective API, LlamaGuard), (2) red-teaming with adversarial prompts, (3) LLM-as-Judge with safety rubrics, (4) human evaluation with content policy guidelines, and (5) multi-turn conversation testing for jailbreak resistance.
-
-**Q6: What is the difference between fluency and coherence?**
-
-Fluency measures whether individual sentences are grammatical and natural. Coherence measures whether the response flows logically as a whole. A response can have perfectly fluent sentences that are incoherent together (random facts on different topics).
+**Q6: Difference between fluency and coherence?**
+Fluency = individual sentences are grammatical. Coherence = the response flows logically as a whole. Fluent sentences can be incoherent together.
 
 **Q7: How would you detect bias in LLM outputs at scale?**
-
-Approaches include: (1) counterfactual testing (swap demographic terms, check if output changes), (2) representation audits across large output corpora, (3) stereotype association tests, (4) disaggregated evaluation across demographic groups, and (5) human evaluation with diverse annotator pools.
+Counterfactual testing (swap demographics), representation audits, stereotype association tests, disaggregated evaluation, diverse annotator pools.
 
 **Q8: When should you NOT use creativity as an evaluation dimension?**
+Factual Q&A, technical docs, legal/medical content -- anywhere accuracy matters more than creative expression.
 
-Creativity should not be evaluated for factual Q&A (precision matters more), technical documentation, legal or medical content, or any task where accuracy and precision are paramount. Creative elements like analogies can introduce inaccuracy in these contexts.
-
-**Q9: How do Flesch-Kincaid readability scores work and what are their limitations?**
-
-Flesch-Kincaid uses average words per sentence and average syllables per word to estimate reading difficulty. Flesch Reading Ease gives 0-100 (higher = easier). Limitations: it only measures surface features, not conceptual difficulty; technical jargon may be necessary and appropriate; it does not account for audience expertise.
+**Q9: How do Flesch-Kincaid scores work and what are their limitations?**
+Uses avg words/sentence and avg syllables/word to estimate difficulty. FRE 0-100 (higher = easier). Limitation: only surface features, not conceptual difficulty.
 
 **Q10: Design an evaluation pipeline for a customer-support chatbot.**
-
-Prioritize: (1) Safety/Toxicity -- must never be harmful, (2) Correctness -- answers must be right, (3) Relevance -- must address the customer's question, (4) Helpfulness -- must be actionable, (5) Instruction Following -- must follow company guidelines, (6) Readability -- accessible to all customers, (7) Consistency -- same question should get consistent answers. Use automated heuristics for pre-filtering, LLM-as-Judge for deeper evaluation, and human review for edge cases.
+Priority: (1) Safety/Toxicity, (2) Correctness, (3) Relevance, (4) Helpfulness, (5) Instruction Following, (6) Readability, (7) Consistency. Use heuristics for pre-filtering, LLM-as-Judge for depth, human review for edge cases.
 
 ---
 
 ## Common Mistakes
 
-1. **Relying on a single dimension**: Correctness alone misses helpfulness, safety, and bias issues.
-2. **Treating heuristic scores as ground truth**: These are approximations, not definitive judgments.
-3. **Ignoring context**: The same word can be safe in one context and harmful in another.
-4. **Over-weighting length**: Longer responses are not always better; they can be padded or redundant.
-5. **Applying creativity metrics to factual tasks**: Creative elements like analogies can introduce inaccuracy where precision is needed.
-6. **Using exact match for open-ended evaluation**: This is too strict and misses correct paraphrases.
-7. **Evaluating consistency without checking correctness**: Consistently wrong answers still score high on consistency.
-8. **Applying groundedness to open-domain tasks**: Groundedness is only meaningful when a specific context is provided.
+1. **Relying on a single dimension**: Correctness alone misses helpfulness, safety, and bias.
+2. **Treating heuristic scores as ground truth**: These are approximations.
+3. **Ignoring context**: Same word can be safe in one context and harmful in another.
+4. **Over-weighting length**: Longer is not always better.
+5. **Applying creativity metrics to factual tasks**: Analogies can introduce inaccuracy.
+6. **Using exact match for open-ended evaluation**: Too strict, misses correct paraphrases.
+7. **Evaluating consistency without checking correctness**: Consistently wrong still scores high.
+8. **Applying groundedness to open-domain tasks**: Only meaningful with specific context.
 
 ---
 
 ## Best Practices
 
-1. **Use multiple dimensions**: Combine at least 5-7 relevant dimensions for a holistic assessment.
-2. **Weight dimensions by task**: Safety is critical for chatbots; faithfulness is critical for RAG.
-3. **Use heuristics as pre-filters**: Fast heuristic checks catch obvious failures before expensive LLM-as-Judge evaluation.
-4. **Calibrate thresholds**: What counts as "good" varies by application and domain.
-5. **Include both positive and negative examples**: Test with both good and bad responses to validate your evaluators.
-6. **Combine with LLM-as-Judge**: Heuristic methods handle surface-level checks; LLM judges handle semantic depth.
-7. **Track dimension-level scores**: Do not just look at averages -- the worst dimension often reveals the most important issue.
-8. **Version your evaluation pipeline**: As your application evolves, your evaluation criteria should too.
+1. **Use multiple dimensions** -- at least 5-7 relevant ones for holistic assessment.
+2. **Weight dimensions by task** -- Safety for chatbots; faithfulness for RAG.
+3. **Use heuristics as pre-filters** before expensive LLM-as-Judge.
+4. **Calibrate thresholds** per application and domain.
+5. **Include positive and negative examples** to validate evaluators.
+6. **Combine with LLM-as-Judge** -- heuristics for surface, LLM for semantics.
+7. **Track dimension-level scores** -- the worst dimension reveals the most important issue.
+8. **Version your evaluation pipeline** as your application evolves.
 
 ---
 
 ## Key Takeaways
 
-- Modern LLM evaluation is **multi-dimensional** -- no single metric captures output quality.
-- The 17 dimensions fall into several categories:
-  - **Accuracy**: Correctness, Hallucination, Faithfulness, Groundedness
-  - **Relevance & Usefulness**: Relevance, Helpfulness, Completeness
-  - **Reliability**: Consistency, Instruction Following
-  - **Language Quality**: Fluency, Coherence, Readability
-  - **Safety & Ethics**: Safety, Toxicity, Bias
-  - **Advanced Quality**: Creativity, Reasoning Quality
+- Modern LLM evaluation is **multi-dimensional** -- no single metric captures quality.
+- The 17 dimensions group into: **Accuracy** (Correctness, Hallucination, Faithfulness, Groundedness), **Relevance & Usefulness** (Relevance, Helpfulness, Completeness), **Reliability** (Consistency, Instruction Following), **Language Quality** (Fluency, Coherence, Readability), **Safety & Ethics** (Safety, Toxicity, Bias), **Advanced** (Creativity, Reasoning).
 - Heuristic methods are fast and interpretable but shallow.
-- Production systems combine heuristic baselines with LLM-as-Judge (Chapter 4) and human evaluation for comprehensive assessment.
-- The choice of which dimensions to evaluate depends on the specific application and use case.
+- Production systems combine heuristics + LLM-as-Judge + human evaluation.
+- Which dimensions to evaluate depends on the specific application.

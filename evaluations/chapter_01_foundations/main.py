@@ -17,6 +17,8 @@ This chapter covers:
   11. Failure analysis & Error taxonomy
   12. Evaluation dashboards
   13. Evaluation in CI/CD
+
+See theory.md for concepts, intuition, and diagrams.
 """
 
 import sys
@@ -74,31 +76,6 @@ def print_json(data: dict, indent: int = 2):
 def demo_why_evaluation_matters():
     print_section("1. WHY EVALUATION MATTERS")
 
-    print("""
-  PROBLEM:
-    You deploy an LLM to answer science questions. Users complain
-    it's wrong 40% of the time. But you didn't know because you
-    never measured it.
-
-  WHY IT EXISTS:
-    LLMs are non-deterministic. They can sound confident while being
-    completely wrong. Without evaluation, you're flying blind.
-
-  INTUITION:
-    Think of evaluation like a speedometer in a car. The car runs
-    fine without one — but you'll get a speeding ticket because
-    you can't tell how fast you're going.
-
-    Evaluation is your speedometer for AI quality.
-
-  KEY REASONS:
-    1. Measure quality    → "How good is my model?"
-    2. Compare models     → "Is model A better than model B?"
-    3. Detect regressions → "Did my latest change break something?"
-    4. Build trust        → "Can I deploy this to production?"
-    5. Improve systems    → "Where exactly does my model fail?"
-    """)
-
     questions = load_train_data(limit=50)
     summary = get_dataset_summary(questions)
 
@@ -111,21 +88,13 @@ def demo_why_evaluation_matters():
     models = sample["simulated_llm_responses"]
     ground_truths = [q["ground_truth"] for q in sample["questions"]]
 
-    print("\n  Comparing 4 models WITHOUT evaluation (you'd never know):")
-    print("  Comparing 4 models WITH evaluation:")
+    print("\n  Comparing 4 models WITH evaluation:")
     print()
     for model_name, model_data in models.items():
         acc = compute_accuracy(ground_truths, model_data["predictions"])
         bar = "█" * int(acc * 30) + "░" * (30 - int(acc * 30))
         print(f"    {model_name:<20s} |{bar}| {acc:.0%}  — {model_data['description']}")
-
-    print("""
-  WITHOUT EVALUATION: All 4 models "seem to work" — you can't tell them apart.
-  WITH EVALUATION:    Clear quality ranking emerges instantly.
-
-  TAKEAWAY: Evaluation is not optional. It's the difference between
-  "I think it works" and "I know it works, here's the data."
-    """)
+    print()
 
 
 # ===================================================================
@@ -134,34 +103,6 @@ def demo_why_evaluation_matters():
 
 def demo_offline_vs_online():
     print_section("2. OFFLINE vs ONLINE EVALUATION")
-
-    print("""
-  PROBLEM:
-    When should you evaluate? Before deployment? After? Both?
-
-  INTUITION:
-    - OFFLINE = exam before graduation (controlled, complete, pre-deployment)
-    - ONLINE  = performance review at work (real-world, continuous, post-deployment)
-
-  ASCII DIAGRAM:
-
-    OFFLINE EVALUATION                 ONLINE EVALUATION
-    ┌──────────────────┐               ┌──────────────────┐
-    │  Fixed Dataset   │               │  Live Traffic    │
-    │  (train.csv)     │               │  (user queries)  │
-    │       │          │               │       │          │
-    │       ▼          │               │       ▼          │
-    │  Run Model       │               │  Run Model       │
-    │       │          │               │       │          │
-    │       ▼          │               │       ▼          │
-    │  Compare with    │               │  Log Response    │
-    │  Ground Truth    │               │  + User Feedback │
-    │       │          │               │       │          │
-    │       ▼          │               │       ▼          │
-    │  Batch Report    │               │  Rolling Metrics │
-    └──────────────────┘               └──────────────────┘
-    Before deployment                  After deployment
-    """)
 
     questions = load_train_data(limit=30)
     preds = simulate_llm_predictions(questions, accuracy=0.75)
@@ -188,23 +129,7 @@ def demo_offline_vs_online():
     print(f"    Rolling accuracy (last 20): {status['rolling_accuracy']:.2%}")
     print(f"    Avg latency: {status['avg_latency_ms']:.1f} ms")
     print(f"    P95 latency: {status['p95_latency_ms']:.1f} ms")
-
-    print("""
-  COMPARISON TABLE:
-  ┌─────────────────┬──────────────────────┬──────────────────────┐
-  │ Aspect          │ Offline              │ Online               │
-  ├─────────────────┼──────────────────────┼──────────────────────┤
-  │ When            │ Before deployment    │ After deployment     │
-  │ Data            │ Fixed dataset        │ Live traffic         │
-  │ Speed           │ Batch (minutes)      │ Real-time (ms)       │
-  │ Ground truth    │ Usually available    │ Often unavailable    │
-  │ Coverage        │ Pre-selected cases   │ Real distribution    │
-  │ Use case        │ Model selection      │ Monitoring & alerts  │
-  └─────────────────┴──────────────────────┴──────────────────────┘
-
-  BEST PRACTICE: Use BOTH. Offline to validate before deploy,
-  Online to catch issues that only appear with real users.
-    """)
+    print()
 
 
 # ===================================================================
@@ -213,20 +138,6 @@ def demo_offline_vs_online():
 
 def demo_intrinsic_vs_extrinsic():
     print_section("3. INTRINSIC vs EXTRINSIC EVALUATION")
-
-    print("""
-  PROBLEM:
-    Your model gets 90% accuracy on the test set, but users are unhappy.
-    How is that possible?
-
-  INTUITION:
-    - INTRINSIC = "How well does the model answer questions?" (task quality)
-    - EXTRINSIC = "Are users actually satisfied?" (real-world impact)
-
-    A model can be intrinsically good but extrinsically bad:
-    → 90% accurate but takes 10 seconds per response (too slow)
-    → 90% accurate but fails on the 10% that matters most to users
-    """)
 
     questions = load_train_data(limit=30)
     preds = simulate_llm_predictions(questions, accuracy=0.80)
@@ -254,15 +165,7 @@ def demo_intrinsic_vs_extrinsic():
     print(f"    Avg latency: {extrinsic_result['avg_latency_ms']:.0f} ms")
     print(f"    Avg user satisfaction: {extrinsic_result['avg_user_satisfaction']:.2f}/5.0")
     print(f"    Metrics focus: {extrinsic_result['metrics_focus']}")
-
-    print("""
-  KEY INSIGHT:
-    The model is 80% accurate (intrinsic = good), but avg latency
-    is ~2500ms and user satisfaction is only ~3.5/5 (extrinsic = mediocre).
-
-    In production, extrinsic metrics often matter MORE than intrinsic ones.
-    Users don't care about your F1 score — they care about their experience.
-    """)
+    print()
 
 
 # ===================================================================
@@ -271,30 +174,6 @@ def demo_intrinsic_vs_extrinsic():
 
 def demo_human_vs_automatic():
     print_section("4. HUMAN vs AUTOMATIC EVALUATION")
-
-    print("""
-  PROBLEM:
-    Some qualities (helpfulness, creativity, safety) are hard to
-    measure automatically. But human evaluation is slow and expensive.
-
-  INTUITION:
-    - AUTOMATIC = Calculator (fast, cheap, consistent, limited)
-    - HUMAN     = Expert reviewer (slow, expensive, nuanced, subjective)
-
-  When to use which:
-    ┌─────────────────────────────┬────────────┬───────────┐
-    │ What you're evaluating      │ Automatic  │ Human     │
-    ├─────────────────────────────┼────────────┼───────────┤
-    │ Exact match / accuracy      │ ✓ Best     │           │
-    │ Format compliance           │ ✓ Best     │           │
-    │ Helpfulness                 │            │ ✓ Best    │
-    │ Creativity                  │            │ ✓ Best    │
-    │ Safety / toxicity           │ ✓ Partial  │ ✓ Best    │
-    │ Factual correctness         │ ✓ Partial  │ ✓ Best    │
-    │ Regression testing (CI/CD)  │ ✓ Best     │           │
-    │ User preference (A vs B)    │            │ ✓ Best    │
-    └─────────────────────────────┴────────────┴───────────┘
-    """)
 
     questions = load_train_data(limit=30)
     preds = simulate_llm_predictions(questions, accuracy=0.75)
@@ -317,17 +196,7 @@ def demo_human_vs_automatic():
     print(f"    Estimated time: {human_result['estimated_time_seconds']:.0f} seconds")
     print(f"    Estimated cost: ${human_result['estimated_cost_usd']:.2f}")
     print(f"    Scalability: {human_result['scalability']}")
-
-    print("""
-  KEY INSIGHT:
-    Automatic evaluation: < 0.001 seconds, $0 cost
-    Human evaluation:     ~900 seconds, ~$9 cost (for just 30 questions!)
-
-    At scale (10,000 questions), human evaluation would cost ~$3,000
-    and take ~83 hours. That's why automatic metrics are essential
-    for day-to-day evaluation, with human evaluation reserved for
-    high-stakes decisions.
-    """)
+    print()
 
 
 # ===================================================================
@@ -336,32 +205,6 @@ def demo_human_vs_automatic():
 
 def demo_reference_vs_referencefree():
     print_section("5. REFERENCE vs REFERENCE-FREE EVALUATION")
-
-    print("""
-  PROBLEM:
-    Sometimes you have the correct answer (ground truth).
-    Sometimes you don't. How do you evaluate in each case?
-
-  INTUITION:
-    - REFERENCE-BASED = Grading an exam with an answer key
-    - REFERENCE-FREE  = Grading an essay without a rubric (just: "is it good?")
-
-  ASCII DIAGRAM:
-
-    REFERENCE-BASED                    REFERENCE-FREE
-    ┌────────────┐                     ┌────────────┐
-    │  Question  │                     │  Question  │
-    │     +      │                     │     +      │
-    │  Answer    │                     │  Answer    │
-    │     +      │                     │     │      │
-    │  Ground    │                     │     ▼      │
-    │  Truth     │                     │  Quality   │
-    │     │      │                     │  Checks    │
-    │     ▼      │                     │  (format,  │
-    │  Compare   │                     │   length,  │
-    │  Match?    │                     │   valid?)  │
-    └────────────┘                     └────────────┘
-    """)
 
     sample = load_sample_data()
     questions = sample["questions"]
@@ -373,9 +216,9 @@ def demo_reference_vs_referencefree():
     for q in questions[:3]:
         prediction = sample["simulated_llm_responses"]["good_model"]["predictions"][q["id"]]
         result = ref_eval.evaluate(q["ground_truth"], prediction)
-        match = "✓" if result["exact_match"] else "✗"
+        match = "+" if result["exact_match"] else "x"
         print(f"    Q{q['id']}: expected={result['ground_truth']}, "
-              f"predicted={result['prediction']} → {match}")
+              f"predicted={result['prediction']} -> {match}")
 
     print("\n  --- REFERENCE-FREE EVALUATION ---")
     for q in questions[:3]:
@@ -384,21 +227,7 @@ def demo_reference_vs_referencefree():
         print(f"    Q{q['id']}: prediction={result['prediction']}, "
               f"valid_choice={result['is_valid_choice']}, "
               f"answer_length={result['answer_length']} chars")
-
-    print("""
-  COMPARISON:
-  ┌──────────────────┬─────────────────────┬─────────────────────────┐
-  │ Aspect           │ Reference-based     │ Reference-free          │
-  ├──────────────────┼─────────────────────┼─────────────────────────┤
-  │ Requires         │ Ground truth        │ Nothing                 │
-  │ Measures         │ Correctness         │ Quality signals         │
-  │ Precision        │ High                │ Lower                   │
-  │ Cost             │ Needs labeled data  │ No labeling needed      │
-  │ Use case         │ Exact tasks (MCQ)   │ Open-ended generation   │
-  │ Example metrics  │ Accuracy, F1, BLEU  │ Fluency, coherence,     │
-  │                  │                     │ LLM-as-a-Judge          │
-  └──────────────────┴─────────────────────┴─────────────────────────┘
-    """)
+    print()
 
 
 # ===================================================================
@@ -407,39 +236,6 @@ def demo_reference_vs_referencefree():
 
 def demo_model_based_evaluation():
     print_section("6. MODEL-BASED EVALUATION (LLM-as-a-Judge Preview)")
-
-    print("""
-  PROBLEM:
-    Human evaluation is expensive. Automatic metrics like BLEU
-    don't capture meaning. Is there a middle ground?
-
-  INTUITION:
-    Use a STRONGER LLM to evaluate a WEAKER LLM's outputs.
-    Like having a senior engineer review a junior's code.
-
-  HOW IT WORKS:
-    ┌──────────┐    ┌──────────────┐    ┌──────────────┐
-    │ Question │───▶│ Model Under  │───▶│ Response     │
-    └──────────┘    │ Test (e.g.   │    └──────┬───────┘
-                    │ Mistral 7B)  │           │
-                    └──────────────┘           │
-                                              ▼
-                    ┌──────────────┐    ┌──────────────┐
-                    │ Judge Model  │◀───│ Judge Prompt │
-                    │ (e.g. GPT-4 │    │ "Rate this   │
-                    │  or Mistral  │    │  response    │
-                    │  Large)      │    │  1-5..."     │
-                    └──────┬───────┘    └──────────────┘
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │ Score: 4/5   │
-                    │ Reason: ...  │
-                    └──────────────┘
-
-  NOTE: We'll do a DEEP DIVE in Chapter 4 (LLM-as-a-Judge).
-  Here we'll simulate it to understand the concept.
-    """)
 
     sample = load_sample_data()
     questions = sample["questions"]
@@ -467,27 +263,6 @@ def demo_model_based_evaluation():
         print(f"      Poor model: pred={poor_pred}, correct={poor_correct}, judge_score={poor_score}/5")
         print()
 
-    print("""
-  KEY TYPES OF MODEL-BASED EVALUATION:
-    1. Pointwise  — Score one response at a time (1-5)
-    2. Pairwise   — Compare two responses: "Which is better?"
-    3. Pass/Fail  — Binary: "Is this acceptable?"
-    4. Rubric     — Score against specific criteria
-
-  ADVANTAGES:
-    - Cheaper than human evaluation
-    - More nuanced than exact match
-    - Scalable to thousands of examples
-    - Can evaluate open-ended responses
-
-  LIMITATIONS:
-    - Judge model can have biases (prefers longer answers, etc.)
-    - Only as good as the judge model
-    - Can be gamed (model learns what judge likes, not what's correct)
-
-  We'll build a full LLM-as-a-Judge system in Chapter 4.
-    """)
-
 
 # ===================================================================
 # SECTION 7: REGRESSION TESTING
@@ -495,27 +270,6 @@ def demo_model_based_evaluation():
 
 def demo_regression_testing():
     print_section("7. REGRESSION TESTING")
-
-    print("""
-  PROBLEM:
-    You update your prompt, fine-tune your model, or change your
-    retrieval pipeline. How do you know you didn't break something?
-
-  INTUITION:
-    Like running your test suite after every code change.
-    If the tests pass → safe to deploy.
-    If tests fail → something broke, investigate before deploying.
-
-  HOW IT WORKS:
-    ┌──────────┐     ┌──────────┐     ┌──────────────┐
-    │ Golden   │────▶│ Model v1 │────▶│ Predictions  │──┐
-    │ Dataset  │     └──────────┘     │ (baseline)   │  │
-    │          │                      └──────────────┘  │  COMPARE
-    │          │     ┌──────────┐     ┌──────────────┐  │  ───────▶ PASS/FAIL
-    │          │────▶│ Model v2 │────▶│ Predictions  │──┘
-    └──────────┘     └──────────┘     │ (candidate)  │
-                                      └──────────────┘
-    """)
 
     questions = load_train_data(limit=50)
     ground_truths = [q["ground_truth"] for q in questions]
@@ -542,16 +296,7 @@ def demo_regression_testing():
     print(f"    Status: {result_b['status']}")
     print(f"    Regressions: {result_b['regressions_count']} questions got worse")
     print(f"    Improvements: {result_b['improvements_count']} questions got better")
-
-    print("""
-  BEST PRACTICES:
-    1. Maintain a "golden dataset" of critical test cases
-    2. Set a clear regression threshold (e.g., max 2% drop allowed)
-    3. Run regression tests automatically in CI/CD
-    4. Track not just overall accuracy, but PER-QUESTION regressions
-    5. A question that v1 got right but v2 gets wrong is a RED FLAG
-       — even if v2's overall accuracy is higher
-    """)
+    print()
 
 
 # ===================================================================
@@ -560,27 +305,6 @@ def demo_regression_testing():
 
 def demo_continuous_evaluation():
     print_section("8. CONTINUOUS EVALUATION")
-
-    print("""
-  PROBLEM:
-    Your model was great when you deployed it. But the world changes.
-    User queries change. Knowledge becomes outdated. How do you know
-    when your model starts degrading?
-
-  INTUITION:
-    Like regular health checkups. You don't wait until you're sick
-    to see a doctor. You check regularly to catch problems early.
-
-  CONTINUOUS EVALUATION LOOP:
-    ┌──────────────────────────────────────────────────┐
-    │                                                  │
-    │   Deploy ──▶ Monitor ──▶ Evaluate ──▶ Alert     │
-    │     ▲                                   │        │
-    │     │                                   ▼        │
-    │   Improve ◀── Diagnose ◀── Triage ◀── Issue     │
-    │                                                  │
-    └──────────────────────────────────────────────────┘
-    """)
 
     tracker = ContinuousEvaluator()
     tracker.add_version("v1.0", 0.72, "2024-01-15")
@@ -599,21 +323,6 @@ def demo_continuous_evaluation():
 
     print(tracker.render_trend_chart())
 
-    print("""
-  WHAT TO MONITOR:
-    1. Accuracy / quality metrics    — Are we getting better or worse?
-    2. Latency trends                — Is the model getting slower?
-    3. Error rate distribution       — Are new error types appearing?
-    4. Input distribution shift      — Are users asking different things?
-    5. Cost per query                — Is inference getting more expensive?
-
-  ALERT TRIGGERS:
-    - Accuracy drops more than 2% in a week
-    - P95 latency exceeds 3 seconds
-    - New error category appears
-    - Input distribution shifts significantly
-    """)
-
 
 # ===================================================================
 # SECTION 9: EVALUATION LIFECYCLE
@@ -621,32 +330,6 @@ def demo_continuous_evaluation():
 
 def demo_evaluation_lifecycle():
     print_section("9. EVALUATION LIFECYCLE")
-
-    print("""
-  PROBLEM:
-    Evaluation isn't just "compute accuracy." It's a multi-step process
-    that needs to be tracked and reproduced.
-
-  THE 6 STAGES:
-    ┌───────────────────┐
-    │ 1. Dataset Prep   │  Load, clean, validate data
-    │         │         │
-    │         ▼         │
-    │ 2. Model Inference│  Run model on evaluation set
-    │         │         │
-    │         ▼         │
-    │ 3. Metric Compute │  Calculate accuracy, F1, etc.
-    │         │         │
-    │         ▼         │
-    │ 4. Error Analysis  │  Classify and analyze failures
-    │         │         │
-    │         ▼         │
-    │ 5. Regression Check│  Compare with previous version
-    │         │         │
-    │         ▼         │
-    │ 6. Report Generate │  Create dashboard & artifacts
-    └───────────────────┘
-    """)
 
     lifecycle = EvaluationLifecycle("science_qa_eval_v2")
 
@@ -683,8 +366,8 @@ def demo_evaluation_lifecycle():
     print(f"    Experiment: {final_report['experiment']}")
     print(f"    Completed: {final_report['completed']}")
     for stage, info in final_report["stages"].items():
-        status_icon = "✓" if info["status"] == "completed" else "○"
-        duration = f"{info['duration']:.4f}s" if info["duration"] else "—"
+        status_icon = "+" if info["status"] == "completed" else "o"
+        duration = f"{info['duration']:.4f}s" if info["duration"] else "-"
         print(f"    {status_icon} {stage:<25s} {info['status']:<12s} {duration}")
 
 
@@ -694,16 +377,6 @@ def demo_evaluation_lifecycle():
 
 def demo_evaluation_pipeline():
     print_section("10. EVALUATION PIPELINES")
-
-    print("""
-  PROBLEM:
-    You run the same evaluation steps repeatedly. How do you
-    automate and standardize this?
-
-  INTUITION:
-    Like a CI/CD pipeline but for model evaluation.
-    Define once, run many times, compare results.
-    """)
 
     questions = load_train_data(limit=30)
     preds = simulate_llm_predictions(questions, accuracy=0.80)
@@ -748,19 +421,11 @@ def demo_evaluation_pipeline():
     print("\n  Step Results:")
     for step_name, step_result in results["steps"].items():
         status = step_result["status"]
-        icon = "✓" if status == "success" else "✗"
+        icon = "+" if status == "success" else "x"
         print(f"    {icon} {step_name}: {status} ({step_result['duration_seconds']:.4f}s)")
         if status == "success" and isinstance(step_result["result"], (int, float)):
-            print(f"      → {step_result['result']:.4f}")
-
-    print("""
-  PIPELINE BENEFITS:
-    1. Reproducibility  — Same steps, same order, every time
-    2. Automation       — No manual steps, runs in CI/CD
-    3. Comparability    — Same pipeline for all model versions
-    4. Extensibility    — Add/remove steps as needed
-    5. Auditability     — Track what was run and when
-    """)
+            print(f"      -> {step_result['result']:.4f}")
+    print()
 
 
 # ===================================================================
@@ -769,31 +434,6 @@ def demo_evaluation_pipeline():
 
 def demo_error_taxonomy():
     print_section("11. FAILURE ANALYSIS & ERROR TAXONOMY")
-
-    print("""
-  PROBLEM:
-    Knowing your model is 80% accurate tells you 20% of answers
-    are wrong — but WHY are they wrong? Different errors need
-    different fixes.
-
-  ERROR TAXONOMY FOR MCQ:
-    ┌─────────────────┬─────────────────────────────────────────┐
-    │ Error Type      │ Description                             │
-    ├─────────────────┼─────────────────────────────────────────┤
-    │ wrong_choice    │ Model picked an incorrect option        │
-    │ hallucination   │ Model invented an answer not in choices │
-    │ no_response     │ Model failed to respond                 │
-    │ format_error    │ Response couldn't be parsed             │
-    │ partial_correct │ Right reasoning, wrong final pick       │
-    └─────────────────┴─────────────────────────────────────────┘
-
-  WHY IT MATTERS:
-    - "wrong_choice" → improve the model/prompt
-    - "hallucination" → add output constraints
-    - "no_response" → fix timeout/retry logic
-    - "format_error" → fix output parsing
-    Each error type has a DIFFERENT fix.
-    """)
 
     questions = load_train_data(limit=50)
     preds = simulate_llm_predictions(questions, accuracy=0.72)
@@ -805,7 +445,7 @@ def demo_error_taxonomy():
     print(f"  Error rate: {result['error_rate']:.1%}")
     print(f"\n  Error Distribution:")
     for error_type, count in result["error_distribution"].items():
-        bar = "█" * count
+        bar = "#" * count
         print(f"    {error_type:<18s} {count:>3d} {bar}")
 
     if result["error_examples"]:
@@ -814,21 +454,8 @@ def demo_error_taxonomy():
             for ex in examples[:1]:
                 print(f"    [{error_type}] Q{ex['id']}: expected={ex['expected']}, "
                       f"got={ex['predicted']}")
-                print(f"      → {ex['prompt_preview']}...")
-
-    print("""
-  FAILURE ANALYSIS PROCESS:
-    1. CLASSIFY  — Put each error into a category
-    2. QUANTIFY  — How many of each type?
-    3. PRIORITIZE — Which error type hurts the most?
-    4. ROOT CAUSE — Why does this error happen?
-    5. FIX       — Apply targeted fix for that error type
-    6. VERIFY    — Run regression test to confirm the fix works
-
-  COMMON MISTAKE:
-    Trying to fix all errors at once. Instead, fix the most
-    common/impactful error category FIRST, then re-evaluate.
-    """)
+                print(f"      -> {ex['prompt_preview']}...")
+    print()
 
 
 # ===================================================================
@@ -837,16 +464,6 @@ def demo_error_taxonomy():
 
 def demo_dashboard():
     print_section("12. EVALUATION DASHBOARD")
-
-    print("""
-  PROBLEM:
-    You've computed 20 metrics. How do you present them so that
-    a stakeholder can understand the model's health at a glance?
-
-  INTUITION:
-    Like a car dashboard — the key gauges are front and center.
-    Details available if you look deeper, but the summary is immediate.
-    """)
 
     questions = load_train_data(limit=50)
     preds = simulate_llm_predictions(questions, accuracy=0.78)
@@ -870,29 +487,6 @@ def demo_dashboard():
 def demo_cicd_evaluation():
     print_section("13. EVALUATION IN CI/CD")
 
-    print("""
-  PROBLEM:
-    How do you automatically block bad models from reaching production?
-
-  INTUITION:
-    Like unit tests in CI. If tests fail, the PR can't merge.
-    If evaluation fails, the model can't deploy.
-
-  CI/CD PIPELINE WITH EVALUATION GATES:
-    ┌──────────┐    ┌──────────┐    ┌──────────────┐    ┌──────────┐
-    │ Code     │──▶ │ Build    │──▶ │ Evaluation   │──▶ │ Deploy   │
-    │ Change   │    │ & Test   │    │ Gate         │    │          │
-    └──────────┘    └──────────┘    │              │    └──────────┘
-                                    │ ✓ accuracy   │
-                                    │   >= 75%     │
-                                    │ ✓ regression │
-                                    │   <= 2%      │
-                                    │              │
-                                    │ PASS → deploy│
-                                    │ FAIL → block │
-                                    └──────────────┘
-    """)
-
     gate = CICDGate(min_accuracy=0.75, max_regression=0.02)
 
     print("  --- SCENARIO 1: Good model, no baseline ---")
@@ -900,14 +494,14 @@ def demo_cicd_evaluation():
     print(f"    Gate status: {result1['gate_status']}")
     print(f"    Deploy allowed: {result1['deploy_allowed']}")
     for check in result1["checks"]:
-        icon = "✓" if check["status"] == "PASS" else "✗"
+        icon = "+" if check["status"] == "PASS" else "x"
         print(f"    {icon} {check['check']}: {check['status']}")
 
     print("\n  --- SCENARIO 2: Good model, better than baseline ---")
     result2 = gate.check(current_accuracy=0.82, previous_accuracy=0.78)
     print(f"    Gate status: {result2['gate_status']}")
     for check in result2["checks"]:
-        icon = "✓" if check["status"] == "PASS" else "✗"
+        icon = "+" if check["status"] == "PASS" else "x"
         detail = f"actual={check.get('actual', check.get('actual_delta'))}"
         print(f"    {icon} {check['check']}: {check['status']} ({detail})")
 
@@ -915,7 +509,7 @@ def demo_cicd_evaluation():
     result3 = gate.check(current_accuracy=0.74, previous_accuracy=0.80)
     print(f"    Gate status: {result3['gate_status']}")
     for check in result3["checks"]:
-        icon = "✓" if check["status"] == "PASS" else "✗"
+        icon = "+" if check["status"] == "PASS" else "x"
         detail = f"actual={check.get('actual', check.get('actual_delta'))}"
         print(f"    {icon} {check['check']}: {check['status']} ({detail})")
 
@@ -923,19 +517,10 @@ def demo_cicd_evaluation():
     result4 = gate.check(current_accuracy=0.60, previous_accuracy=0.65)
     print(f"    Gate status: {result4['gate_status']}")
     for check in result4["checks"]:
-        icon = "✓" if check["status"] == "PASS" else "✗"
+        icon = "+" if check["status"] == "PASS" else "x"
         detail = f"actual={check.get('actual', check.get('actual_delta'))}"
         print(f"    {icon} {check['check']}: {check['status']} ({detail})")
-
-    print("""
-  CI/CD EVALUATION BEST PRACTICES:
-    1. Define clear pass/fail thresholds BEFORE deployment
-    2. Test against a golden dataset (not random samples)
-    3. Check BOTH absolute quality AND regression
-    4. Log all evaluation results for audit trail
-    5. Alert on failures — don't just silently block
-    6. Include evaluation time in your deployment budget
-    """)
+    print()
 
 
 # ===================================================================
@@ -943,59 +528,9 @@ def demo_cicd_evaluation():
 # ===================================================================
 
 def print_final_summary():
-    print_section("CHAPTER 1 SUMMARY — FOUNDATIONS OF LLM EVALUATION")
-
-    print("""
-  KEY TAKEAWAYS:
-  ─────────────
-  1. Evaluation is mandatory, not optional — it's your AI speedometer
-  2. Use OFFLINE evaluation before deployment, ONLINE after
-  3. INTRINSIC measures the task, EXTRINSIC measures the impact
-  4. AUTOMATIC is fast and cheap; HUMAN captures nuance
-  5. REFERENCE-BASED needs ground truth; REFERENCE-FREE doesn't
-  6. LLM-as-a-Judge bridges the gap between automatic and human
-  7. REGRESSION TESTING catches broken models before deployment
-  8. CONTINUOUS EVALUATION catches degradation after deployment
-  9. PIPELINES standardize and automate evaluation
-  10. ERROR TAXONOMY guides targeted improvements
-  11. DASHBOARDS communicate results to stakeholders
-  12. CI/CD GATES prevent bad models from reaching production
-
-  COMPARISON TABLE:
-  ┌──────────────────┬──────────────┬──────────────┬──────────────┐
-  │ Method           │ Cost         │ Speed        │ Nuance       │
-  ├──────────────────┼──────────────┼──────────────┼──────────────┤
-  │ Automatic        │ Near zero    │ Milliseconds │ Low          │
-  │ Human            │ $$$          │ Hours/days   │ High         │
-  │ LLM-as-a-Judge   │ $            │ Seconds      │ Medium-High  │
-  │ Reference-based  │ Labeling $$  │ Fast         │ Medium       │
-  │ Reference-free   │ Zero         │ Fast         │ Low-Medium   │
-  └──────────────────┴──────────────┴──────────────┴──────────────┘
-
-  COMMON MISTAKES:
-  ────────────────
-  ✗ Only evaluating once (before deployment)
-  ✗ Only using one metric (accuracy is not enough)
-  ✗ No regression testing (changes break things silently)
-  ✗ No error analysis (you can't fix what you don't classify)
-  ✗ Manual evaluation only (doesn't scale)
-  ✗ Ignoring latency and cost (users care about these too)
-
-  INTERVIEW QUESTIONS:
-  ────────────────────
-  Q1: What's the difference between offline and online evaluation?
-  Q2: When would you use reference-free evaluation?
-  Q3: How do you prevent model regressions in production?
-  Q4: What is LLM-as-a-Judge and when would you use it?
-  Q5: Design an evaluation pipeline for a RAG-based Q&A system.
-  Q6: What metrics would you track for continuous evaluation?
-  Q7: How would you set up evaluation gates in a CI/CD pipeline?
-
-  WHAT'S NEXT:
-  ────────────
-  Chapter 2: Classical NLP Metrics — we'll implement Accuracy, Precision,
-  Recall, F1, BLEU, ROUGE, BERTScore, Perplexity, and more from scratch.
-    """)
+    print_section("CHAPTER 1 SUMMARY")
+    print("  See theory.md for full summary, comparison tables, and interview questions.")
+    print()
 
 
 # ===================================================================
@@ -1003,12 +538,10 @@ def print_final_summary():
 # ===================================================================
 
 def main():
-    print("\n" + "█" * 70)
-    print("█" + " " * 68 + "█")
-    print("█" + "  CHAPTER 1: FOUNDATIONS OF LLM EVALUATION".center(68) + "█")
-    print("█" + "  Comprehensive LLM Evaluation Course".center(68) + "█")
-    print("█" + " " * 68 + "█")
-    print("█" * 70)
+    print("\n" + "=" * 70)
+    print("  CHAPTER 1: FOUNDATIONS OF LLM EVALUATION")
+    print("  Comprehensive LLM Evaluation Course")
+    print("=" * 70)
 
     demo_why_evaluation_matters()
     demo_offline_vs_online()
@@ -1025,8 +558,8 @@ def main():
     demo_cicd_evaluation()
     print_final_summary()
 
-    print("\n  Run complete! All 13 foundation topics covered.")
-    print("  Next: Chapter 2 — Classical NLP Metrics\n")
+    print("  Run complete! All 13 foundation topics covered.")
+    print("  Next: Chapter 2 -- Classical NLP Metrics\n")
 
 
 if __name__ == "__main__":

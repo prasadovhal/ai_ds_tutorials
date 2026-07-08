@@ -49,15 +49,14 @@ agent_traces = get_agent_traces()
 print("=" * 70)
 print("  CHAPTER 11: EVALUATION FRAMEWORKS - FULL DEMO")
 print("=" * 70)
-print(f"\nDataset: {len(rag_examples)} RAG examples, {len(mcq_examples)} MCQs, "
-      f"{len(agent_traces)} agent traces, {len(test_cases)} test cases")
+print(f"\nDataset: {len(rag_examples)} RAG, {len(mcq_examples)} MCQs, "
+      f"{len(agent_traces)} traces, {len(test_cases)} test cases")
 
 
 # =====================================================================
 # 1. DeepEval
 # =====================================================================
 header(1, "DeepEval-Style Evaluation")
-print("Unit-test style LLM evaluation with metric classes and measure() methods.")
 
 evaluator = DeepEvalStyleEvaluator()
 results = evaluator.evaluate(rag_dataset)
@@ -81,7 +80,6 @@ for metric in evaluator.metrics:
 # 2. RAGAS
 # =====================================================================
 header(2, "RAGAS-Style Evaluation")
-print("Component RAG metrics: faithfulness, relevancy, context precision/recall.")
 
 ragas = RAGASStyleEvaluator()
 ragas_results = ragas.evaluate(rag_dataset)
@@ -103,7 +101,6 @@ for key in ["faithfulness", "answer_relevancy", "context_precision", "context_re
 # 3. LangSmith
 # =====================================================================
 header(3, "LangSmith-Style Evaluation")
-print("Run-based evaluation with datasets, custom evaluators, and latency tracking.")
 
 langsmith = LangSmithStyleEvaluator(dataset_name="rag_eval")
 
@@ -133,7 +130,6 @@ for r in ls_results:
 # 4. Phoenix (Arize)
 # =====================================================================
 header(4, "Phoenix-Style Evaluation (Arize)")
-print("OpenTelemetry-based tracing with inline evaluation spans.")
 
 phoenix = PhoenixStyleEvaluator(project_name="rag_project")
 phoenix_results = phoenix.evaluate_rag(rag_dataset)
@@ -158,21 +154,16 @@ print(f"  Span types: {summary['span_types']}")
 # 5. OpenAI Evals
 # =====================================================================
 header(5, "OpenAI Evals-Style Evaluation")
-print("Registry-based evals with exact/fuzzy match and model-graded criteria.")
 
 oai_evals = OpenAIEvalsStyleEvaluator()
 
-# Register MCQ accuracy eval
 oai_evals.register_eval("mcq_accuracy", lambda s: s.get("prediction") == s.get("ground_truth"))
-
-# Register RAG faithfulness eval
 oai_evals.register_eval("rag_faithfulness", lambda s: (
     1.0 - _contains_extra_info(
         s.get("answer", ""),
         _context_as_str(s.get("contexts", ""))
     )) > 0.6)
 
-# Prepare MCQ samples with simulated predictions
 import random
 rng = random.Random(42)
 mcq_samples = []
@@ -198,7 +189,6 @@ print(f"  Pass rate: {faith_result['accuracy']:.1%}  ({faith_result['passed']}/{
 # 6. Promptfoo
 # =====================================================================
 header(6, "Promptfoo-Style Evaluation")
-print("Config-driven test assertions with pass/fail results per prompt.")
 
 promptfoo = PromptfooStyleEvaluator()
 
@@ -226,7 +216,6 @@ for r in pf_results:
 # 7. TruLens
 # =====================================================================
 header(7, "TruLens-Style Evaluation")
-print("Feedback functions wrapping an app to compute quality scores per record.")
 
 trulens = TruLensStyleEvaluator(app_name="RAG Pipeline v1")
 
@@ -265,9 +254,7 @@ for name, stats in lb["metrics"].items():
 # 8. Inspect AI
 # =====================================================================
 header(8, "Inspect AI-Style Evaluation")
-print("Task/solver/scorer pattern for structured evaluations.")
 
-# MCQ task
 mcq_task = InspectTask("mcq_science", mcq_examples)
 mcq_task.set_solver(lambda item: item["ground_truth"] if random.Random(
     item["id"]).random() < 0.8 else "A")
@@ -275,7 +262,6 @@ mcq_task.set_solver(lambda item: item["ground_truth"] if random.Random(
 mcq_task.add_scorer("exact_match", lambda item, output: 1.0 if output == item["ground_truth"] else 0.0)
 mcq_task.add_scorer("partial", lambda item, output: 0.5 if output != item["ground_truth"] else 1.0)
 
-# RAG task
 rag_task = InspectTask("rag_faithfulness", rag_dataset)
 rag_task.set_solver(lambda item: item["answer"])
 rag_task.add_scorer("faithfulness", lambda item, output: round(
@@ -300,11 +286,9 @@ for tr in inspect_results:
 # 9. Evidently AI
 # =====================================================================
 header(9, "Evidently AI-Style Evaluation")
-print("Data drift detection and LLM output monitoring between reference/current.")
 
 evidently = EvidentlyStyleEvaluator()
 
-# Use first 3 examples as reference, last 2 as "current" (simulating production shift)
 evidently.set_reference(rag_dataset[:3])
 evidently.set_current(rag_dataset[3:])
 
@@ -330,7 +314,6 @@ print(f"    Drift score:    {qd['drift_score']:.3f}  Drifted: {qd['is_drifted']}
 # 10. Maxim AI
 # =====================================================================
 header(10, "Maxim AI-Style Evaluation")
-print("End-to-end quality monitoring with pluggable check functions.")
 
 maxim = MaximAIStyleEvaluator(pipeline_name="production_rag")
 
@@ -380,23 +363,6 @@ print(f"\n  {'Framework':<14} {'Approach':<22} {'Pricing':<14} {'Best For'}")
 print(f"  {'-'*14} {'-'*22} {'-'*14} {'-'*24}")
 for name, approach, pricing, best_for in frameworks:
     print(f"  {name:<14} {approach:<22} {pricing:<14} {best_for}")
-
-print(f"\n  Key differentiators:")
-print(f"  - DeepEval/RAGAS   : Purpose-built for RAG evaluation with standard metrics")
-print(f"  - LangSmith/Phoenix: Full observability (tracing + evals) for production LLM apps")
-print(f"  - Promptfoo        : Best for CI/CD integration and regression testing prompts")
-print(f"  - TruLens          : Feedback loops for iterative quality improvement")
-print(f"  - Inspect AI       : Designed for AI safety benchmarks (UK AISI)")
-print(f"  - Evidently AI     : Statistical drift detection applied to LLM outputs")
-print(f"  - OpenAI Evals     : Standardized eval specs, model-graded criteria")
-print(f"  - Maxim AI         : Enterprise SaaS with end-to-end pipeline monitoring")
-
-print(f"\n  WHY LANGFUSE FOR EVALUATION?")
-print(f"  Langfuse bridges the gap between offline evaluation (DeepEval, RAGAS) and")
-print(f"  production monitoring (Phoenix, LangSmith). You can run your evaluation suite,")
-print(f"  send the scores to Langfuse as trace annotations, and track how metrics change")
-print(f"  across prompt versions and model updates. It also supports datasets and prompt")
-print(f"  management, so your evaluation workflow lives alongside your production traces.")
 
 print(f"\n{'='*70}")
 print(f"  Demo complete.")

@@ -43,15 +43,6 @@ def kv(key: str, value, indent: int = 2) -> None:
     prefix = " " * indent
     if isinstance(value, float):
         print(f"{prefix}{key}: {value:.4f}")
-    elif isinstance(value, dict):
-        print(f"{prefix}{key}:")
-        for k, v in value.items():
-            if isinstance(v, list) and len(v) > 3:
-                print(f"{prefix}  {k}: [{v[0]}, {v[1]}, ... ({len(v)} items)]")
-            elif isinstance(v, float):
-                print(f"{prefix}  {k}: {v:.4f}")
-            else:
-                print(f"{prefix}  {k}: {v}")
     else:
         print(f"{prefix}{key}: {value}")
 
@@ -78,14 +69,11 @@ def demo_retrieval_metrics(example: dict) -> None:
     heading("1a. Context Precision (Average Precision)", level=2)
     cp = ret.context_precision(ctx_texts, rel_labels)
     print(f"  Score: {cp:.4f}")
-    print("  Interpretation: Measures if relevant docs are ranked above irrelevant ones.")
-    print("  1.0 = all relevant docs come before all irrelevant docs.")
 
     # Context Recall
     heading("1b. Context Recall", level=2)
     cr = ret.context_recall(ctx_texts, gt, rel_labels)
     print(f"  Score: {cr:.4f}")
-    print("  Interpretation: Fraction of ground-truth information covered by retrieved contexts.")
 
     # Context Relevance
     heading("1c. Context Relevance", level=2)
@@ -96,19 +84,17 @@ def demo_retrieval_metrics(example: dict) -> None:
         print(f"    Chunk {i+1} ({label_str}): {s:.4f}")
 
     # Hit Rate / MRR
-    heading("1d. Hit Rate & Mean Reciprocal Rank (MRR)", level=2)
+    heading("1d. Hit Rate & MRR", level=2)
     hr_mrr = ret.hit_rate_and_mrr(rel_labels)
     kv("Hit Rate", hr_mrr["hit_rate"])
     kv("MRR", hr_mrr["mrr"])
-    print("  Interpretation: Hit Rate=1 if any relevant doc retrieved; MRR=1/rank of first relevant.")
 
     # NDCG
-    heading("1e. Normalized Discounted Cumulative Gain (NDCG)", level=2)
+    heading("1e. NDCG", level=2)
     ndcg_score = ret.ndcg(rel_labels)
     print(f"  NDCG: {ndcg_score:.4f}")
     ndcg_at_2 = ret.ndcg(rel_labels, k=2)
     print(f"  NDCG@2: {ndcg_at_2:.4f}")
-    print("  Interpretation: Accounts for graded relevance and ranking position.")
 
 
 # ============================================================================
@@ -136,7 +122,6 @@ def demo_generation_metrics(example: dict) -> None:
     kv("Score", ar["score"])
     kv("Unigram overlap", ar["unigram_overlap"])
     kv("Bigram overlap", ar["bigram_overlap"])
-    print("  Interpretation: Does the answer address what the query asked?")
 
     # Faithfulness
     heading("2b. Faithfulness", level=2)
@@ -181,7 +166,7 @@ def demo_generation_metrics(example: dict) -> None:
             print(f"    - ctx_overlap={fc['context_overlap']:.2f}, "
                   f"gt_overlap={fc['gt_overlap']:.2f}: {fc['claim']}")
     else:
-        print("  No claims flagged as hallucinated.")
+        print("  No claims flagged.")
 
 
 # ============================================================================
@@ -235,7 +220,6 @@ def demo_end_to_end_metrics(example: dict) -> None:
     heading("3d. Latency Tracking", level=2)
     timer = e2e.measure_latency("simulated_pipeline")
     timer["start"]()
-    # Simulate a tiny workload
     _ = sum(range(100000))
     timer["stop"]()
     print(f"  Simulated pipeline latency: {timer['latency_seconds']:.6f}s")
@@ -299,22 +283,19 @@ def demo_full_pipeline(examples: list[dict]) -> None:
     heading("4b. Aggregate Metrics", level=2)
     agg = report["aggregates"]
     print(f"  Number of examples:         {agg['num_examples']}")
-    print()
-    print("  RETRIEVAL AVERAGES:")
+    print("\n  RETRIEVAL AVERAGES:")
     print(f"    Context Precision:         {agg['avg_context_precision']:.4f}")
     print(f"    Context Recall:            {agg['avg_context_recall']:.4f}")
     print(f"    NDCG:                      {agg['avg_ndcg']:.4f}")
     print(f"    Hit Rate:                  {agg['avg_hit_rate']:.4f}")
     print(f"    MRR:                       {agg['avg_mrr']:.4f}")
-    print()
-    print("  GENERATION AVERAGES:")
+    print("\n  GENERATION AVERAGES:")
     print(f"    Answer Relevance:          {agg['avg_answer_relevance']:.4f}")
     print(f"    Faithfulness:              {agg['avg_faithfulness']:.4f}")
     print(f"    Groundedness:              {agg['avg_groundedness']:.4f}")
     print(f"    Citation Correctness:      {agg['avg_citation_correctness']:.4f}")
     print(f"    Hallucination Risk:        {agg['avg_hallucination_risk']:.4f}")
-    print()
-    print("  END-TO-END AVERAGES:")
+    print("\n  END-TO-END AVERAGES:")
     print(f"    Answer Correctness:        {agg['avg_answer_correctness']:.4f}")
     print(f"    Context Utilization:       {agg['avg_context_utilization']:.4f}")
 
@@ -377,150 +358,28 @@ def demo_quality_comparison(examples: list[dict]) -> None:
         direction = "+" if delta >= 0 else ""
         print(f"  {name:<24} {good_val:>14.4f} {bad_val:>14.4f} {direction}{delta:>9.4f}")
 
-    print("\n  Observation: Good answers consistently score higher on faithfulness,")
-    print("  groundedness, and correctness, while hallucinated answers show")
-    print("  higher hallucination risk -- exactly what the metrics should detect.")
-
 
 # ============================================================================
-# 6. FRAMEWORK COMPARISON (conceptual)
+# 6. FRAMEWORK COMPARISON
 # ============================================================================
 
 def demo_framework_comparison() -> None:
     heading("6. RAG EVALUATION FRAMEWORK COMPARISON")
 
     frameworks = [
-        {
-            "name": "RAGAS",
-            "url": "https://github.com/explodinggradients/ragas",
-            "metrics": [
-                "Faithfulness", "Answer Relevance", "Context Precision",
-                "Context Recall", "Context Utilization", "Answer Correctness",
-            ],
-            "approach": "LLM-as-judge with structured decomposition",
-            "strengths": [
-                "Strong theoretical grounding in information retrieval",
-                "Decomposes metrics into verifiable sub-questions",
-                "Active open-source community and frequent updates",
-            ],
-            "limitations": [
-                "Requires LLM calls (cost + latency)",
-                "Faithfulness can be noisy for long answers",
-            ],
-        },
-        {
-            "name": "DeepEval",
-            "url": "https://github.com/confident-ai/deepeval",
-            "metrics": [
-                "Faithfulness", "Answer Relevancy", "Contextual Precision",
-                "Contextual Recall", "Hallucination", "Bias", "Toxicity",
-            ],
-            "approach": "LLM-as-judge with pytest integration",
-            "strengths": [
-                "pytest-style test runner for CI/CD integration",
-                "Built-in bias and toxicity checks",
-                "Supports custom metric definitions",
-            ],
-            "limitations": [
-                "Heavier dependency footprint",
-                "Some metrics closely mirror RAGAS",
-            ],
-        },
-        {
-            "name": "TruLens",
-            "url": "https://github.com/truera/trulens",
-            "metrics": [
-                "Groundedness", "Answer Relevance", "Context Relevance",
-                "Comprehensiveness", "Harmful/Controversial content",
-            ],
-            "approach": "Feedback functions with LLM or embedding models",
-            "strengths": [
-                "Excellent dashboard for tracking experiments over time",
-                "Supports multiple LLM providers as evaluators",
-                "Traces full chain-of-thought for debugging",
-            ],
-            "limitations": [
-                "Dashboard adds operational complexity",
-                "Tightly coupled to LangChain/LlamaIndex initially",
-            ],
-        },
-        {
-            "name": "LangSmith",
-            "url": "https://smith.langchain.com/",
-            "metrics": [
-                "Correctness", "Helpfulness", "Harmlessness",
-                "Custom evaluators",
-            ],
-            "approach": "Human + LLM annotation platform with tracing",
-            "strengths": [
-                "Deep LangChain integration with automatic tracing",
-                "Supports human-in-the-loop evaluation workflows",
-                "Dataset management and versioning built in",
-            ],
-            "limitations": [
-                "Primarily designed for LangChain ecosystem",
-                "SaaS dependency for full feature set",
-            ],
-        },
-        {
-            "name": "Phoenix (Arize)",
-            "url": "https://github.com/Arize-ai/phoenix",
-            "metrics": [
-                "Retrieval metrics (MRR, NDCG, Precision@k)",
-                "LLM Evals (Hallucination, QA, Toxicity)",
-                "Embedding drift",
-            ],
-            "approach": "Observability-first with embedding analysis",
-            "strengths": [
-                "Strong embedding visualization and drift detection",
-                "Open-source with notebook-friendly interface",
-                "Good for production monitoring beyond evaluation",
-            ],
-            "limitations": [
-                "Evaluation is secondary to observability focus",
-                "Fewer RAG-specific decomposed metrics",
-            ],
-        },
+        ("RAGAS",          6, "LLM-as-judge with structured decomposition"),
+        ("DeepEval",       7, "LLM-as-judge with pytest integration"),
+        ("TruLens",        5, "Feedback functions with LLM or embedding models"),
+        ("LangSmith",      4, "Human + LLM annotation platform with tracing"),
+        ("Phoenix (Arize)",3, "Observability-first with embedding analysis"),
     ]
 
-    # --- Summary table ---
-    print(f"\n  {'Framework':<14} {'# Metrics':>10} {'Approach'}")
-    print(f"  {'-'*14} {'-'*10} {'-'*40}")
-    for fw in frameworks:
-        print(f"  {fw['name']:<14} {len(fw['metrics']):>10} {fw['approach'][:50]}")
+    print(f"\n  {'Framework':<18} {'# Metrics':>10} {'Approach'}")
+    print(f"  {'-'*18} {'-'*10} {'-'*40}")
+    for name, n_metrics, approach in frameworks:
+        print(f"  {name:<18} {n_metrics:>10} {approach}")
 
-    # --- Detailed comparison ---
-    for fw in frameworks:
-        heading(f"{fw['name']}", level=2)
-        print(f"  URL: {fw['url']}")
-        print(f"  Approach: {fw['approach']}")
-        print(f"  Key metrics: {', '.join(fw['metrics'])}")
-        print(f"  Strengths:")
-        for s in fw["strengths"]:
-            print(f"    + {s}")
-        print(f"  Limitations:")
-        for lim in fw["limitations"]:
-            print(f"    - {lim}")
-
-    # --- Our heuristic approach ---
-    heading("Our Heuristic Approach (this chapter)", level=2)
-    print("  This chapter implements all core RAG metrics using keyword overlap,")
-    print("  entity matching, and statistical measures -- no LLM calls needed.")
-    print()
-    print("  Advantages:")
-    print("    + Zero cost -- runs on standard library only")
-    print("    + Deterministic -- same inputs always produce same outputs")
-    print("    + Fast -- evaluates thousands of examples per second")
-    print("    + Educational -- makes the metric logic transparent")
-    print()
-    print("  Trade-offs:")
-    print("    - Less semantically rich than LLM-based evaluation")
-    print("    - Cannot detect subtle paraphrasing or logical entailment")
-    print("    - Entity extraction is regex-based, not NER-model-based")
-    print()
-    print("  Recommendation: Use heuristic metrics for rapid iteration and CI/CD")
-    print("  gates, then validate with LLM-based frameworks (RAGAS, DeepEval)")
-    print("  for release decisions and deeper analysis.")
+    print("\n  See theory.md for detailed per-framework strengths/limitations.")
 
 
 # ============================================================================
@@ -570,10 +429,7 @@ def print_metric_taxonomy() -> None:
 # ============================================================================
 
 def main() -> None:
-    heading("CHAPTER 5: RAG EVALUATION - COMPREHENSIVE DEMONSTRATION", level=1)
-    print("  Evaluating Retrieval-Augmented Generation pipelines using")
-    print("  heuristic metrics (keyword overlap, entity matching, statistics).")
-    print("  All metrics run without external LLM calls or third-party libraries.")
+    heading("CHAPTER 5: RAG EVALUATION", level=1)
 
     # Load data
     examples = load_rag_examples()
@@ -595,7 +451,7 @@ def main() -> None:
 
     # --- Show a hallucinated example for contrast ---
     heading("HALLUCINATED EXAMPLE - Metric Contrast", level=2)
-    print(f"\n  Now evaluating Example {halluc_example['id']} "
+    print(f"\n  Evaluating Example {halluc_example['id']} "
           f"(quality={halluc_example['quality_label']})")
     gen = GenerationMetrics()
     ctx_texts = [c["text"] for c in halluc_example["retrieved_contexts"]]
@@ -607,8 +463,6 @@ def main() -> None:
     print(f"  Faithfulness score:     {faith['score']:.4f}")
     print(f"  Hallucination risk:     {halluc['risk_score']:.4f}")
     print(f"  Flagged claims:         {len(halluc['flagged_claims'])}")
-    if halluc.get("hallucination_details"):
-        print(f"  Details: {halluc_example.get('hallucination_details', 'N/A')}")
 
     # --- Full pipeline on all examples ---
     demo_full_pipeline(examples)
@@ -622,39 +476,7 @@ def main() -> None:
     # --- Taxonomy ---
     print_metric_taxonomy()
 
-    # --- Closing ---
-    heading("SUMMARY", level=1)
-    print("  This chapter demonstrated 17 RAG evaluation metrics across three tiers:")
-    print("    - RETRIEVAL: Context Precision, Recall, Relevance, Hit Rate, MRR, NDCG")
-    print("    - GENERATION: Answer Relevance, Faithfulness, Groundedness,")
-    print("                  Citation Correctness, Source Attribution, Hallucination")
-    print("    - END-TO-END: Context Utilization, Answer Correctness,")
-    print("                  Chunk Evaluation, Latency, Cost")
-    print()
-    print("  Key takeaways:")
-    print("    1. Good answers consistently outscore hallucinated ones across metrics")
-    print("    2. Heuristic metrics provide fast, cheap, deterministic evaluation")
-    print("    3. LLM-based frameworks (RAGAS, DeepEval, TruLens) add semantic depth")
-    print("    4. Use heuristic metrics in CI/CD; LLM-based for release decisions")
-    print("    5. No single metric is sufficient -- use a balanced scorecard")
-    print()
-    heading("WHY USE LANGGRAPH, LANGFUSE & TRACING FOR RAG?")
-    print("  LangGraph: Models the RAG pipeline (retrieve -> generate -> evaluate) as a")
-    print("  state graph. Each node is a step you can test, swap, or retry independently.")
-    print("  Unlike a linear chain, LangGraph lets you add conditional routing (e.g., re-retrieve")
-    print("  if context score is low) and parallel branches without rewriting the pipeline.")
-    print()
-    print("  Langfuse: Gives you a production dashboard where every RAG query becomes a trace")
-    print("  with nested spans (retrieval, generation, evaluation). You attach scores to each")
-    print("  span, so you can filter by low-faithfulness queries and debug exactly which step")
-    print("  failed. This is critical because RAG failures are often silent -- the LLM returns")
-    print("  a confident but wrong answer, and without per-query metrics you never notice.")
-    print()
-    print("  Tracing: Captures latency, token usage, and retrieval quality per request. Without")
-    print("  it, you only have aggregate accuracy. With it, you can find the 5% of queries that")
-    print("  take 10x longer or retrieve irrelevant context, and fix them specifically.")
-    print()
-    print("  Chapter 5 complete.")
+    print("\n  Chapter 5 complete.")
 
 
 if __name__ == "__main__":

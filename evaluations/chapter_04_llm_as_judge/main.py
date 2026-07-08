@@ -91,38 +91,8 @@ def show(obj, indent=2):
 # ============================================================================
 def topic_01_history():
     banner(1, "History of LLM-as-a-Judge")
-    print("""
-Timeline of LLM-as-a-Judge evolution:
-
-  2002-2004  BLEU & ROUGE introduced for MT and summarization evaluation.
-             Fast, reproducible, but limited to surface-level n-gram overlap.
-
-  2015-2018  Neural metrics (BERTScore, BLEURT) use embeddings to capture
-             semantic similarity, moving beyond exact word matching.
-
-  2022       InstructGPT & ChatGPT show that LLMs can follow complex
-             instructions, including evaluation rubrics.
-
-  2023 Feb   "Judging LLM-as-a-Judge" (Zheng et al.) systematically studies
-             GPT-4 as an evaluator, revealing >80% agreement with humans on
-             open-ended tasks -- higher than human-human agreement.
-
-  2023 May   LMSYS Chatbot Arena launches crowd-sourced pairwise evaluation
-             with Elo ratings, becoming a de-facto LLM leaderboard.
-
-  2023 Jun   G-Eval (Liu et al.) proposes chain-of-thought prompting for
-             evaluation, improving human correlation from 0.57 to 0.75.
-
-  2023-2024  Constitutional AI, Reflexion, multi-agent judging panels, and
-             meta-evaluation become standard practice in production systems.
-
-  2024+      Focus shifts to bias mitigation, calibration, and hybrid
-             human-LLM judging pipelines for high-stakes decisions.
-
-Key insight: LLM judges complement (not replace) human evaluation. They
-offer scalability and consistency, while humans provide ground-truth
-calibration and nuance.
-""")
+    print("  See theory.md for full timeline. Key: BLEU/ROUGE (2002) -> "
+          "neural metrics (2015) -> LLM judges (2023) -> hybrid pipelines (2024+).")
 
 
 # ============================================================================
@@ -130,14 +100,6 @@ calibration and nuance.
 # ============================================================================
 def topic_02_bleu_rouge_insufficient():
     banner(2, "Why BLEU/ROUGE Are Insufficient")
-    print("""
-Classical n-gram metrics fail for open-ended LLM evaluation because they:
-  - Measure surface overlap, not semantic meaning
-  - Miss paraphrases (same meaning, different words = low score)
-  - Reward plagiarism of reference (copy reference = perfect score)
-  - Cannot detect factual errors wrapped in correct-looking language
-  - Ignore coherence, reasoning quality, and depth of understanding
-""")
 
     demo = ClassicalMetricsDemonstrator()
     cases = demo.demonstrate_failures()
@@ -166,41 +128,17 @@ Classical n-gram metrics fail for open-ended LLM evaluation because they:
 # ============================================================================
 def topic_03_prompt_engineering():
     banner(3, "Judge Prompt Engineering")
-    print("""
-Effective judge prompts share several key design principles:
 
-  1. Clear role assignment     -- "You are an expert evaluator"
-  2. Structured input format   -- Question / Reference / Response sections
-  3. Explicit scoring criteria -- Define each score level precisely
-  4. Required output format    -- "Score: [1-5]\\nReasoning: [...]"
-  5. Chain-of-thought elicitation -- "Show your reasoning step by step"
-  6. Bias mitigation           -- "Do not favor longer responses"
-""")
+    from evaluator import POINTWISE_PROMPT, PAIRWISE_PROMPT, GEVAL_PROMPT
 
-    sub("Example: Pointwise prompt template")
-    from evaluator import POINTWISE_PROMPT
-    print(POINTWISE_PROMPT[:500])
-    print("  ... (truncated)")
+    sub("Pointwise prompt (first 200 chars)")
+    print(POINTWISE_PROMPT[:200], "...")
 
-    sub("Example: Pairwise prompt template")
-    from evaluator import PAIRWISE_PROMPT
-    print(PAIRWISE_PROMPT[:500])
-    print("  ... (truncated)")
+    sub("Pairwise prompt (first 200 chars)")
+    print(PAIRWISE_PROMPT[:200], "...")
 
-    sub("Example: G-Eval prompt with chain-of-thought steps")
-    from evaluator import GEVAL_PROMPT
-    print(GEVAL_PROMPT[:600])
-    print("  ... (truncated)")
-
-    print("""
-Best practices for judge prompt engineering:
-  - Be explicit: vague instructions yield inconsistent scores
-  - Use anchored rubrics: define what each score level means
-  - Require structured output: makes parsing reliable
-  - Include reference answers: improves accuracy by ~15-20%
-  - Ask for reasoning BEFORE the score: reduces anchoring bias
-  - Test with adversarial examples: catch prompt weaknesses early
-""")
+    sub("G-Eval prompt (first 200 chars)")
+    print(GEVAL_PROMPT[:200], "...")
 
 
 # ============================================================================
@@ -208,7 +146,6 @@ Best practices for judge prompt engineering:
 # ============================================================================
 def topic_04_pointwise():
     banner(4, "Pointwise Evaluation")
-    print("Score a single response on a 1-5 scale, like grading an essay.\n")
 
     items = get_questions_with_responses(limit=3)
     judge = PointwiseJudge(seed=42)
@@ -230,7 +167,6 @@ def topic_04_pointwise():
 # ============================================================================
 def topic_05_pairwise():
     banner(5, "Pairwise Evaluation")
-    print("Compare two responses head-to-head and pick the winner.\n")
 
     pairs = get_pairwise_items(limit=5)
     judge = PairwiseJudge(seed=42)
@@ -253,7 +189,6 @@ def topic_05_pairwise():
 # ============================================================================
 def topic_06_pass_fail():
     banner(6, "Pass/Fail Evaluation")
-    print("Binary quality gate: does the response meet minimum standards?\n")
 
     items = get_questions_with_responses(limit=3)
     judge = PassFailJudge(seed=42)
@@ -275,8 +210,6 @@ def topic_06_pass_fail():
 # ============================================================================
 def topic_07_likert():
     banner(7, "Likert Scale Evaluation")
-    print("Rate on multiple dimensions (accuracy, completeness, clarity, "
-          "depth, helpfulness).\n")
 
     items = get_questions_with_responses(limit=2)
     judge = LikertJudge(seed=42)
@@ -301,7 +234,6 @@ def topic_07_likert():
 # ============================================================================
 def topic_08_rubric():
     banner(8, "Rubric-Based Evaluation")
-    print("Score against specific criteria with defined levels (0-3 or 0-2).\n")
 
     items = get_questions_with_responses(limit=2)
     judge = RubricJudge(seed=42)
@@ -327,7 +259,6 @@ def topic_08_rubric():
 # ============================================================================
 def topic_09_geval():
     banner(9, "G-Eval (Chain-of-Thought Evaluation)")
-    print("Break evaluation into reasoning steps before assigning a score.\n")
 
     items = get_questions_with_responses(limit=2)
     judge = GEvalJudge(seed=42)
@@ -356,7 +287,6 @@ def topic_09_geval():
 # ============================================================================
 def topic_10_arena():
     banner(10, "Arena-Style Evaluation")
-    print("Tournament bracket: models compete head-to-head across questions.\n")
 
     items = get_questions_with_responses(limit=5)
     arena = ArenaEvaluator(seed=42)
@@ -390,7 +320,6 @@ def topic_10_arena():
 # ============================================================================
 def topic_11_elo():
     banner(11, "Tournament / Elo Ratings")
-    print("Elo ratings account for opponent strength, like chess rankings.\n")
 
     items = get_questions_with_responses(limit=5)
     elo = EloRatingSystem(k_factor=32, initial_rating=1500)

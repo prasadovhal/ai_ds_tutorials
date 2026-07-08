@@ -2,7 +2,7 @@ import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8
 """
 Chapter 12: Research Papers on LLM Evaluation
 =============================================
-Code demos of 10 landmark evaluation papers. Minimal theory, maximum code.
+Code demos of 10 landmark evaluation papers.
 """
 
 import json
@@ -48,10 +48,9 @@ if train:
 
 
 # =========================================================================
-# Paper 1: "Judging LLM-as-a-Judge" (Zheng et al., 2023)
+# Paper 1: MT-Bench (Zheng et al., 2023)
 # =========================================================================
-divider("PAPER 1: Judging LLM-as-a-Judge (Zheng et al., 2023)")
-print("Key idea: MT-Bench uses multi-turn questions + Elo ratings to rank LLMs.")
+divider("PAPER 1: MT-Bench (Zheng et al., 2023)")
 
 mt_eval = MTBenchEvaluator()
 conversations = get_mt_bench_conversations(data)
@@ -65,18 +64,12 @@ for conv in conversations:
 
 sub_divider("Elo Rating Tournament")
 elo = EloRatingSystem(k=32)
-# Simulate matchups derived from MT-Bench results
 matchups = [
-    ("GPT-4", "Claude-3"),
-    ("GPT-4", "Llama-2-70B"),
-    ("Claude-3", "Llama-2-70B"),
-    ("GPT-4", "Gemini-Pro"),
-    ("Claude-3", "Gemini-Pro"),
-    ("GPT-4", "Mixtral-8x7B"),
-    ("Gemini-Pro", "Mixtral-8x7B"),
-    ("Claude-3", "Mixtral-8x7B"),
-    ("GPT-4", "Llama-2-70B"),
-    ("Gemini-Pro", "Llama-2-70B"),
+    ("GPT-4", "Claude-3"), ("GPT-4", "Llama-2-70B"),
+    ("Claude-3", "Llama-2-70B"), ("GPT-4", "Gemini-Pro"),
+    ("Claude-3", "Gemini-Pro"), ("GPT-4", "Mixtral-8x7B"),
+    ("Gemini-Pro", "Mixtral-8x7B"), ("Claude-3", "Mixtral-8x7B"),
+    ("GPT-4", "Llama-2-70B"), ("Gemini-Pro", "Llama-2-70B"),
 ]
 models = ["GPT-4", "Claude-3", "Gemini-Pro", "Llama-2-70B", "Mixtral-8x7B"]
 leaderboard = elo.simulate_tournament(models, matchups)
@@ -87,10 +80,9 @@ for entry in leaderboard:
 
 
 # =========================================================================
-# Paper 2: "LLMs are not Fair Evaluators" (Wang et al., 2023)
+# Paper 2: Bias Detection (Wang et al., 2023)
 # =========================================================================
 divider("PAPER 2: LLMs are not Fair Evaluators (Wang et al., 2023)")
-print("Key idea: LLM judges show position bias -- they favor whichever response appears first.")
 
 detector = PositionBiasDetector()
 bias_examples = get_position_bias_examples(data)
@@ -106,10 +98,9 @@ for j in bias_result["judgments"]:
 
 
 # =========================================================================
-# Paper 3: "G-Eval" (Liu et al., 2023)
+# Paper 3: G-Eval (Liu et al., 2023)
 # =========================================================================
 divider("PAPER 3: G-Eval (Liu et al., 2023)")
-print("Key idea: Chain-of-thought prompting + form-filling yields better evaluation scores.")
 
 geval = GEvalScorer()
 geval_examples = get_geval_examples(data)
@@ -131,10 +122,9 @@ for ex in geval_examples:
 
 
 # =========================================================================
-# Paper 4: "RAGAS" (Es et al., 2023)
+# Paper 4: RAGAS (Es et al., 2023)
 # =========================================================================
-divider("PAPER 4: RAGAS - RAG Evaluation Framework (Es et al., 2023)")
-print("Key idea: Evaluate RAG with faithfulness (is answer grounded?) and relevancy (does it answer the question?).")
+divider("PAPER 4: RAGAS (Es et al., 2023)")
 
 ragas = RAGASMetrics()
 rag_examples = get_rag_examples(data)
@@ -152,14 +142,12 @@ for ex in rag_examples:
 
 
 # =========================================================================
-# Paper 5: "ARES" (Saad-Falcon et al., 2023)
+# Paper 5: ARES (Saad-Falcon et al., 2023)
 # =========================================================================
-divider("PAPER 5: ARES - Automated RAG Evaluation (Saad-Falcon et al., 2023)")
-print("Key idea: Use prediction-powered inference (PPI) to evaluate RAG with minimal human labels.")
+divider("PAPER 5: ARES (Saad-Falcon et al., 2023)")
 
 ares = ARESEvaluator(confidence_level=0.95)
 
-# Simulate labeled + unlabeled data
 labeled = [
     {"faithfulness": 1.0, "relevancy": 1.0, "completeness": 0.9},
     {"faithfulness": 0.0, "relevancy": 1.0, "completeness": 0.3},
@@ -190,17 +178,15 @@ for metric, vals in ares_results.items():
 
 
 # =========================================================================
-# Paper 6: "AgentBench" (Liu et al., 2023)
+# Paper 6: AgentBench (Liu et al., 2023)
 # =========================================================================
 divider("PAPER 6: AgentBench (Liu et al., 2023)")
-print("Key idea: Benchmark LLM agents across 8 environments (code, web, DB, games, etc.).")
 
 agent_scorer = AgentBenchScorer()
 agent_examples = get_agent_examples(data)
 agent_results = agent_scorer.score_across_environments(agent_examples)
 
-print(f"\n  Trajectory Results:")
-print(f"  {'ID':<12} {'Env':<10} {'Done':>5} {'Steps':>6} {'Optimal':>8} {'Efficiency':>10} {'Accuracy':>9} {'Overall':>8}")
+print(f"\n  {'ID':<12} {'Env':<10} {'Done':>5} {'Steps':>6} {'Optimal':>8} {'Efficiency':>10} {'Accuracy':>9} {'Overall':>8}")
 print(f"  {'-'*12} {'-'*10} {'-'*5} {'-'*6} {'-'*8} {'-'*10} {'-'*9} {'-'*8}")
 for t in agent_results["trajectories"]:
     print(f"  {t['id']:<12} {t['environment']:<10} {str(t['completed']):>5} {t['steps_taken']:>6} "
@@ -213,10 +199,9 @@ for env, summary in agent_results["environment_summary"].items():
 
 
 # =========================================================================
-# Paper 7: "SWE-Bench" (Jimenez et al., 2023)
+# Paper 7: SWE-Bench (Jimenez et al., 2023)
 # =========================================================================
 divider("PAPER 7: SWE-Bench (Jimenez et al., 2023)")
-print("Key idea: Evaluate code agents on real GitHub issues. Metric: pass@k.")
 
 swe_scorer = SWEBenchScorer()
 swe_examples = get_swe_bench_examples(data)
@@ -229,7 +214,6 @@ for model in sorted(swe_results.keys()):
     print(f"  {model:<20} {r['solved']:>7} {r['total']:>6} {r['pass_at_1']:>8.3f}")
 
 sub_divider("Pass@k Demonstration")
-print("  pass@k formula: probability at least 1 of k samples is correct")
 for n, c in [(10, 3), (10, 5), (10, 1), (50, 10)]:
     for k in [1, 5, 10]:
         if k <= n:
@@ -238,10 +222,9 @@ for n, c in [(10, 3), (10, 5), (10, 1), (50, 10)]:
 
 
 # =========================================================================
-# Paper 8: "Calibrating LLM-Based Evaluators" (Various, 2023-2024)
+# Paper 8: Calibration (Various, 2023-2024)
 # =========================================================================
 divider("PAPER 8: Calibrating LLM-Based Evaluators")
-print("Key idea: A judge's confidence should match its accuracy. Measure with ECE (Expected Calibration Error).")
 
 calibrator = CalibratedJudge()
 cal_examples = get_calibration_examples(data)
@@ -261,10 +244,9 @@ for ex in cal_examples:
 
 
 # =========================================================================
-# Paper 9: "Reflexion" (Shinn et al., 2023)
+# Paper 9: Reflexion (Shinn et al., 2023)
 # =========================================================================
 divider("PAPER 9: Reflexion (Shinn et al., 2023)")
-print("Key idea: Agents improve by reflecting on failures and retrying with updated reasoning.")
 
 reflexion = ReflexionLoop()
 refl_examples = get_reflexion_examples(data)
@@ -299,7 +281,6 @@ for att in sim["attempts"]:
 # Paper 10: Meta-Evaluation Research
 # =========================================================================
 divider("PAPER 10: Meta-Evaluation Research")
-print("Key idea: Evaluate the evaluators -- measure judge reliability with kappa, Spearman, and bias analysis.")
 
 meta = MetaEvaluator()
 meta_examples = get_meta_evaluation_examples(data)
@@ -320,32 +301,7 @@ for ex in meta_examples:
 
 
 # =========================================================================
-# TIMELINE: Evolution of LLM Evaluation Research
-# =========================================================================
-divider("TIMELINE: Evolution of LLM Evaluation Research")
-
-timeline = [
-    ("2022 Q4", "InstructGPT / ChatGPT", "Human preference data collection at scale"),
-    ("2023 Q1", "Reflexion (Shinn et al.)", "Self-reflection for iterative improvement"),
-    ("2023 Q2", "G-Eval (Liu et al.)", "CoT-based NLG evaluation with GPT-4"),
-    ("2023 Q2", "LLMs Not Fair Evaluators", "Position & verbosity bias in LLM judges"),
-    ("2023 Q3", "MT-Bench / Chatbot Arena", "Multi-turn eval + Elo crowdsourced ranking"),
-    ("2023 Q3", "RAGAS (Es et al.)", "Automated RAG pipeline evaluation"),
-    ("2023 Q3", "SWE-Bench (Jimenez et al.)", "Real GitHub issues for code agents"),
-    ("2023 Q4", "AgentBench (Liu et al.)", "8-environment agent capability benchmark"),
-    ("2023 Q4", "ARES (Saad-Falcon et al.)", "PPI for RAG eval with few labels"),
-    ("2024 Q1", "Calibration research", "Aligning judge confidence with accuracy"),
-    ("2024 Q2", "Meta-evaluation consensus", "Standardized evaluator-of-evaluator protocols"),
-]
-
-print(f"\n  {'Period':<10} {'Paper/System':<28} {'Contribution'}")
-print(f"  {'-'*10} {'-'*28} {'-'*45}")
-for period, paper, contribution in timeline:
-    print(f"  {period:<10} {paper:<28} {contribution}")
-
-
-# =========================================================================
-# COMPARISON TABLE: Paper Techniques
+# Comparison Table
 # =========================================================================
 divider("COMPARISON TABLE: Paper Techniques")
 
@@ -369,10 +325,9 @@ for paper, technique, eval_type, best_for, limitation in papers:
 
 
 # =========================================================================
-# TRAIN.CSV INTEGRATION DEMO
+# Train.csv Integration Demo
 # =========================================================================
 divider("BONUS: Train.csv MCQA Evaluation Demo")
-print("Demonstrating evaluation concepts on the MCQA benchmark dataset.")
 
 train_rows = load_train_csv(limit=3)
 if train_rows:
@@ -380,12 +335,10 @@ if train_rows:
     for row in train_rows:
         prompt = row["prompt"]
         correct = row["answer"]
-        # Treat each option as a "response" and score it
         options = {k: row[k] for k in ["A", "B", "C", "D", "E"] if row.get(k)}
         print(f"\n  Q{row['id']}: {prompt[:80]}...")
         print(f"  Correct answer: {correct}")
 
-        # Score option relevance to question
         best_option, best_score = "", 0
         for opt_key, opt_text in options.items():
             rel = geval_mcqa.score_relevance(prompt, opt_text)
@@ -398,4 +351,4 @@ if train_rows:
 
 
 divider("CHAPTER 12 COMPLETE")
-print("All 10 paper techniques demonstrated with sample data and train.csv.\n")
+print("All 10 paper techniques demonstrated.\n")
