@@ -1,0 +1,11 @@
+id,name,department,salary,years_experience,city,active
+1,Alice Johnson,Engineering,95000,8,San Francisco,true
+2,Bob Smith,Design,82000,5,New York,true
+3,Charlie Brown,Engineering,105000,12,Seattle,true
+4,Diana Prince,Marketing,78000,3,Chicago,false
+5,Eve Davis,Engineering,110000,15,San Francisco,true
+6,Frank Miller,Design,88000,7,New York,true
+7,Grace Lee,Marketing,72000,2,Chicago,true
+8,Henry Wilson,Engineering,98000,10,Seattle,false
+9,Ivy Chen,Data Science,92000,6,San Francisco,true
+10,Jack Taylor,Data Science,115000,14,New York,true

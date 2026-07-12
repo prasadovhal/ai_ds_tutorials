@@ -1,0 +1,45 @@
+{
+  "company": "TechCorp Solutions",
+  "founded": 2015,
+  "headquarters": "San Francisco, CA",
+  "employees": 150,
+  "departments": [
+    {
+      "name": "Engineering",
+      "head": "Alice Johnson",
+      "team_size": 45,
+      "projects": ["MCP Server", "API Gateway", "Data Pipeline"]
+    },
+    {
+      "name": "Design",
+      "head": "Bob Smith",
+      "team_size": 20,
+      "projects": ["UI Redesign", "Mobile App", "Design System"]
+    },
+    {
+      "name": "Marketing",
+      "head": "Diana Prince",
+      "team_size": 15,
+      "projects": ["Q4 Campaign", "Brand Refresh", "Social Media"]
+    },
+    {
+      "name": "Data Science",
+      "head": "Jack Taylor",
+      "team_size": 25,
+      "projects": ["Recommendation Engine", "Fraud Detection", "Analytics Dashboard"]
+    }
+  ],
+  "tech_stack": [
+    "Python",
+    "TypeScript",
+    "PostgreSQL",
+    "Redis",
+    "Docker",
+    "Kubernetes"
+  ],
+  "contact": {
+    "email": "info@techcorp.example.com",
+    "website": "https://techcorp.example.com",
+    "phone": "+1-555-0100"
+  }
+}

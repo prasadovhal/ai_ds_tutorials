@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  mcp-server:
+    build: .
+    container_name: mcp-production-server
+    environment:
+      - MCP_ENVIRONMENT=production
+      - MCP_LOG_LEVEL=INFO
+      - MCP_SERVER_NAME=production-server
+      - MCP_DATA_DIR=/app/data
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
