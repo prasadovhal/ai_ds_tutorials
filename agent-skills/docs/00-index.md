@@ -111,6 +111,53 @@ Advanced questions for scaling skills. Covers:
 
 ---
 
+### [08-40-questions-coverage-map.md](08-40-questions-coverage-map.md)
+**Mapping all 40 handbook questions to documentation**
+
+Cross-reference guide for the 40 important questions from the handbook. Covers:
+- Question mapping to documentation sections
+- Quick lookup table
+- Which documents answer which questions
+- Finding answers to specific concerns
+
+**Best for:** Finding answers to specific questions
+
+---
+
+### [09-skill-upgrade-v1.1.md](09-skill-upgrade-v1.1.md)
+**Research Paper Reviewer Skill - Upgrade from v1.0 to v1.1**
+
+Complete documentation of what changed in v1.1. Covers:
+- New algorithm explanation capabilities
+- Step-by-step example walkthroughs
+- Real-world analogies for algorithms
+- Visual diagrams and pseudocode
+- Common questions about algorithms
+- Backward compatibility
+- Migration path from v1.0
+
+**Best for:** Understanding the research-paper-reviewer upgrade
+
+---
+
+### [10-article-summarizer-skill.md](10-article-summarizer-skill.md)
+**Article Summarizer Skill - Complete Guide**
+
+Comprehensive documentation for the new article-summarizer skill. Covers:
+- What the skill does (summarize, compare, research)
+- Smart URL validation and paywall detection
+- Conditional web search (1 article = search, 2+ = skip)
+- Key point extraction and comparison matrices
+- Study notes generation
+- Use cases and examples
+- Paywall workarounds
+- Success criteria
+- Model recommendations
+
+**Best for:** Understanding the article-summarizer skill
+
+---
+
 ## 🎯 Quick Start Guide
 
 ### If You Have 15 Minutes
@@ -325,6 +372,32 @@ Refer to the relevant document section for:
 
 ---
 
+## 📊 Skill Documentation
+
+### Active Skills with Documentation
+
+1. **Research Paper Reviewer (v1.0 → v1.1)**
+   - Location: `skills/research-paper-reviewer.md`
+   - Documentation: `docs/09-skill-upgrade-v1.1.md`
+   - Status: v1.1 with algorithm explanations
+   - Model: Opus (recommended) or Sonnet
+
+2. **Article Summarizer (v1.0)**
+   - Location: `skills/article-summarizer.md`
+   - Documentation: `docs/10-article-summarizer-skill.md`
+   - Status: Ready to use
+   - Model: Opus (recommended) or Sonnet
+
+### Planned Skills
+
+- Dataset Quality Analyzer
+- RAG Evaluator
+- Experiment Reviewer
+- Code Reviewer
+- And more from 06-list-of-skills-and-explanations.md
+
+---
+
 ## 📝 Notes for Your Review
 
 This documentation was created by:
@@ -332,6 +405,7 @@ This documentation was created by:
 2. Incorporating practical skill examples
 3. Structuring into learning paths
 4. Creating quick references and checklists
+5. Documenting skill implementations and upgrades
 
 **Please review and provide feedback on:**
 - Clarity and organization
@@ -339,9 +413,10 @@ This documentation was created by:
 - Accuracy of examples
 - Any missing sections or categories
 - Any corrections needed
+- Skill workflow accuracy
 
 ---
 
 **Last Updated:** 2026-08-03
-**Status:** Ready for review
-**Next Steps:** Integration testing and team feedback
+**Status:** 2 skills implemented, comprehensive documentation complete
+**Next Steps:** Additional skill development, integration testing
