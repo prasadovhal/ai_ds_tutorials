@@ -24,11 +24,12 @@ Summarize and analyze articles from any URL, extract key insights, compare again
 
 Use this skill when:
 - You need to quickly understand what an article is about
-- You want to compare an article with similar content
-- You need to extract key points and create notes
-- You want to see what's unique about an article compared to others
-- You're doing research and need comprehensive analysis
-- You want to save time by getting concise summaries with comparisons
+- You need to extract key points and create study notes
+- You want detailed bullet-point analysis of article content
+- You're doing research and need organized reference material
+- You want to save time by getting structured summaries
+- (Optional) You want to compare multiple articles you provide
+- (Optional) You want to find similar articles (request explicitly)
 
 Do NOT use this skill for:
 - Very short snippets (less than 200 words)
@@ -105,17 +106,7 @@ For the main article:
 - Note target audience
 - Identify article type (opinion, tutorial, news, analysis, etc.)
 
-### Step 5: Web Search for Similar Articles (Conditional)
-**Only if 1 article provided:**
-- Search for top 5 similar articles
-- Use keywords from main article
-- Search across web
-- Filter for quality sources
-- Verify accessibility (non-paywall if possible)
-
-**Skip this if 2+ articles provided**
-
-### Step 6: Extract Key Points - Main Article
+### Step 5: Extract Key Points - Main Article
 Create bullet-point notes:
 - Main thesis/argument
 - Key findings/conclusions
@@ -127,31 +118,7 @@ Create bullet-point notes:
 - Quotes (if significant)
 - Tools/resources mentioned
 
-### Step 7: Extract Key Points - Similar Articles
-For each of top 5 (or provided) articles:
-- Summarize in 2-3 sentences
-- Extract key points (same format as main article)
-- Note unique perspective/angle
-- Identify what's similar to main article
-- Identify what's different/additional
-
-### Step 8: Create Comparison Matrix
-Build table showing:
-- **Topics covered:** Main article vs each comparison article
-- **What's included in main but not in others**
-- **What's in others but not main**
-- **Unique perspectives per article**
-- **Overlap areas**
-
-### Step 9: Generate Comprehensive Notes
-Create master notes document with:
-- **Main Article Deep Dive** (comprehensive bullet points)
-- **Top 5 Similar Articles** (organized by similarity)
-- **Comparison Summary** (what makes main article unique)
-- **Key Learnings Across All** (synthesized insights)
-- **Gaps & Additional Info** (what's missing from all)
-
-### Step 10: Create Study/Reference Notes
+### Step 6: Create Study/Reference Notes
 Format final notes as:
 - Organized sections
 - Clear hierarchy
@@ -290,93 +257,7 @@ comprehensive notes, including finding 5 similar articles and detailed compariso
 • "[Quote 2]" - [context]
 ```
 
-### 4. Similar Articles Analysis (If Single Article)
-
-**Similar Article 1: [Title]**
-
-```
-Summary: [2-3 sentence summary]
-
-📌 Key Points:
-• [Point 1]
-• [Point 2]
-• [Point 3]
-• [Point 4]
-• [Point 5]
-
-🔄 Relation to Main Article:
-Similar: [What overlaps with main]
-Different: [Unique angle/content]
-Source: [URL]
-```
-
-[Repeat for articles 2-5]
-
-### 5. Comparison Matrix
-
-**What's Included in Main Article:**
-```
-| Topic | Main Article | Article 2 | Article 3 | Article 4 | Article 5 |
-|-------|--------------|-----------|-----------|-----------|-----------|
-| [Topic 1] | ✅ | ❌ | ✅ | ❌ | ✅ |
-| [Topic 2] | ✅ | ✅ | ❌ | ✅ | ❌ |
-| [Topic 3] | ✅ | ✅ | ✅ | ✅ | ✅ |
-```
-
-**What's Unique to Main Article:**
-```
-• [Unique point 1]
-• [Unique point 2]
-• [Unique point 3]
-```
-
-**What Other Articles Provide That Main Doesn't:**
-```
-Article 2: [What's additional]
-Article 3: [What's additional]
-Article 4: [What's additional]
-Article 5: [What's additional]
-```
-
-### 6. Comprehensive Master Notes
-
-**Master Summary of All Articles**
-
-```
-🎓 KEY CONCEPTS ACROSS ALL ARTICLES:
-• [Concept 1] - Covered in: [Articles]
-• [Concept 2] - Covered in: [Articles]
-• [Concept 3] - Covered in: [Articles]
-
-🔑 MOST IMPORTANT POINTS:
-1. [Point 1] - From: [Article name]
-2. [Point 2] - From: [Article name]
-3. [Point 3] - From: [Article name]
-
-📊 DATA & STATISTICS SUMMARY:
-• [Stat 1] - Source: [Article]
-• [Stat 2] - Source: [Article]
-• [Stat 3] - Source: [Article]
-
-💡 SYNTHESIZED INSIGHTS:
-[What we learn from combining all articles]
-
-✅ ACTIONABLE TAKEAWAYS:
-[What you can do with this information]
-
-❓ GAPS & QUESTIONS:
-[What's not covered by any article]
-[Questions that remain unanswered]
-
-📚 FULL READING ORDER RECOMMENDATION:
-1. [Main Article] - Foundation
-2. [Article X] - For [specific aspect]
-3. [Article Y] - For [specific aspect]
-4. [Article Z] - For [specific aspect]
-5. [Article W] - For [specific aspect]
-```
-
-### 7. Study Notes Format
+### 4. Study Notes Format
 
 **[Article Name] - Complete Notes**
 
@@ -579,7 +460,7 @@ I can then summarize and analyze it completely.
 
 **User Input:**
 ```
-Summarize this article and find 5 similar ones:
+Summarize this article and create study notes:
 https://medium.com/article-about-ai
 ```
 
@@ -587,9 +468,7 @@ https://medium.com/article-about-ai
 ```
 1. Article Summary
 2. Key Points
-3. Top 5 Similar Articles Found
-4. Comparison Matrix
-5. Comprehensive Master Notes
+3. Study Notes Format
 ```
 
 ### Multiple Articles
@@ -607,8 +486,24 @@ https://blog.site.com/article-3
 1. Summary of Article 1
 2. Summary of Article 2
 3. Summary of Article 3
-4. Comparison Matrix (no web search - skip)
-5. Master Notes from All 3
+4. Combined Study Notes
+```
+
+### If User Wants Similar Articles
+
+**User Input:**
+```
+Summarize this article and find similar ones on the same topic:
+https://medium.com/article-about-ai
+```
+
+**Skill Output:**
+```
+1. Article Summary
+2. Key Points
+3. Study Notes
++ Web search for 5 similar articles on the topic (explicitly requested)
++ Comparison of all articles
 ```
 
 ### Paywall Article
@@ -657,6 +552,14 @@ This skill is working well when:
 ---
 
 ## Version History
+
+- **v1.1** (2026-08-06) - Simplified output focus
+  - Removed automatic web search for similar articles
+  - Web search now opt-in (user requests explicitly)
+  - Streamlined output: Summary + Key Points + Study Notes
+  - Cleaner, less overwhelming analysis format
+  - Fixed paywall handling (no credential sharing suggestions)
+  - Support for multiple article comparison when provided
 
 - **v1.0** (2026-08-03) - Initial release
   - Article summarization from URLs
