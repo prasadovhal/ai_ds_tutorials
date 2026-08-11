@@ -101,7 +101,6 @@ def hybrid_intent_classifier(query):
 
 if __name__ == "__main__":
     print("File 2: Intent Classification")
-    print("=" * 60)
 
     test_queries = [
         "What is photosynthesis?",
@@ -125,11 +124,5 @@ if __name__ == "__main__":
         intent, method = hybrid_intent_classifier(query)
         print(f"Query: {query[:50]}")
         print(f"  Intent: {intent} (via {method})\n")
-
-    print("=" * 60)
-    print("Key Takeaways:")
-    print("1. Rule-based classification is fast but brittle")
-    print("2. LLM-based classification is accurate but slow (needs token count)")
-    print("3. Hybrid approach: use rules for obvious cases, LLM for edge cases")
-    print("4. Intent classification feeds into routing logic (next file)")
-    print("5. Always parse LLM output strictly to avoid surprises")
+        
+    

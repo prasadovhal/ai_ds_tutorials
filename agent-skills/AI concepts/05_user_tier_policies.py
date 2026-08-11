@@ -143,7 +143,6 @@ def domain_policy_check(query_domain, user_tier):
 
 if __name__ == "__main__":
     print("File 5: User Tier Policies")
-    print("=" * 60)
 
     print("\n--- Tier Policies Overview ---")
     for tier, policy in USER_TIER_POLICIES.items():
@@ -169,11 +168,3 @@ if __name__ == "__main__":
         print(f"  Response preview (first 200 chars):")
         print(f"  {result['response'][:200]}...")
         print()
-
-    print("=" * 60)
-    print("Key Takeaways:")
-    print("1. User tiers segment users by need and trust level")
-    print("2. Each tier has: token budget, depth level, allowed domains")
-    print("3. System prompt changes per tier → different response styles")
-    print("4. Policies enforce constraints (budget, citations, domains)")
-    print("5. This enables fair resource allocation and compliance")

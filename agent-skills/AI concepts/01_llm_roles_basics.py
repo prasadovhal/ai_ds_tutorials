@@ -302,7 +302,6 @@ def data_privacy():
 
 if __name__ == "__main__":
     print("File 1: LLM Roles Basics & Security")
-    print("=" * 60)
 
     # Core concepts
     basic_message_api()
@@ -315,14 +314,3 @@ if __name__ == "__main__":
     tool_permission_control()
     secret_leakage_prevention()
     data_privacy()
-
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. System role sets behavior FIRST; LLM tries to follow it")
-    print("2. Multi-turn requires passing full message history each time")
-    print("3. Prompt injection: users try to override system rules")
-    print("4. Jailbreak prevention: defend against creative override attempts")
-    print("5. Tool permission control: restrict sensitive tool access by user tier")
-    print("6. Secret leakage: filter API keys, passwords, PII from responses")
-    print("7. Data privacy: anonymize before sending to external LLM")
-    print("8. Good system prompts are defensive + explicit refusal rules")

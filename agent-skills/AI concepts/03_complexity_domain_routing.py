@@ -54,7 +54,29 @@ def estimate_complexity_heuristic(query):
     return complexity_score
 
 
-def estimate_complexity_llm(query):
+def select_model_by_complexity(complexity):
+    """
+    Pick appropriate model based on task complexity.
+
+    Simple tasks (1-3): Use lightweight model (fast, low resource)
+    Moderate tasks (4-6): Use balanced model (accurate, reasonable speed)
+    Complex tasks (7-10): Use powerful model (deep reasoning, quality)
+
+    Available ollama models:
+    - phi (lightweight, ~3B parameters)
+    - mistral:7b-instruct (balanced, ~7B)
+    - neural-chat (fast, decent quality)
+    - mixtral (powerful, ~47B)
+    """
+    if complexity <= 3:
+        return "phi"  # Fast, lightweight model for simple tasks
+    elif complexity <= 6:
+        return "neural-chat"  # Balanced model for moderate tasks
+    else:
+        return "mistral"  # Powerful model for complex tasks
+
+
+def estimate_complexity_llm(query, model="mistral"):
     """
     Use LLM to score complexity. More accurate than heuristic.
     Returns a score 1-10 from the model.
@@ -72,7 +94,7 @@ def estimate_complexity_llm(query):
     Return ONLY a number (1-10). No explanation."""
 
     response = client.chat(
-        model="mistral",
+        model=model,
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": query}
@@ -122,14 +144,28 @@ def classify_domain(query):
 
 def routing_decision(query):
     """
-    Combined routing decision based on complexity + domain.
+    Combined routing decision based on complexity + domain + model selection.
+
+    1. First pass: use lightweight model to estimate complexity (fast)
+    2. Select appropriate model based on complexity
+    3. Route strategy: simple → domain → RAG
+    4. Return model, strategy, and metadata
 
     High complexity + specific domain → use specialized RAG (file 10)
     Low complexity → use fast simple LLM answer
     General domain → use general-purpose system prompt
     """
 
-    complexity = estimate_complexity_llm(query)
+    # Fast first pass with lightweight model to estimate complexity
+    complexity = estimate_complexity_llm(query, model="phi")
+
+    # Select model based on complexity
+    selected_model = select_model_by_complexity(complexity)
+
+    # Re-evaluate with selected model if it's different (optional, for higher accuracy)
+    if selected_model != "phi":
+        complexity = estimate_complexity_llm(query, model=selected_model)
+
     domain = classify_domain(query)
 
     routing_path = "unknown"
@@ -144,13 +180,13 @@ def routing_decision(query):
         "query": query,
         "complexity": complexity,
         "domain": domain,
-        "routing_path": routing_path
+        "routing_path": routing_path,
+        "selected_model": selected_model  # NEW: Model selection
     }
 
 
 if __name__ == "__main__":
     print("File 3: Complexity & Domain Routing")
-    print("=" * 60)
 
     test_queries = [
         "What is DNA?",
@@ -166,18 +202,11 @@ if __name__ == "__main__":
         print(f"Query: {query[:50]}")
         print(f"  Complexity (heuristic): {score}\n")
 
-    print("\n--- Routing Decision (Complexity + Domain) ---")
+    print("\n--- Routing Decision (Complexity + Domain + Model Selection) ---")
     for query in test_queries:
         decision = routing_decision(query)
         print(f"Query: {decision['query'][:50]}")
         print(f"  Complexity (LLM): {decision['complexity']}")
         print(f"  Domain: {decision['domain']}")
-        print(f"  Routing path: {decision['routing_path']}\n")
-
-    print("=" * 60)
-    print("Key Takeaways:")
-    print("1. Complexity drives resource allocation (simple = fast, complex = thorough)")
-    print("2. Domain classification allows specialized prompts/retrieval")
-    print("3. Heuristics are fast; LLM judgment is accurate—use hybrid approach")
-    print("4. Routing paths: simple_answer → domain_answer → rag_with_context")
-    print("5. This routing feeds into file 4 (token/cost decisions)")
+        print(f"  Routing path: {decision['routing_path']}")
+        print(f"  Selected model: {decision['selected_model']}\n")

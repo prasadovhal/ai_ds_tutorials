@@ -159,7 +159,6 @@ def measure_latency(query):
 
 if __name__ == "__main__":
     print("File 4: Token, Cost & Latency Routing")
-    print("=" * 60)
 
     test_queries = [
         "What is photosynthesis?",
@@ -195,12 +194,3 @@ if __name__ == "__main__":
     print(f"Query: {test_queries[0]}")
     print(f"  Latency: {latency_data['latency_ms']}ms")
     print(f"  Response preview: {latency_data['response']}")
-
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. Token count estimation drives cost prediction")
-    print("2. Cost budget prevents runaway expenses in production")
-    print("3. Latency budgets route queries to appropriate models")
-    print("4. Simple queries: fast model, low latency")
-    print("5. Complex queries: powerful model, accept higher latency")
-    print("6. Actual latency measurement validates assumptions")
