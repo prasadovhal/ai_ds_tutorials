@@ -214,7 +214,6 @@ def context_propagation_example():
 
 if __name__ == "__main__":
     print("File 8: Observability Foundations")
-    print("=" * 60)
 
     print("\n--- Span Structure ---")
     span = Span(
@@ -232,12 +231,3 @@ if __name__ == "__main__":
     trace_id, trace = trace_query_flow("What is photosynthesis?")
 
     context_propagation_example()
-
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. Trace = one user request end-to-end")
-    print("2. Span = one logical unit of work (e.g., LLM call)")
-    print("3. Trace_id links all steps together for correlation")
-    print("4. Structured JSON logs are queryable and filterable")
-    print("5. Context propagation: pass trace_id through all functions")
-    print("6. This foundation enables debugging and performance analysis")

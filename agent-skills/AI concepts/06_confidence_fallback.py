@@ -152,8 +152,6 @@ def handle_low_confidence_answer(query):
 
 
 if __name__ == "__main__":
-    print("File 6: Confidence-Based Fallback & Retry")
-    print("=" * 60)
 
     test_queries = [
         "What is the role of mitochondria in cells?",
@@ -164,7 +162,6 @@ if __name__ == "__main__":
     print("\n--- Confidence Pipeline (with Retry) ---")
     for query in test_queries:
         print(f"\nQuery: {query}")
-        print("-" * 60)
 
         result = handle_low_confidence_answer(query)
 
@@ -181,10 +178,58 @@ if __name__ == "__main__":
         else:
             print(f"[ACCEPTED] Final confidence: {result['final_confidence']}/10")
 
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. Self-evaluation: ask LLM to rate its own confidence")
-    print("2. Low confidence → retry with enriched context")
-    print("3. Still low → escalate to human or stronger model")
-    print("4. Confidence threshold is tunable (higher = stricter)")
-    print("5. This pipeline improves reliability without constant human review")
+    # ===== FAILURE CASE: Confident Hallucination =====
+    print("\n" + "="*70)
+    print("FAILURE CASE: Confident Hallucination (No Escalation)")
+    print("="*70)
+
+    failure_query = "What is the current CEO of OpenAI as of 2026?"
+    print(f"\nQuery: {failure_query}")
+    print("(Note: Model was trained in Feb 2025, so it may hallucinate about 2026)")
+
+    result = handle_low_confidence_answer(failure_query)
+
+    print(f"\nInitial answer: {result['initial_answer']}")
+    print(f"Initial confidence: {result['initial_confidence']}/10")
+
+    if result['retried']:
+        print(f"\n[RETRY with context]")
+        print(f"Retry answer: {result['final_answer']}")
+        print(f"Retry confidence: {result['final_confidence']}/10")
+
+    if result['escalated']:
+        print(f"[ESCALATION FLAGGED]: {result['escalation_reason']}")
+    else:
+        print(f"\n[ACCEPTED] Final confidence: {result['final_confidence']}/10")
+        print("⚠️  PROBLEM: Model is confident about 2026 info it doesn't actually know!")
+        print("    Confidence score ≠ Accuracy. Model hallucinated with high confidence.")
+        print("    No escalation triggered because confidence stayed above threshold.")
+
+    # ===== FAILURE CASE 2: Escalation Without Resolution =====
+    print("\n" + "="*70)
+    print("FAILURE CASE 2: Escalation Triggered But No Human Handler")
+    print("="*70)
+
+    failure_query_2 = "Describe the protein folding algorithm discovered in 2024 at my company"
+    print(f"\nQuery: {failure_query_2}")
+    print("(Note: Proprietary/specialized knowledge the model won't know)")
+
+    result2 = handle_low_confidence_answer(failure_query_2)
+
+    print(f"\nInitial answer: {result2['initial_answer'][:100]}...")
+    print(f"Initial confidence: {result2['initial_confidence']}/10")
+
+    if result2['retried']:
+        print(f"\n[RETRY with context]")
+        print(f"Retry answer: {result2['final_answer'][:100]}...")
+        print(f"Retry confidence: {result2['final_confidence']}/10")
+
+    if result2['escalated']:
+        print(f"\n[ESCALATION FLAGGED]: {result2['escalation_reason']}")
+        print("⚠️  PROBLEM: Escalation triggered, but then what?")
+        print("    - No human is actually reviewing this")
+        print("    - Generic context didn't help with proprietary knowledge")
+        print("    - System flags it but can't resolve it")
+        print("    - User gets an escalation message instead of an answer")
+    else:
+        print(f"\n[ACCEPTED] Final confidence: {result2['final_confidence']}/10")

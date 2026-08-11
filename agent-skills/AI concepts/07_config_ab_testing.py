@@ -194,7 +194,6 @@ def ab_test_prompt_styles(query, variant_a="concise", variant_b="detailed", num_
 
 if __name__ == "__main__":
     print("File 7: Configuration-Driven Routing & A/B Testing")
-    print("=" * 60)
 
     print("\n--- Load and Display Config ---")
     config = load_config()
@@ -224,11 +223,3 @@ if __name__ == "__main__":
     print(f"  Score: {ab_result['score_b']}/10")
     print(f"  Preview: {ab_result['answer_b']}")
     print(f"\nWinner: Variant {ab_result['winner']} (score diff: {ab_result['score_diff']})")
-
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. Config-driven routing: define rules in dicts, not hardcoded")
-    print("2. A/B testing: compare two prompt styles objectively")
-    print("3. Quality scoring: use LLM-as-judge to evaluate outputs")
-    print("4. Stateless design: no side effects, easy to test")
-    print("5. This enables data-driven prompt optimization")
