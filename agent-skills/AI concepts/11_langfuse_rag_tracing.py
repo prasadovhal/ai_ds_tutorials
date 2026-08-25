@@ -200,7 +200,7 @@ def traced_rag_answer(query, collection, trace, top_k=3):
         }
     )
 
-    span_gen.end()
+    span_gen.end(output={"answer": answer})
 
     return {
         "query": query,
