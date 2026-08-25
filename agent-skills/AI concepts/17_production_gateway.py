@@ -61,7 +61,7 @@ class FAISSVectorStore:
 lf_client = Langfuse(
     public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
     secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
-    baseurl=os.getenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
+    host=os.getenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
 )
 
 # Gateway configuration

@@ -17,12 +17,29 @@ from langfuse import Langfuse
 
 load_dotenv()
 
-# Initialize LangFuse client (connects to cloud.langfuse.com)
-lf_client = Langfuse(
-    public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
-    secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
-    baseurl=os.getenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
-)
+# Initialize LangFuse client (Langfuse 2.0+ reads from env vars)
+public_key = os.getenv('LANGFUSE_PUBLIC_KEY')
+secret_key = os.getenv('LANGFUSE_SECRET_KEY')
+base_url = os.getenv('LANGFUSE_BASE_URL')  # Note: underscore, not camelCase
+
+print(f"[DEBUG] LANGFUSE_PUBLIC_KEY: {public_key[:10] if public_key else 'NOT SET'}...")
+print(f"[DEBUG] LANGFUSE_SECRET_KEY: {secret_key[:10] if secret_key else 'NOT SET'}...")
+print(f"[DEBUG] LANGFUSE_BASE_URL: {base_url if base_url else 'NOT SET (will default to EU cloud)'}")
+
+try:
+    # Use 'host' parameter (confirmed working earlier)
+    if base_url and not base_url.startswith("http"):
+        base_url = f"https://{base_url}"
+
+    lf_client = Langfuse(
+        public_key=public_key,
+        secret_key=secret_key,
+        host=base_url
+    )
+    print("[DEBUG] Langfuse client initialized successfully\n")
+except Exception as e:
+    print(f"[ERROR] Failed to initialize Langfuse: {e}")
+    exit(1)
 
 ollama_client = ollama.Client()
 
@@ -33,55 +50,81 @@ def simple_trace_example():
     This shows the basic hierarchy: trace > span > generation.
     """
 
-    query = "What is photosynthesis?"
+    query = "Explain machine learning in simple terms"
 
-    # Create a trace (represents one user request)
-    trace = lf_client.trace(name="science_qa", input={"query": query})
+    try:
+        # Create a trace (represents one user request)
+        trace = lf_client.trace(name="science_qa", input={"query": query})
+        print(f"✓ Trace created: {trace.id}")
 
-    # Create a span (represents one step: LLM call)
-    span = trace.span(name="llm_generation", input={"query": query})
+        # Create a span (represents one step: LLM call)
+        span = trace.span(name="llm_generation", input={"query": query})
+        print(f"✓ Span created: {span.id}")
 
-    # Call LLM
-    start_time = time.time()
+        # Call LLM
+        start_time = time.time()
 
-    response = ollama_client.chat(
-        model="mistral",
-        messages=[
-            {"role": "system", "content": "You are a science expert. Answer concisely."},
-            {"role": "user", "content": query}
-        ]
-    )
+        response = ollama_client.chat(
+            model="mistral",
+            messages=[
+                {"role": "system", "content": "You are a science expert. Answer concisely."},
+                {"role": "user", "content": query}
+            ]
+        )
 
-    end_time = time.time()
-    latency_ms = (end_time - start_time) * 1000
+        end_time = time.time()
+        latency_ms = (end_time - start_time) * 1000
 
-    answer = response['message']['content']
+        answer = response['message']['content']
+        print(f"✓ LLM response received ({len(answer)} chars)")
+        print(f"[DEBUG] Answer: {answer[:50]}...")
 
-    # Log the generation to LangFuse
-    # In real usage, token counts come from LLM metadata
-    generation = span.generation(
-        name="mistral_inference",
-        model="mistral",
-        input=query,
-        output=answer,
-        usage={
-            "input": 50,  # approximate token count
-            "output": 100,
-            "total": 150
-        },
-        metadata={
-            "latency_ms": latency_ms,
-            "temperature": 0.7
-        }
-    )
+        # Log the generation to LangFuse
+        try:
+            # Create generation with output as string
+            gen = span.generation(
+                name="mistral_inference",
+                model="mistral",
+                input=query,
+                output=str(answer) if answer else "",  # Ensure it's a string
+                usage={
+                    "input": 50,
+                    "output": 100,
+                    "total": 150
+                },
+                metadata={
+                    "latency_ms": latency_ms,
+                    "temperature": 0.7
+                }
+            )
+            # Try to save/end the generation
+            if hasattr(gen, 'end'):
+                gen.end()
+            print(f"✓ Generation logged with output")
+        except Exception as e:
+            print(f"✗ Error logging generation: {e}")
+            import traceback
+            traceback.print_exc()
 
-    # End the span
-    span.end()
+        # End the span
+        span.end()
+        print(f"✓ Span ended")
 
-    print(f"Trace created: {trace.id}")
-    print(f"View in LangFuse: https://cloud.langfuse.com/traces/{trace.id}")
+        # Flush to send to cloud
+        lf_client.flush()
+        print(f"✓ Flushed to Langfuse")
+        time.sleep(1)  # Wait for async send
 
-    return trace.id
+        print(f"✓ Trace created: {trace.id}")
+        print(f"View in LangFuse: https://us.cloud.langfuse.com/project/cmshi3anw05jpad0it1pqaib8/traces/{trace.id}\n")
+
+        return trace.id
+
+    except Exception as e:
+        print(f"✗ Error in simple_trace_example: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
 
 
 def multi_step_trace():
@@ -144,6 +187,9 @@ def multi_step_trace():
 
     span_llm.end()
 
+    # Flush to send to cloud
+    lf_client.flush()
+
     print(f"\nMulti-step trace created: {trace.id}")
     print(f"View in LangFuse: https://cloud.langfuse.com/traces/{trace.id}")
 
@@ -202,31 +248,102 @@ def metadata_and_context():
 
     span.end()
 
+    # Flush to send to cloud
+    lf_client.flush()
+
     print(f"\nTrace with metadata: {trace.id}")
     print("Metadata is indexed and searchable in LangFuse dashboard")
 
     return trace.id
 
 
+def trace_user_query(user_query):
+    """Trace a user query through the system"""
+
+    query = user_query
+
+    try:
+        # Create a trace
+        trace = lf_client.trace(name="user_query", input={"query": query})
+        print(f"✓ Trace created: {trace.id}")
+
+        # Create a span for LLM call
+        span = trace.span(name="llm_inference", input={"query": query})
+        print(f"✓ Span created")
+
+        # Call LLM
+        start_time = time.time()
+
+        response = ollama_client.chat(
+            model="mistral",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": query}
+            ]
+        )
+
+        end_time = time.time()
+        latency_ms = (end_time - start_time) * 1000
+
+        answer = response['message']['content']
+        print(f"✓ LLM response received")
+
+        # Log the generation
+        span.generation(
+            name="mistral_response",
+            model="mistral",
+            input=query,
+            output=answer,
+            usage={
+                "input": 50,
+                "output": len(answer.split()),
+                "total": 50 + len(answer.split())
+            },
+            metadata={
+                "latency_ms": latency_ms,
+                "temperature": 0.7
+            }
+        )
+
+        span.end()
+        lf_client.flush()
+
+        print(f"\n📊 Answer:")
+        print(f"{answer}\n")
+        print(f"View trace: {base_url}/project/cmshi3anw05jpad0it1pqaib8/traces/{trace.id}")
+
+        return trace.id
+
+    except Exception as e:
+        print(f"✗ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
 if __name__ == "__main__":
     print("File 9: LangFuse Basics")
     print("=" * 60)
 
+    # Verify API keys are set
+    if not os.getenv("LANGFUSE_PUBLIC_KEY") or not os.getenv("LANGFUSE_SECRET_KEY"):
+        print("ERROR: LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY must be set in .env")
+        exit(1)
+
     print("\n--- Simple Trace Example ---")
-    trace_id_1 = simple_trace_example()
+    simple_trace_example()
 
-    print("\n\n--- Multi-Step Trace Example ---")
-    trace_id_2 = multi_step_trace()
+    print("\n--- Multi-Step Trace Example ---")
+    # multi_step_trace()
 
-    print("\n\n--- Metadata and Context ---")
-    trace_id_3 = metadata_and_context()
+    print("\n--- Metadata and Context ---")
+    # metadata_and_context()
 
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. LangFuse hierarchy: Trace > Span > Generation")
-    print("2. Trace = one user request end-to-end")
-    print("3. Span = one step (e.g., LLM call, retrieval)")
-    print("4. Generation = LLM output (model, tokens, metadata)")
-    print("5. Metadata is searchable: domain, user_tier, complexity, etc.")
-    print("6. Visit cloud.langfuse.com and search by trace_id to view traces")
-    print("7. All traces are persisted; view latency, tokens, metadata in dashboard")
+    # Final flush
+    try:
+        lf_client.flush()
+        print("\n✓ All traces flushed to Langfuse cloud")
+        time.sleep(2)
+        print("✓ Check Langfuse dashboard now!")
+    except Exception as e:
+        print(f"\n✗ Error flushing: {e}")
