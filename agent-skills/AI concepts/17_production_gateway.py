@@ -22,41 +22,51 @@ from dotenv import load_dotenv
 from pathlib import Path
 import time
 import json
-import numpy as np
-from sentence_transformers import SentenceTransformer
 import ollama
-import faiss
+from langchain_community.vectorstores import PGVector
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langfuse import Langfuse
 
 load_dotenv()
 
-# Initialize clients
 client = ollama.Client()
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
+embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-# FAISS vector store
-class FAISSVectorStore:
-    def __init__(self, embedding_dim=384):
-        self.embedding_dim = embedding_dim
-        self.index = faiss.IndexFlatL2(embedding_dim)
-        self.documents = []
-        self.metadata = []
+CONNECTION_STRING = (
+    f"postgresql+psycopg2://"
+    f"{os.getenv('POSTGRES_USER', 'postgres')}:"
+    f"{os.getenv('POSTGRES_PASSWORD', '')}@"
+    f"{os.getenv('POSTGRES_HOST', 'localhost')}:"
+    f"{os.getenv('POSTGRES_PORT', 5432)}/"
+    f"{os.getenv('POSTGRES_DB', 'ragdb')}"
+)
 
-    def add(self, text, metadata):
-        embedding = embedder.encode(text).reshape(1, -1).astype('float32')
-        self.index.add(embedding)
-        self.documents.append(text)
-        self.metadata.append(metadata)
+# Lazy-loaded vector store — built once on first complex query
+_vector_store = None
 
-    def query(self, query_text, top_k=3):
-        query_embedding = embedder.encode(query_text).reshape(1, -1).astype('float32')
-        distances, indices = self.index.search(query_embedding, top_k)
-        results = {
-            "documents": [[self.documents[i] for i in indices[0]]],
-            "distances": [distances[0].tolist()],
-            "metadatas": [[self.metadata[i] for i in indices[0]]]
-        }
-        return results
+def get_vector_store(kb_path):
+    """Build PGVector store from KB file (once per process)."""
+    global _vector_store
+    if _vector_store is not None:
+        return _vector_store
+
+    with open(kb_path, 'r') as f:
+        content = f.read()
+
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    texts = splitter.split_text(content)
+    source = Path(kb_path).stem
+
+    _vector_store = PGVector.from_texts(
+        texts=texts,
+        embedding=embeddings,
+        metadatas=[{"category": source} for _ in texts],
+        connection_string=CONNECTION_STRING,
+        collection_name="gateway_documents",
+        pre_delete_collection=True,
+    )
+    return _vector_store
 
 lf_client = Langfuse(
     public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
@@ -132,15 +142,11 @@ def get_user_policy(user_tier):
 
 def retrieve_rag_context(query, store, top_k=2):
     """File 10: RAG pipeline"""
-    results = store.query(query, top_k=top_k)
-
-    retrieved = []
-    if results and results["documents"]:
-        for i, doc in enumerate(results["documents"][0]):
-            score = results["distances"][0][i] if results["distances"] else 0
-            retrieved.append({"text": doc, "score": score, "rank": i + 1})
-
-    return retrieved
+    results = store.similarity_search_with_score(query, k=top_k)
+    return [
+        {"text": doc.page_content, "score": float(score), "rank": i + 1}
+        for i, (doc, score) in enumerate(results)
+    ]
 
 
 def generate_llm_response(system_prompt, user_prompt):
@@ -224,28 +230,7 @@ def process_query(query, user_tier="student", trace_id=None):
         # Complex query: use RAG context (if KB exists)
         kb_path = Path("data/science_kb.txt")
         if kb_path.exists():
-            # Build FAISS store
-            def load_and_build_kb():
-                with open(kb_path, 'r') as f:
-                    content = f.read()
-                sections = content.split("===== ")
-                chunks = []
-                for section in sections:
-                    if section.strip():
-                        lines = section.strip().split("\n", 1)
-                        category = lines[0].rstrip(" =====").strip() if len(lines) > 0 else "general"
-                        text = lines[1].strip() if len(lines) > 1 else section.strip()
-                        sub_chunks = text.split("Chunk ")
-                        for sub in sub_chunks:
-                            if sub.strip():
-                                chunks.append({"text": sub.strip(), "category": category})
-                return chunks
-
-            chunks = load_and_build_kb()
-            store = FAISSVectorStore()
-            for i, chunk in enumerate(chunks):
-                store.add(chunk["text"], {"category": chunk["category"], "chunk_id": i})
-
+            store = get_vector_store(str(kb_path))
             retrieved = retrieve_rag_context(query, store, top_k=2)
             context = "\n".join([r["text"][:100] for r in retrieved])
             context_info = f"Retrieved {len(retrieved)} chunks"

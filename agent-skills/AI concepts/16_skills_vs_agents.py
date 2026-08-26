@@ -68,7 +68,7 @@ def fact_lookup_skill(query):
     }
 
     for key, fact in facts.items():
-        if key in query.lower():
+        if key.lower() in query.lower():
             return {"skill": "fact_lookup", "fact": fact}
 
     return {"skill": "fact_lookup", "fact": "Fact not found"}
@@ -236,77 +236,16 @@ def supervisor_agent(query):
 # PART 4: COMPARISON & DECISION MATRIX
 # ============================================================================
 
-def print_skill_vs_agent_comparison():
-    """Show the distinction between skills and agents."""
-
-    print("\n=== SKILL vs AGENT ===\n")
-
-    comparison = {
-        "Characteristic": ["Decision Making", "Workflow", "Flexibility", "Complexity", "Use Case"],
-        "SKILL": [
-            "No - fixed workflow",
-            "Deterministic (same every time)",
-            "Low - does one thing",
-            "Simple to implement",
-            "Specific task (RAG search, fact lookup)"
-        ],
-        "AGENT": [
-            "Yes - reasons about action",
-            "Dynamic (depends on input)",
-            "High - can choose different paths",
-            "More complex (needs reasoning)",
-            "General purpose (decides what to do)"
-        ]
-    }
-
-    print(f"{'Characteristic':<20} {'SKILL':<40} {'AGENT':<40}")
-    print("=" * 100)
-    for i, char in enumerate(comparison["Characteristic"]):
-        skill_val = comparison["SKILL"][i]
-        agent_val = comparison["AGENT"][i]
-        print(f"{char:<20} {skill_val:<40} {agent_val:<40}")
+# Theory moved to: 16_skills_vs_agents_theory.md
+# (See markdown doc for detailed skill vs agent comparison)
 
 
-def print_architecture_patterns():
-    """Show different architecture patterns."""
-
-    print("\n=== ARCHITECTURE PATTERNS ===\n")
-
-    patterns = {
-        "Simple (Single Skill)": {
-            "Structure": "Query → RAG Skill → Answer",
-            "Pros": ["Fast", "Predictable"],
-            "Cons": ["Inflexible", "One-size-fits-all"],
-            "When to use": "Simple, well-defined problem"
-        },
-        "Skill Router (Agent)": {
-            "Structure": "Query → Agent (chooses skill) → Skill → Answer",
-            "Pros": ["Flexible", "Chooses best approach"],
-            "Cons": ["Slower", "Agent reasoning overhead"],
-            "When to use": "Multiple task types"
-        },
-        "Supervisor (Multi-Agent)": {
-            "Structure": "Query → Supervisor (chooses agent) → Agent → Skills → Answer",
-            "Pros": ["Very flexible", "Specialized agents"],
-            "Cons": ["Complex", "Multiple reasoning steps"],
-            "When to use": "Enterprise: multiple domains, complex reasoning"
-        }
-    }
-
-    for pattern, details in patterns.items():
-        print(f"\n{pattern}:")
-        for key, val in details.items():
-            if isinstance(val, list):
-                print(f"  {key}:")
-                for item in val:
-                    print(f"    - {item}")
-            else:
-                print(f"  {key}: {val}")
+# Theory moved to: 16_skills_vs_agents_theory.md
+# (See markdown doc for architecture patterns: Simple, Agent, Supervisor)
 
 
 if __name__ == "__main__":
     print("File 16: Skills vs Agents & Multi-Agent Architecture")
-    print("=" * 60)
 
     print("\n--- Testing Individual Skills ---")
     print("\n1. RAG Search Skill:")
@@ -333,15 +272,7 @@ if __name__ == "__main__":
     print(f"   Routed to: {result['routed_to']}")
     print(f"   Result: {result['result'][:80]}...")
 
-    print_skill_vs_agent_comparison()
-    print_architecture_patterns()
-
     print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. SKILL: fixed workflow (RAG, fact lookup, explain)")
-    print("2. AGENT: decides what to do based on input")
-    print("3. Skill Router Agent: chooses best skill for query")
-    print("4. Supervisor Agent: multi-level decision making")
-    print("5. Simple problems: use skills directly")
-    print("6. Complex problems: use agents to decide")
-    print("7. Enterprise: supervisor pattern for organization")
+    print("For detailed theory on skills, agents, and architecture:")
+    print("→ See 16_skills_vs_agents_theory.md")
+    print("=" * 60)

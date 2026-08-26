@@ -19,7 +19,6 @@ from opentelemetry import trace, context
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
-from opentelemetry.exporter.trace.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import Resource
 
 load_dotenv()
@@ -189,22 +188,68 @@ def get_exported_spans():
 
 if __name__ == "__main__":
     print("File 12: OpenTelemetry Introduction")
-    print("=" * 60)
 
     simple_span_example()
     nested_spans_example()
     context_propagation_otel()
     attributes_vs_events()
     get_exported_spans()
+    
+    
+"""
 
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. OpenTelemetry is the open standard for observability")
-    print("2. Spans: represent one unit of work (start → end)")
-    print("3. Nested spans: show hierarchical workflow")
-    print("4. Context propagation: automatic span linking within request")
-    print("5. Attributes: static metadata (searchable)")
-    print("6. Events: timestamped markers (what happened, when)")
-    print("7. Exporters: send spans to LangFuse, Jaeger, Datadog, etc.")
-    print("8. LangFuse and LangSmith use OTel under the hood")
-    print("9. OTel is language-agnostic and cloud-provider agnostic")
+Trace = Complete journey of one request
+Span  = One operation in that journey
+Context	= Keeps spans connected
+Attribute = Metadata about a span
+Event = Something that happened during a span
+Exporter = Sends/stores telemetry somewhere
+=======================================================
+
+Nested spans = structure
+Context propagation = connection
+
+Nested spans describe the hierarchy.
+Context propagation makes that hierarchy/trace relationship possible across execution boundaries.
+
+
+Trace ID = the whole journey.
+Span ID = one operation.
+Parent Span ID = who called/contained this operation.
+Context propagation = carries the Trace ID and relevant span context from one service to the next.
+
+                         CONTEXT PROPAGATION
+          Trace ID = ABC123 is propagated across services
+        ─────────────────────────────────────────────────────►
+
+┌──────────────────┐      ┌──────────────────────────┐      ┌──────────────────────────┐
+│   API SERVICE    │      │      RAG SERVICE         │      │      LLM SERVICE         │
+│                  │      │                          │      │                          │
+│ API Request      │      │ process_query            │      │ generate_answer          │
+│                  │      │                          │      │                          │
+│ Trace ID:        │─────►│ Trace ID: ABC123         │─────►│ Trace ID: ABC123         │
+│ ABC123           │      │ Span ID: S2              │      │ Span ID: S8              │
+│                  │      │ Parent: S1               │      │ Parent: S2*              │
+│ Span ID: S1      │      │                          │      │                          │
+│                  │      │  ├── classify_intent     │      │  ├── prompt_processing   │
+│                  │      │  │   Span ID: S3         │      │  │   Span ID: S9         │
+│                  │      │  │   Parent: S2          │      │  │   Parent: S8          │
+│                  │      │      │                   │      │      │                   │
+│                  │      │  ├── retrieve            │      │  ├── model_call          │
+│                  │      │  │   Span ID: S4         │      │  │   Span ID: S10        │
+│                  │      │  │   Parent: S2          │      │  │   Parent: S8          │
+│                  │      │  │      │                │      │      │                   │
+│                  │      │  │      ├── vector_search│      │  └── parse_response      │
+│                  │      │  │      │   Span ID: S5  │      │      Span ID: S11        │
+│                  │      │  │      │   Parent: S4   │      │      Parent: S8          │
+│                  │      │  │      │                │      │                          │
+│                  │      │  │      └── rerank       │      │                          │
+│                  │      │  │          Span ID: S6  │      │                          │
+│                  │      │  │          Parent: S4   │      │                          │
+│                  │      │  │                       │      │                          │
+│                  │      │  └── build_prompt        │      │                          │
+│                  │      │      Span ID: S7         │      │                          │
+│                  │      │      Parent: S2          │      │                          │
+└──────────────────┘      └──────────────────────────┘      └──────────────────────────┘
+
+"""

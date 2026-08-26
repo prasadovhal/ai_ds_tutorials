@@ -393,7 +393,6 @@ def evaluate_batch_responses(eval_dataset):
 
 if __name__ == "__main__":
     print("File 15: Evaluation Metrics")
-    print("=" * 60)
 
     # Sample evaluation data (with retrieved chunks for RAGAS metrics)
     eval_dataset = [
@@ -438,16 +437,12 @@ if __name__ == "__main__":
     print("\n--- Evaluating Batch of Responses ---")
     results, summary = evaluate_batch_responses(eval_dataset)
 
-    print("\n" + "=" * 60)
     print("EVALUATION SUMMARY")
-    print("=" * 60)
 
     import json
     print(json.dumps(summary, indent=2))
 
-    print("\n" + "=" * 60)
     print("INDIVIDUAL RESULTS")
-    print("=" * 60)
 
     for i, result in enumerate(results, 1):
         print(f"\nEvaluation {i}: {result['query']}")
@@ -465,14 +460,31 @@ if __name__ == "__main__":
         print(f"  Latency: {result['performance_metrics']['latency_ms']}ms")
         print(f"  Cost: ${result['performance_metrics']['estimated_cost']}")
 
-    print("\n" + "=" * 60)
-    print("Key Takeaways:")
-    print("1. Hallucination score: detects factual contradictions")
-    print("2. Groundedness score: % of answer supported by context")
-    print("3. Faithfulness score: accuracy of context representation")
-    print("4. Relevance score: does answer address question")
-    print("5. RAGAS Context Precision: % of retrieved chunks actually useful")
-    print("6. RAGAS Context Recall: were all necessary chunks retrieved?")
-    print("7. Overall score: weighted combination including RAGAS metrics")
-    print("8. Performance metrics: latency and estimated cost")
-    print("9. Evaluation enables data-driven improvements to RAG systems")
+
+"""
+ Groundedness ≈ Recall
+  Recall:         "Did I retrieve ALL relevant documents?"
+  Groundedness:   "Is the answer based on ALL relevant context?"
+
+Faithfulness ≈ Precision
+  Precision:     "Of what I predicted, how many were correct?"
+  Faithfulness:  "Of what I said, how much is accurate to context?"
+
+┌───────────────────┬─────────────┬─────────────────────┬────────────────────────────┬───────────────────────┐
+│      Metric       │    Level    │      Measures       │           Input            │       Ideal For       │
+├───────────────────┼─────────────┼─────────────────────┼────────────────────────────┼───────────────────────┤
+│ Context Precision │ Retrieval   │ Quality of chunks   │ Retrieved vs relevant      │ Clean context         │
+├───────────────────┼─────────────┼─────────────────────┼────────────────────────────┼───────────────────────┤
+│ Context Recall    │ Retrieval   │ Coverage of chunks  │ Retrieved vs all available │ Comprehensive context │
+├───────────────────┼─────────────┼─────────────────────┼────────────────────────────┼───────────────────────┤
+│ Faithfulness      │ Generation  │ Accuracy of answer  │ Answer vs context          │ Avoiding errors       │
+├───────────────────┼─────────────┼─────────────────────┼────────────────────────────┼───────────────────────┤
+│ Groundedness      │ Generation  │ Support for answer  │ Answer coverage            │ Complete answers      │
+├───────────────────┼─────────────┼─────────────────────┼────────────────────────────┼───────────────────────┤
+│ Precision         │ Traditional │ Prediction accuracy │ Predictions vs actual      │ Classification        │
+├───────────────────┼─────────────┼─────────────────────┼────────────────────────────┼───────────────────────┤
+│ Recall            │ Traditional │ Coverage of actuals │ Predictions vs all         │ Finding everything    │
+└───────────────────┴─────────────┴─────────────────────┴────────────────────────────┴───────────────────────┘
+
+
+"""

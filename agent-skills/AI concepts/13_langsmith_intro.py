@@ -1,259 +1,292 @@
 """
 File 13: LangSmith Introduction
-Concepts: LangSmith, tracing, prompt management, evaluations
+Concepts: @traceable decorator, runs, datasets, feedback, fetching runs
 
-LangSmith is similar to LangFuse but optimized for LangChain/LangGraph workflows.
+LangSmith is an observability platform by LangChain.
+Key difference from Langfuse: tracing uses the @traceable decorator
+instead of manually creating spans — much less boilerplate.
 
-This file shows:
-- What LangSmith is and when to use it
-- Basic tracing (requires LANGSMITH_API_KEY from environment)
-- Conceptual differences from LangFuse
-- When to pick LangSmith vs LangFuse
+What this file covers:
+1. Setup and connection test
+2. @traceable decorator — the primary way to trace
+3. Nested traces — parent/child runs
+4. Tracing a real Ollama LLM call
+5. Creating a dataset
+6. Adding feedback to runs
+7. Fetching runs back to local Python
 
-For this tutorial: LangFuse is primary (you have keys).
-LangSmith shown for understanding the ecosystem.
+Prerequisites:
+- pip install langsmith
+- LANGSMITH_API_KEY in .env
 """
 
 import os
+import time
 from dotenv import load_dotenv
+import ollama
+from langsmith import Client, traceable
 
 load_dotenv()
 
-# Check if LangSmith API key exists
-LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
+# Enable tracing and point to your project
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "ai-concepts-tutorial"
 
-# Conditional import (LangSmith is optional for this tutorial)
-try:
-    from langsmith import Client as LangSmithClient
-    LANGSMITH_AVAILABLE = True
-except ImportError:
-    LANGSMITH_AVAILABLE = False
-    print("Note: langsmith not installed. Showing conceptual examples only.\n")
+client = Client()
+ollama_client = ollama.Client()
 
 
-def langsmith_vs_langfuse():
+# ─────────────────────────────────────────────
+# 1. Connection Test
+# ─────────────────────────────────────────────
+
+def test_connection():
+    """Verify API key works and show account info."""
+    print("\n=== 1. Connection Test ===")
+    try:
+        # list_projects confirms auth is working
+        projects = list(client.list_projects())
+        print(f"Connected. Projects found: {len(projects)}")
+        for p in projects[:3]:
+            print(f"  - {p.name}")
+    except Exception as e:
+        print(f"Connection failed: {e}")
+
+
+# ─────────────────────────────────────────────
+# 2. @traceable — simplest tracing
+# ─────────────────────────────────────────────
+#
+# @traceable wraps a function. Every call is automatically logged
+# to LangSmith as a "run" — inputs, outputs, duration, errors.
+# No manual span start/end needed (unlike Langfuse).
+
+@traceable(name="classify_intent", run_type="chain")
+def classify_intent(query: str) -> dict:
+    """Simulate intent classification."""
+    time.sleep(0.02)
+    keywords = ["what", "how", "why", "explain"]
+    intent = "factual" if any(k in query.lower() for k in keywords) else "other"
+    return {"intent": intent, "confidence": 0.9}
+
+
+@traceable(name="estimate_complexity", run_type="chain")
+def estimate_complexity(query: str) -> int:
+    """Simulate complexity scoring."""
+    time.sleep(0.01)
+    return min(len(query.split()) // 5, 5)
+
+
+def simple_traceable_example():
+    print("\n=== 2. @traceable Decorator ===")
+
+    result = classify_intent("What is photosynthesis?")
+    print(f"Intent: {result}")
+
+    complexity = estimate_complexity("What is the mechanism behind DNA replication?")
+    print(f"Complexity: {complexity}")
+
+    print("→ View runs at: https://smith.langchain.com/projects/ai-concepts-tutorial")
+
+
+# ─────────────────────────────────────────────
+# 3. Nested Traces — parent/child runs
+# ─────────────────────────────────────────────
+#
+# When a @traceable function calls another @traceable function,
+# LangSmith automatically nests them as parent → child runs.
+# Same trace_id flows through — no manual linking needed.
+
+@traceable(name="full_pipeline", run_type="chain")
+def full_pipeline(query: str) -> dict:
     """
-    Comparison: LangSmith vs LangFuse
-    Both are observability platforms, but optimized for different use cases.
-    """
+    Calling @traceable functions inside another @traceable
+    creates a nested run tree automatically:
 
-    comparison = {
-        "LangSmith": {
-            "Best for": "LangChain/LangGraph-native workflows",
-            "Key features": [
-                "Prompt management (versioning, A/B testing)",
-                "Evaluation framework (LangSmith evaluators)",
-                "Dataset collection and benchmarking",
-                "Integration with LangChain agents"
-            ],
-            "Strengths": [
-                "Excellent prompt version control",
-                "Built-in evaluation framework",
-                "Agent monitoring",
-                "LangChain integrations"
-            ],
-            "When to use": "Building LangChain agents, managing prompts, running evals"
+    full_pipeline
+     ├── classify_intent
+     └── estimate_complexity
+    """
+    intent = classify_intent(query)
+    complexity = estimate_complexity(query)
+    return {"query": query, "intent": intent, "complexity": complexity}
+
+
+def nested_trace_example():
+    print("\n=== 3. Nested Traces ===")
+    result = full_pipeline("How does quantum entanglement work?")
+    print(f"Pipeline result: {result}")
+    print("→ Check LangSmith UI for nested run tree")
+
+
+# ─────────────────────────────────────────────
+# 4. Tracing a Real LLM Call (Ollama)
+# ─────────────────────────────────────────────
+#
+# run_type="llm" tells LangSmith this is an LLM call.
+# LangSmith renders input/output in a chat-friendly format.
+
+@traceable(name="ollama_mistral", run_type="llm")
+def call_mistral(system_prompt: str, user_prompt: str) -> str:
+    """Traced Ollama call."""
+    response = ollama_client.chat(
+        model="mistral",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+    )
+    return response['message']['content']
+
+
+@traceable(name="science_qa", run_type="chain")
+def science_qa(query: str) -> dict:
+    """Full Q&A chain — parent run containing the LLM child run."""
+    system = "You are a science expert. Answer concisely in 2-3 sentences."
+    answer = call_mistral(system, query)
+    return {"query": query, "answer": answer}
+
+
+def llm_trace_example():
+    print("\n=== 4. Tracing Real LLM Call ===")
+    result = science_qa("What is the role of mitochondria?")
+    print(f"Q: {result['query']}")
+    print(f"A: {result['answer'][:150]}...")
+    print("→ LangSmith shows input/output in chat format under 'science_qa' run")
+
+
+# ─────────────────────────────────────────────
+# 5. Creating a Dataset
+# ─────────────────────────────────────────────
+#
+# Datasets store input/output pairs for evaluation.
+# You build a dataset once, then run evals against it repeatedly.
+
+def create_dataset_example():
+    print("\n=== 5. Creating a Dataset ===")
+
+    dataset_name = "science_qa_eval"
+
+    # Delete if already exists (for re-running this tutorial)
+    try:
+        existing = client.read_dataset(dataset_name=dataset_name)
+        client.delete_dataset(dataset_id=existing.id)
+        print("Deleted existing dataset")
+    except Exception:
+        pass
+
+    dataset = client.create_dataset(
+        dataset_name=dataset_name,
+        description="Science Q&A pairs for evaluating RAG answers"
+    )
+
+    examples = [
+        {
+            "inputs":  {"query": "What is photosynthesis?"},
+            "outputs": {"answer": "Photosynthesis converts light energy into chemical energy stored as glucose."}
         },
-        "LangFuse": {
-            "Best for": "General LLM observability (framework-agnostic)",
-            "Key features": [
-                "Trace collection (any LLM API)",
-                "RAG debugging (retrieval visibility)",
-                "Cost tracking",
-                "User analytics"
-            ],
-            "Strengths": [
-                "Works with any LLM (Ollama, OpenAI, Anthropic)",
-                "Lightweight SDK",
-                "Good for RAG debugging",
-                "User session analytics"
-            ],
-            "When to use": "Any LLM app, especially RAG systems"
-        }
-    }
+        {
+            "inputs":  {"query": "What is the role of mitochondria?"},
+            "outputs": {"answer": "Mitochondria produce ATP through cellular respiration — the cell's energy currency."}
+        },
+        {
+            "inputs":  {"query": "What is quantum entanglement?"},
+            "outputs": {"answer": "Quantum entanglement links two particles so measuring one instantly affects the other."}
+        },
+    ]
 
-    print("=== LangSmith vs LangFuse ===\n")
-    for platform, details in comparison.items():
-        print(f"\n{platform}:")
-        print(f"  Best for: {details['Best for']}")
-        print(f"  Key features:")
-        for f in details['Key features']:
-            print(f"    - {f}")
-        print(f"  Strengths:")
-        for s in details['Strengths']:
-            print(f"    - {s}")
-        print(f"  When to use: {details['When to use']}")
+    client.create_examples(
+        inputs=[e["inputs"] for e in examples],
+        outputs=[e["outputs"] for e in examples],
+        dataset_id=dataset.id
+    )
+
+    print(f"Dataset '{dataset_name}' created with {len(examples)} examples")
+    print("→ View at: https://smith.langchain.com/datasets")
+    return dataset
 
 
-def conceptual_langsmith_trace():
-    """
-    Show conceptually how LangSmith tracing works.
-    If API key is available, this would create a real trace.
-    """
+# ─────────────────────────────────────────────
+# 6. Adding Feedback to Runs
+# ─────────────────────────────────────────────
+#
+# Feedback attaches a quality score to a specific run.
+# Useful for human review or programmatic scoring.
 
-    print("\n=== Conceptual LangSmith Trace ===\n")
+def feedback_example():
+    print("\n=== 6. Adding Feedback to Runs ===")
 
-    if LANGSMITH_AVAILABLE and LANGSMITH_API_KEY:
-        print("✓ LangSmith is installed and API key found")
-        print("Note: Real LangSmith integration requires LangChain framework")
-        print("For standalone use, see langsmith.Client() documentation")
+    # Run something and capture the run_id
+    # langsmith_extra={"metadata": ...} passes extra info to the run
+    result = science_qa("What is DNA replication?")
+
+    # Fetch the most recent run for this function to get its ID
+    runs = list(client.list_runs(
+        project_name="ai-concepts-tutorial",
+        filter='eq(name, "science_qa")',
+        limit=1
+    ))
+
+    if runs:
+        run = runs[0]
+        client.create_feedback(
+            run_id=run.id,
+            key="correctness",
+            score=0.9,
+            comment="Answer is accurate and concise"
+        )
+        print(f"Feedback added to run: {run.id}")
+        print(f"Answer was: {result['answer'][:100]}...")
     else:
-        print("✗ LangSmith not fully configured (optional for this tutorial)")
-        print("Using conceptual example instead...\n")
-
-    # Conceptual trace structure (as if LangSmith was initialized)
-    trace_structure = {
-        "trace_id": "trace_abc123",
-        "name": "science_qa_with_langsmith",
-        "runs": [
-            {
-                "name": "intent_classification",
-                "run_type": "chain",
-                "input": {"query": "What is photosynthesis?"},
-                "output": {"intent": "factual"}
-            },
-            {
-                "name": "rag_retrieval",
-                "run_type": "retriever",
-                "input": {"query": "What is photosynthesis?"},
-                "output": {
-                    "documents": ["Chunk 1: Photosynthesis is...", "Chunk 2: Light reactions..."],
-                    "num_docs": 2
-                }
-            },
-            {
-                "name": "llm_generation",
-                "run_type": "llm",
-                "model": "mistral",
-                "input": {"prompt": "Answer based on context..."},
-                "output": {"text": "Photosynthesis is the process..."},
-                "tokens": {"input": 100, "output": 200}
-            }
-        ]
-    }
-
-    import json
-    print(json.dumps(trace_structure, indent=2))
+        print("No runs found yet — run llm_trace_example() first")
 
 
-def langsmith_prompt_management_concept():
-    """
-    LangSmith's prompt management feature: version and test prompts.
-    This is not available in Ollama setup, but shows the concept.
-    """
+# ─────────────────────────────────────────────
+# 7. Fetching Runs Back to Local Python
+# ─────────────────────────────────────────────
+#
+# Like Langfuse's fetch_traces(), LangSmith lets you pull
+# run data back for offline analysis or reporting.
 
-    print("\n=== LangSmith Prompt Management (Conceptual) ===\n")
+def fetch_runs_example():
+    print("\n=== 7. Fetching Runs Locally ===")
 
-    print("LangSmith enables:")
-    print("1. Prompt versioning")
-    print("   - Save prompt iterations")
-    print("   - Roll back to previous versions")
-    print("   - Track which version is in production")
+    runs = list(client.list_runs(
+        project_name="ai-concepts-tutorial",
+        limit=5
+    ))
 
-    print("\n2. Prompt testing")
-    print("   - Test multiple prompt versions against test cases")
-    print("   - Measure quality scores")
-    print("   - Deploy winning version")
-
-    print("\n3. Example workflow:")
-    print("   v1.0: 'Answer the question concisely'")
-    print("   v1.1: 'Answer with step-by-step reasoning'")
-    print("   v1.2: 'Answer with examples'")
-    print("   → Test all 3 → v1.1 wins → Deploy v1.1")
-
-    print("\n4. LangSmith dashboard shows:")
-    print("   - Which prompt version is running")
-    print("   - Cost per version")
-    print("   - Quality metrics per version")
-
-
-def langsmith_evaluation_framework():
-    """
-    LangSmith has built-in evaluators for quality assessment.
-    These are comparable to file 15 (evaluation metrics).
-    """
-
-    print("\n=== LangSmith Evaluation Framework (Conceptual) ===\n")
-
-    print("LangSmith evaluators include:")
-    print("- Criteria evaluators: custom criteria (e.g., 'Is answer relevant?')")
-    print("- Scoring evaluators: score outputs (1-10)")
-    print("- Comparison evaluators: compare two outputs")
-    print("- Distance evaluators: semantic similarity to reference")
-
-    print("\nExample LangSmith evaluation:")
-    evaluation_example = {
-        "dataset_name": "science_questions",
-        "runs": [
-            {
-                "input": {"query": "What is photosynthesis?"},
-                "output": "Photosynthesis is the process...",
-                "evaluation": {
-                    "correctness": {"score": 9, "reasoning": "Accurate, concise"},
-                    "completeness": {"score": 7, "reasoning": "Missing some details"},
-                    "overall": {"score": 8}
-                }
-            }
-        ]
-    }
-
-    import json
-    print(json.dumps(evaluation_example, indent=2))
-
-
-def when_to_use_which():
-    """
-    Decision matrix: when to use LangSmith vs LangFuse vs custom tracing.
-    """
-
-    print("\n=== Decision Matrix ===\n")
-
-    decision_matrix = {
-        "Using LangChain/LangGraph agents?": {
-            "Yes": "→ LangSmith (native integration)",
-            "No": "→ LangFuse or custom"
-        },
-        "Need prompt versioning/management?": {
-            "Yes": "→ LangSmith",
-            "No": "→ LangFuse"
-        },
-        "Building RAG system?": {
-            "Yes": "→ LangFuse (better RAG debugging)",
-            "No": "→ Either"
-        },
-        "Need cost tracking per model?": {
-            "Yes": "→ LangFuse",
-            "No": "→ Either"
-        },
-        "Want lightweight SDK, minimal setup?": {
-            "Yes": "→ LangFuse",
-            "No": "→ LangSmith"
-        }
-    }
-
-    for question, answer in decision_matrix.items():
-        print(f"{question}")
-        for key, val in answer.items():
-            print(f"  {key}: {val}")
+    print(f"Found {len(runs)} recent runs:\n")
+    for run in runs:
+        duration_ms = (
+            (run.end_time - run.start_time).total_seconds() * 1000
+            if run.end_time and run.start_time else 0
+        )
+        print(f"  [{run.run_type}] {run.name}")
+        print(f"    Input  : {str(run.inputs)[:80]}")
+        print(f"    Output : {str(run.outputs)[:80]}")
+        print(f"    Duration: {duration_ms:.0f}ms")
         print()
+
+
+# ─────────────────────────────────────────────
+# Theory moved to: 13_langsmith_vs_langfuse.md
+# ─────────────────────────────────────────────
+# See markdown for detailed comparison and trade-offs
 
 
 if __name__ == "__main__":
     print("File 13: LangSmith Introduction")
-    print("=" * 60)
 
-    langsmith_vs_langfuse()
-    conceptual_langsmith_trace()
-    langsmith_prompt_management_concept()
-    langsmith_evaluation_framework()
-    when_to_use_which()
+    test_connection()
+    simple_traceable_example()
+    nested_trace_example()
+    llm_trace_example()
+    create_dataset_example()
+    feedback_example()
+    fetch_runs_example()
 
+    print("\n" + "=" * 60)
+    print("For detailed LangSmith vs Langfuse comparison theory:")
+    print("→ See 13_langsmith_vs_langfuse.md")
     print("=" * 60)
-    print("Key Takeaways:")
-    print("1. LangSmith: best for LangChain/LangGraph workflows")
-    print("2. LangFuse: best for general LLM apps and RAG systems")
-    print("3. Both provide observability; different trade-offs")
-    print("4. LangSmith strength: prompt versioning and management")
-    print("5. LangFuse strength: RAG debugging and cost tracking")
-    print("6. For this tutorial: LangFuse is primary (you have keys)")
-    print("7. In production: pick based on your tech stack (LangChain vs other)")
