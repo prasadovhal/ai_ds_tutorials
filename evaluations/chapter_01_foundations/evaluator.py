@@ -45,10 +45,13 @@ def build_confusion_matrix(
     ground_truths: list[str],
     predictions: list[str],
 ) -> dict:
+    from sklearn.metrics import confusion_matrix
     labels = sorted(set(ground_truths) | set(predictions))
-    matrix = {actual: {pred: 0 for pred in labels} for actual in labels}
-    for gt, pred in zip(ground_truths, predictions):
-        matrix[gt][pred] += 1
+    cm = confusion_matrix(ground_truths, predictions, labels=labels)
+    matrix = {
+        actual: {pred: int(cm[i][j]) for j, pred in enumerate(labels)}
+        for i, actual in enumerate(labels)
+    }
     return {"labels": labels, "matrix": matrix}
 
 

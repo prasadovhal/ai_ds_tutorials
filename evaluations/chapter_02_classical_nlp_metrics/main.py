@@ -27,7 +27,8 @@ Metrics covered:
 import sys
 import io
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 from dataset import (
     load_sample_data,
@@ -282,14 +283,13 @@ def main():
     cider_refs = [ex["reference"] for ex in text_examples[:3]]
 
     for i, ex in enumerate(text_examples[:3]):
-        ref_list = [ex["reference"]]
         print(f"\n    Example {i+1}:")
 
         for quality, hyp_key in [("Good", "good_hypothesis"),
                                   ("Mediocre", "mediocre_hypothesis"),
                                   ("Poor", "poor_hypothesis")]:
             hyp = ex[hyp_key]
-            result = cider_score(ref_list, hyp)
+            result = cider_score(cider_refs, hyp)
             per_n_str = "  ".join(f"{k}={v:.3f}" for k, v in result["per_n"].items())
             print(f"      {quality:10s}: CIDEr={result['score']:.4f}  ({per_n_str})")
 

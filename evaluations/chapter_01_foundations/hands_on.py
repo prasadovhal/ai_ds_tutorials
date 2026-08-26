@@ -2,7 +2,10 @@
 Chapter 1: Foundations of LLM Evaluation - Hands-On
 Uses: pandas, scikit-learn
 """
-import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+import sys, io; 
+
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 import random
 import numpy as np

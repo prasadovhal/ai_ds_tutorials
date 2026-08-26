@@ -6,7 +6,8 @@ label noise, Cohen's/Fleiss' Kappa, and meta-evaluation.
 
 import sys
 import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 import json
 import random

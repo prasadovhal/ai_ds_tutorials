@@ -6,7 +6,8 @@ monitoring, alerting, CI/CD gates, prompt versioning, and continuous benchmarkin
 
 import sys
 import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 from dataset import (
     load_sample_data,

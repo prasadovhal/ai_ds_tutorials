@@ -1,4 +1,5 @@
-import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+import sys, io; if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 """
 Chapter 6 Hands-On: Golden Dataset Engineering
 Uses: pandas, sklearn, ollama

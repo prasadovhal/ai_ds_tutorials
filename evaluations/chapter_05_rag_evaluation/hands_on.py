@@ -1,4 +1,5 @@
-import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+import sys, io; if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 """
 Chapter 5 Hands-On: RAG Evaluation with Real Embeddings + FAISS
 Uses: langchain, FAISS, ragas, deepeval, ollama, pandas

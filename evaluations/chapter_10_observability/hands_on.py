@@ -2,7 +2,8 @@
 Chapter 10: Observability for LLM Systems - Hands-On
 Tools: OpenTelemetry, Arize Phoenix, LangSmith, W&B, MLflow + manual fallback
 """
-import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+import sys, io; if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 import time
 import random

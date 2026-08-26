@@ -3,7 +3,8 @@ Chapter 8: Agent Evaluation - Hands-On
 Builds a real LangGraph ReAct agent, runs it on science questions,
 captures full traces, and evaluates agent trajectories.
 """
-import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+import sys, io; if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import os, re
 import pandas as pd
 

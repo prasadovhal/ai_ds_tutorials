@@ -118,16 +118,12 @@ def get_dataset_summary(questions: list[dict]) -> dict:
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("DATASET MODULE - Quick Test")
-    print("=" * 60)
-
-    train = load_train_data(limit=10)
+    train = load_train_data(limit=50)
     print(f"\nLoaded {len(train)} training questions")
     print(f"First question: {train[0]['prompt'][:80]}...")
     print(f"Ground truth: {train[0]['ground_truth']}")
 
-    summary = get_dataset_summary(load_train_data())
+    summary = get_dataset_summary(train)
     print(f"\nFull dataset summary:")
     for k, v in summary.items():
         print(f"  {k}: {v}")

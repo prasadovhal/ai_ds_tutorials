@@ -2,7 +2,8 @@
 Chapter 9: Production Evaluation Systems - Hands-On
 Uses: pandas, sklearn, mlflow, numpy
 """
-import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+import sys, io; if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 import numpy as np
 import pandas as pd

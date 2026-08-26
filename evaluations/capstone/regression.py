@@ -1,5 +1,6 @@
 import sys, io
-if sys.stdout.encoding != "utf-8" and hasattr(sys.stdout, "buffer"): sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 
 def compare_versions(results_v1, results_v2, threshold=0.02):

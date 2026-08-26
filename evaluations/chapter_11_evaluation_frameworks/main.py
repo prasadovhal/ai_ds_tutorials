@@ -1,4 +1,5 @@
-import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+import sys, io; if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 """
 Chapter 11 - Evaluation Frameworks
 Main demo: run all 10 framework-style evaluators on the same dataset.
