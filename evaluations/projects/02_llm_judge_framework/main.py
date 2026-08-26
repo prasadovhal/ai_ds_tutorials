@@ -7,7 +7,8 @@ Uses Ollama to evaluate answers with multiple judging strategies:
 - Inter-judge agreement analysis (consistency across runs)
 - Multi-criteria evaluation (correctness, completeness, clarity)
 """
-import sys, io; if hasattr(sys.stdout, "buffer"):
+import sys, io
+if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, json, random, os
 

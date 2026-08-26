@@ -5,18 +5,14 @@ Comprehensive multi-metric evaluator for classification predictions.
 Computes accuracy, per-class accuracy, confusion matrix, BLEU, and ROUGE scores.
 Compares random vs smart predictors and saves results to JSON.
 """
-import sys, io; if hasattr(sys.stdout, "buffer"):
+import sys, io
+if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, json, random, os
 from collections import Counter
 
-# --- Load sklearn metrics (fallback if missing) ---
-try:
-    from sklearn.metrics import accuracy_score, confusion_matrix
-    HAS_SKLEARN = True
-except ImportError:
-    HAS_SKLEARN = False
-    print("[WARN] sklearn not found — using manual accuracy/confusion matrix")
+# --- Load sklearn metrics ---
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 
 # --- Load BLEU / ROUGE (fallback if missing) ---
 try:
@@ -62,28 +58,15 @@ def predict_smart(rows):
 
 # ── 3. Metrics ───────────────────────────────────────────────────────────────
 def compute_accuracy(y_true, y_pred):
-    if HAS_SKLEARN:
-        return accuracy_score(y_true, y_pred)
-    return sum(a == b for a, b in zip(y_true, y_pred)) / len(y_true)
+    return accuracy_score(y_true, y_pred)
 
 def compute_per_class_accuracy(y_true, y_pred):
-    per_class = {}
-    for label in LABELS:
-        indices = [i for i, y in enumerate(y_true) if y == label]
-        if indices:
-            per_class[label] = sum(y_pred[i] == label for i in indices) / len(indices)
-        else:
-            per_class[label] = 0.0
-    return per_class
+    recalls = recall_score(y_true, y_pred, labels=LABELS, average=None, zero_division=0.0)
+    return {LABELS[i]: recalls[i] for i in range(len(LABELS))}
 
 def compute_confusion(y_true, y_pred):
-    if HAS_SKLEARN:
-        cm = confusion_matrix(y_true, y_pred, labels=LABELS)
-        return {LABELS[i]: {LABELS[j]: int(cm[i][j]) for j in range(5)} for i in range(5)}
-    cm = {a: {b: 0 for b in LABELS} for a in LABELS}
-    for t, p in zip(y_true, y_pred):
-        cm[t][p] += 1
-    return cm
+    cm = confusion_matrix(y_true, y_pred, labels=LABELS)
+    return {LABELS[i]: {LABELS[j]: int(cm[i][j]) for j in range(5)} for i in range(5)}
 
 def compute_bleu_rouge(rows, preds):
     """Compute BLEU/ROUGE between predicted answer text and gold answer text."""

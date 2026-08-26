@@ -5,7 +5,8 @@ Monitors model accuracy and performance over batches simulating data arrival ove
 Detects drift using chi-squared test, tracks accuracy trends, and flags regressions.
 Compares 3 model versions (weak, medium, drifting) across batches.
 """
-import sys, io; if hasattr(sys.stdout, "buffer"):
+import sys, io
+if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, os, random
 

@@ -13,7 +13,7 @@ Beginner-friendly implementation: one file, no classes, small metric functions.
 
 import math
 from collections import Counter
-
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix as sk_confusion_matrix
 
 GROUND_TRUTH = ["A", "B", "A", "C", "B", "A"]
 GOOD_PREDICTIONS = ["A", "B", "A", "C", "A", "A"]
@@ -37,96 +37,58 @@ def section(title):
 
 
 def accuracy(truth, preds):
-    correct = 0
-    for expected, predicted in zip(truth, preds):
-        if expected == predicted:
-            correct += 1
-    return correct / len(truth)
+    return accuracy_score(truth, preds)
 
 
 def precision_for_label(truth, preds, label):
-    true_positive = 0
-    false_positive = 0
-    for expected, predicted in zip(truth, preds):
-        if predicted == label and expected == label:
-            true_positive += 1
-        if predicted == label and expected != label:
-            false_positive += 1
-    if true_positive + false_positive == 0:
-        return 0.0
-    return true_positive / (true_positive + false_positive)
+    return precision_score(truth, preds, labels=[label], average=None, zero_division=0.0)[0]
 
 
 def recall_for_label(truth, preds, label):
-    true_positive = 0
-    false_negative = 0
-    for expected, predicted in zip(truth, preds):
-        if expected == label and predicted == label:
-            true_positive += 1
-        if expected == label and predicted != label:
-            false_negative += 1
-    if true_positive + false_negative == 0:
-        return 0.0
-    return true_positive / (true_positive + false_negative)
+    return recall_score(truth, preds, labels=[label], average=None, zero_division=0.0)[0]
 
 
-def f1_score(precision_value, recall_value):
+def compute_f1_score(precision_value, recall_value):
     if precision_value + recall_value == 0:
         return 0.0
     return 2 * precision_value * recall_value / (precision_value + recall_value)
 
 
 def confusion_matrix(truth, preds):
-    matrix = {}
     labels = sorted(set(truth + preds))
-    for expected in labels:
-        matrix[expected] = {}
-        for predicted in labels:
-            matrix[expected][predicted] = 0
-    for expected, predicted in zip(truth, preds):
-        matrix[expected][predicted] += 1
-    return matrix
+    cm = sk_confusion_matrix(truth, preds, labels=labels)
+    return {labels[i]: {labels[j]: int(cm[i][j]) for j in range(len(labels))} for i in range(len(labels))}
+
+
+try:
+    from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+    from rouge_score import rouge_scorer
+    HAS_BLEU = True
+    HAS_ROUGE = True
+except ImportError:
+    HAS_BLEU = False
+    HAS_ROUGE = False
 
 
 def tokenize(text):
     return text.lower().split()
 
 
-def unigram_precision(reference, hypothesis):
-    ref_counts = Counter(tokenize(reference))
-    hyp_counts = Counter(tokenize(hypothesis))
-    overlap = 0
-    for token, count in hyp_counts.items():
-        overlap += min(count, ref_counts[token])
-    if len(tokenize(hypothesis)) == 0:
-        return 0.0
-    return overlap / len(tokenize(hypothesis))
-
-
-def unigram_recall(reference, hypothesis):
-    ref_tokens = tokenize(reference)
-    ref_counts = Counter(ref_tokens)
-    hyp_counts = Counter(tokenize(hypothesis))
-    overlap = 0
-    for token, count in ref_counts.items():
-        overlap += min(count, hyp_counts[token])
-    return overlap / len(ref_tokens)
-
-
 def bleu_1(reference, hypothesis):
-    precision = unigram_precision(reference, hypothesis)
-    ref_len = len(tokenize(reference))
-    hyp_len = len(tokenize(hypothesis))
-    if hyp_len == 0:
-        return 0.0
-    brevity_penalty = 1.0
-    if hyp_len < ref_len:
-        brevity_penalty = math.exp(1 - ref_len / hyp_len)
-    return brevity_penalty * precision
+    if HAS_BLEU:
+        ref_tokens = reference.lower().split()
+        hyp_tokens = hypothesis.lower().split()
+        smooth = SmoothingFunction().method1
+        return sentence_bleu([ref_tokens], hyp_tokens, smoothing_function=smooth)
+    return 0.0
 
 
 def rouge_1(reference, hypothesis):
-    return unigram_recall(reference, hypothesis)
+    if HAS_ROUGE:
+        scorer = rouge_scorer.RougeScorer(['rouge1'], use_stemmer=True)
+        scores = scorer.score(reference, hypothesis)
+        return scores['rouge1'].fmeasure
+    return 0.0
 
 
 def exact_match(reference, hypothesis):
@@ -134,24 +96,32 @@ def exact_match(reference, hypothesis):
 
 
 def token_f1(reference, hypothesis):
-    precision_value = unigram_precision(reference, hypothesis)
-    recall_value = unigram_recall(reference, hypothesis)
-    return f1_score(precision_value, recall_value)
-
-
-def perplexity(probabilities):
-    log_sum = 0
-    for probability in probabilities:
-        log_sum += math.log(probability)
-    average_negative_log = -log_sum / len(probabilities)
-    return math.exp(average_negative_log)
+    if not HAS_BLEU and not HAS_ROUGE:
+        return 0.0
+    ref_tokens = set(reference.lower().split())
+    hyp_tokens = set(hypothesis.lower().split())
+    if not ref_tokens or not hyp_tokens:
+        return 0.0
+    intersection = len(ref_tokens & hyp_tokens)
+    precision = intersection / len(hyp_tokens) if hyp_tokens else 0.0
+    recall = intersection / len(ref_tokens) if ref_tokens else 0.0
+    return compute_f1_score(precision, recall)
 
 
 def cross_entropy(probabilities):
+    """Compute cross-entropy from probability values."""
     total = 0
     for probability in probabilities:
+        if probability <= 0:
+            raise ValueError("Probabilities must be positive")
         total += -math.log(probability)
     return total / len(probabilities)
+
+
+def perplexity(probabilities):
+    """Compute perplexity from probability values."""
+    ce = cross_entropy(probabilities)
+    return math.exp(ce)
 
 
 def calibration_gap(correct_flags, confidences):
@@ -166,7 +136,7 @@ def show_classification_metrics(name, preds):
     for label in sorted(set(GROUND_TRUTH)):
         precision_value = precision_for_label(GROUND_TRUTH, preds, label)
         recall_value = recall_for_label(GROUND_TRUTH, preds, label)
-        f1_value = f1_score(precision_value, recall_value)
+        f1_value = compute_f1_score(precision_value, recall_value)
         print(f"Label {label}: precision={precision_value:.2f} recall={recall_value:.2f} f1={f1_value:.2f}")
     print("Confusion matrix:")
     for expected, row in confusion_matrix(GROUND_TRUTH, preds).items():

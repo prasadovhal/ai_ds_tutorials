@@ -5,7 +5,8 @@ End-to-end RAG system with TF-IDF retrieval, Ollama generation, and evaluation.
 Computes context precision/recall, faithfulness, and answer relevancy.
 Includes Langfuse tracing and LangGraph RAG chain orchestration.
 """
-import sys, io; if hasattr(sys.stdout, "buffer"):
+import sys, io
+if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, json, random, os, re
 

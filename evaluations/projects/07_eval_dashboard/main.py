@@ -5,9 +5,11 @@ Comprehensive evaluation dashboard with metrics and ASCII visualizations.
 Computes accuracy, per-class metrics, F1 scores, and generates dashboard artifacts
 for 3 simulated model variants (GPT-Basic, Claude-Mid, DeepEval-Pro).
 """
-import sys, io; if hasattr(sys.stdout, "buffer"):
+import sys, io
+if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, os, random
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix as sk_confusion_matrix
 
 # === Load data ===
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "train.csv")
@@ -36,28 +38,14 @@ truths = [row["answer"] for row in rows]
 
 # === Compute metrics ===
 def compute_metrics(truths, preds, name):
-    n = len(truths)
-    accuracy = sum(1 for t, p in zip(truths, preds) if t == p) / n
-    # Per-class accuracy
-    cc, ct = {c: 0 for c in CHOICES}, {c: 0 for c in CHOICES}
-    for t, p in zip(truths, preds):
-        ct[t] += 1
-        if t == p: cc[t] += 1
-    pca = {c: cc[c] / ct[c] if ct[c] > 0 else 0.0 for c in CHOICES}
-    # F1 per class -> macro F1
-    f1s = {}
-    for c in CHOICES:
-        tp = sum(1 for t, p in zip(truths, preds) if t == c and p == c)
-        fp = sum(1 for t, p in zip(truths, preds) if t != c and p == c)
-        fn = sum(1 for t, p in zip(truths, preds) if t == c and p != c)
-        pr = tp / (tp + fp) if tp + fp > 0 else 0.0
-        rc = tp / (tp + fn) if tp + fn > 0 else 0.0
-        f1s[c] = 2 * pr * rc / (pr + rc) if pr + rc > 0 else 0.0
+    accuracy = accuracy_score(truths, preds)
+    recalls = recall_score(truths, preds, labels=CHOICES, average=None, zero_division=0.0)
+    pca = {c: recalls[i] for i, c in enumerate(CHOICES)}
+    f1_scores = f1_score(truths, preds, labels=CHOICES, average=None, zero_division=0.0)
+    f1s = {c: f1_scores[i] for i, c in enumerate(CHOICES)}
     macro_f1 = sum(f1s.values()) / len(f1s)
-    # Confusion matrix
-    cm = {t: {p: 0 for p in CHOICES} for t in CHOICES}
-    for t, p in zip(truths, preds):
-        cm[t][p] += 1
+    cm_array = sk_confusion_matrix(truths, preds, labels=CHOICES)
+    cm = {CHOICES[i]: {CHOICES[j]: int(cm_array[i][j]) for j in range(len(CHOICES))} for i in range(len(CHOICES))}
     errors = [i for i, (t, p) in enumerate(zip(truths, preds)) if t != p]
     return {"name": name, "accuracy": accuracy, "pca": pca, "macro_f1": macro_f1,
             "f1s": f1s, "cm": cm, "errors": errors}

@@ -5,9 +5,11 @@ Gated evaluation pipeline for model deployment with 6 stages:
 load data, run inference (with latency), compute metrics, regression testing, quality gates, and report.
 Checks accuracy thresholds, latency p95, and regressions before deployment approval.
 """
-import sys, io; if hasattr(sys.stdout, "buffer"):
+import sys, io
+if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, os, random, time
+from sklearn.metrics import accuracy_score, recall_score
 
 try:
     import json
@@ -48,12 +50,9 @@ def stage_run_inference(rows, accuracy, model_name):
 def stage_compute_metrics(truths, preds):
     t0 = time.time()
     n = len(truths)
-    accuracy = sum(1 for t, p in zip(truths, preds) if t == p) / n if n else 0.0
-    cc, ct = {c: 0 for c in CHOICES}, {c: 0 for c in CHOICES}
-    for t, p in zip(truths, preds):
-        ct[t] += 1
-        if t == p: cc[t] += 1
-    per_class = {c: cc[c] / ct[c] if ct[c] > 0 else 0.0 for c in CHOICES}
+    accuracy = accuracy_score(truths, preds)
+    recalls = recall_score(truths, preds, labels=CHOICES, average=None, zero_division=0.0)
+    per_class = {c: recalls[i] for i, c in enumerate(CHOICES)}
     return {"accuracy": accuracy, "per_class": per_class, "correct": int(accuracy * n),
             "total": n, "ms": (time.time() - t0) * 1000, "status": "PASS"}
 
