@@ -1,27 +1,23 @@
-# Chapter 10 - LLM Application Observability
+# Chapter 10: Observability
 
-Observability tools for monitoring LLM pipelines: tracing, logging, latency analysis, token/cost tracking, prompt versioning, and response quality monitoring.
+This chapter covers how to observe and monitor an LLM system in practice. The code is now a single straightforward walkthrough.
+
+## Topics
+
+1. Tracing
+2. Structured logging
+3. Latency tracking
+4. Token tracking
+5. Cost tracking
+6. Prompt tracking
+7. Response monitoring
+8. Dashboard summary
 
 ## Files
 
-| File | Description |
-|------|-------------|
-| `dataset.py` | Data loading, token estimation, simulated LLM responses and traces |
-| `sample_data.json` | Pre-built sample traces, logs, metrics, pricing, and prompt versions |
-| `evaluator.py` | Observability tool implementations (8 classes) |
-| `theory.md` | All theory, intuition, diagrams, and interview questions |
-| `main.py` | Demonstrates all tools with output |
-
-## Evaluator Classes
-
-- **TraceManager** - Distributed traces with parent-child spans
-- **LLMLogger** - Structured logging with level filtering
-- **LatencyTracker** - P50/P95/P99 percentile calculations
-- **TokenCounter** - Token usage tracking and estimation
-- **CostCalculator** - Per-model pricing and cost comparison
-- **PromptTracker** - Prompt versioning with effectiveness metrics
-- **ResponseMonitor** - Accuracy, confidence, and format error tracking
-- **ObservabilityDashboard** - Unified text-based dashboard
+- `main.py`: run this file
+- `theory.md`: chapter notes
+- `sample_data.json`: sample chapter data
 
 ## Run
 
@@ -30,4 +26,3 @@ cd chapter_10_observability
 python main.py
 ```
 
-No external dependencies required -- uses Python standard library only.

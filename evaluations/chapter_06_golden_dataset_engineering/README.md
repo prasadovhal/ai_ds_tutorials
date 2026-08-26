@@ -1,22 +1,28 @@
 # Chapter 6: Golden Dataset Engineering
 
+This chapter focuses on how to build and maintain a strong evaluation dataset. The code is rewritten as one simple file.
+
+## Topics
+
+1. Why golden datasets matter
+2. Deduplication
+3. Sampling and balancing
+4. Annotation workflow
+5. Regression and prompt comparison
+6. Versioning and drift
+7. Synthetic data
+8. Dataset quality
+
+## Files
+
+- `main.py`: run this file
+- `theory.md`: chapter notes
+- `sample_data.json`: sample chapter data
+
 ## Run
+
 ```bash
 cd chapter_06_golden_dataset_engineering
 python main.py
 ```
 
-## Files
-| File | Description |
-|------|-------------|
-| main.py | Demonstrates golden dataset creation, curation, and management |
-| evaluator.py | Dataset quality evaluation tools |
-| dataset.py | Golden dataset builder, annotator, versioning tools |
-| theory.md | All theory, intuition, diagrams, and interview questions |
-| sample_data.json | Sample golden dataset with annotations |
-
-## Topics Covered
-Dataset types, creating from sources, sampling, deduplication, balancing, annotation workflows, inter-annotator agreement (Cohen's Kappa), versioning, drift detection, synthetic data generation
-
-## Dependencies
-Python standard library only.

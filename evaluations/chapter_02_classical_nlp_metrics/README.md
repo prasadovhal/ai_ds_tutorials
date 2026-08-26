@@ -1,22 +1,38 @@
 # Chapter 2: Classical NLP Metrics
 
+This chapter covers the classical metrics used before modern judge-style evaluation became common. The rewritten code keeps the concepts but simplifies the implementation into one file.
+
+## Topics
+
+1. Accuracy
+2. Precision
+3. Recall
+4. F1 score
+5. Confusion matrix
+6. BLEU
+7. ROUGE
+8. Exact match
+9. Token F1
+10. Perplexity
+11. Cross entropy
+12. Calibration
+
+## Files
+
+- `main.py`: run this file
+- `theory.md`: chapter notes and formulas
+- `sample_data.json`: sample chapter data
+
 ## Run
+
 ```bash
 cd chapter_02_classical_nlp_metrics
 python main.py
 ```
 
-## Files
-| File | Description |
-|------|-------------|
-| main.py | Demonstrates all 17 metrics with examples |
-| evaluator.py | All metric implementations from scratch |
-| dataset.py | Data loading and text generation samples |
-| theory.md | All theory, formulas, intuition, diagrams, interview questions |
-| sample_data.json | Sample evaluation pairs |
+## Structure
 
-## Metrics Covered
-Accuracy, Precision, Recall, F1, Confusion Matrix, BLEU, ROUGE, METEOR, CIDEr, BERTScore, BLEURT, MoverScore, Exact Match, Token F1, Perplexity, Cross Entropy, Calibration
+- one file
+- small metric functions
+- direct print-based demonstration
 
-## Dependencies
-Python standard library only.

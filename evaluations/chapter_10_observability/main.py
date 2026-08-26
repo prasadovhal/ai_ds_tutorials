@@ -1,233 +1,122 @@
-import sys, io; if hasattr(sys.stdout, "buffer"):
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 """
-Chapter 10 - LLM Application Observability
-Main demonstration: tracing, logging, latency analysis, token/cost tracking,
-prompt versioning, response quality monitoring, and a unified dashboard.
+Chapter 10: Observability
+
+Simple walkthrough of traces, logs, latency, tokens, cost,
+prompt tracking, response monitoring, and dashboards.
 """
 
-import os
-import json
-import random
-import math
-
-from dataset import load_sample_data, estimate_tokens, simulate_llm_response
-from evaluator import (
-    TraceManager, LLMLogger, LatencyTracker, TokenCounter,
-    CostCalculator, PromptTracker, ResponseMonitor, ObservabilityDashboard,
-)
+from statistics import mean
 
 
-def separator(title: str, char: str = "=", width: int = 70):
-    print(f"\n{char * width}")
-    print(f"  {title}")
-    print(f"{char * width}")
+TRACE = [
+    {"span": "request.start", "duration_ms": 5},
+    {"span": "retrieve.context", "duration_ms": 40},
+    {"span": "llm.call", "duration_ms": 900},
+    {"span": "response.parse", "duration_ms": 20},
+]
+
+LOGS = [
+    {"level": "INFO", "message": "request received"},
+    {"level": "INFO", "message": "retrieval complete"},
+    {"level": "WARNING", "message": "llm call is slow"},
+]
+
+RESPONSES = [
+    {"quality": 0.90, "toxicity": 0.02, "latency_ms": 920, "tokens": 320, "cost": 0.012},
+    {"quality": 0.84, "toxicity": 0.01, "latency_ms": 1010, "tokens": 280, "cost": 0.011},
+    {"quality": 0.70, "toxicity": 0.08, "latency_ms": 1400, "tokens": 500, "cost": 0.020},
+]
+
+
+def line():
+    print("=" * 72)
+
+
+def section(title):
+    print()
+    line()
+    print(title)
+    line()
+
+
+def total_trace_time(spans):
+    return sum(span["duration_ms"] for span in spans)
+
+
+def log_summary(logs):
+    summary = {}
+    for log in logs:
+        summary[log["level"]] = summary.get(log["level"], 0) + 1
+    return summary
+
+
+def average_latency(responses):
+    return mean(item["latency_ms"] for item in responses)
+
+
+def total_tokens(responses):
+    return sum(item["tokens"] for item in responses)
+
+
+def total_cost(responses):
+    return sum(item["cost"] for item in responses)
+
+
+def prompt_versions():
+    return [
+        {"version": "v1", "prompt": "Answer the question."},
+        {"version": "v2", "prompt": "Answer clearly in two sentences."},
+    ]
+
+
+def quality_alerts(responses):
+    alerts = []
+    for index, item in enumerate(responses, start=1):
+        if item["quality"] < 0.75:
+            alerts.append(f"response {index} quality is low")
+        if item["toxicity"] > 0.05:
+            alerts.append(f"response {index} toxicity is high")
+    return alerts
+
+
+def dashboard(responses):
+    return {
+        "average_quality": mean(item["quality"] for item in responses),
+        "average_latency_ms": average_latency(responses),
+        "total_tokens": total_tokens(responses),
+        "total_cost": total_cost(responses),
+    }
 
 
 def main():
-    data = load_sample_data()
+    section("Chapter 10: Observability")
 
-    # === 1. TRACING ===
-    separator("1. DISTRIBUTED TRACING")
-    tm = TraceManager()
-    tm.load_from_sample(data["sample_traces"])
+    section("1. Tracing")
+    print(f"Trace time: {total_trace_time(TRACE)} ms")
+    for span in TRACE:
+        print(span)
 
-    print(f"\n  Loaded {len(tm.traces)} sample traces\n")
-    for trace_id in tm.traces:
-        print(f"  Trace: {trace_id}")
-        tm.print_trace(trace_id)
-        print()
+    section("2. Structured Logging")
+    print(log_summary(LOGS))
 
-    tid = tm.create_trace("live_demo")
-    root = tm.start_span(tid, "pipeline.run", attributes={"demo": True})
-    fmt_span = tm.start_span(tid, "prompt.format", parent_span_id=root.span_id)
-    tm.end_span(fmt_span)
-    llm_span = tm.start_span(tid, "llm.call", parent_span_id=root.span_id,
-                             attributes={"model": "gpt-4"})
-    tm.end_span(llm_span)
-    parse_span = tm.start_span(tid, "response.parse", parent_span_id=root.span_id)
-    tm.end_span(parse_span)
-    tm.end_span(root)
+    section("3. Latency")
+    print(f"Average latency: {average_latency(RESPONSES):.1f} ms")
 
-    print(f"  Live trace ({tid}):")
-    tm.print_trace(tid)
+    section("4. Token Tracking")
+    print(f"Total tokens: {total_tokens(RESPONSES)}")
 
-    # === 2. STRUCTURED LOGGING ===
-    separator("2. STRUCTURED LLM LOGGING")
-    logger = LLMLogger()
-    logger.load_from_sample(data["sample_logs"])
+    section("5. Cost Tracking")
+    print(f"Total cost: ${total_cost(RESPONSES):.4f}")
 
-    rng = random.Random(42)
-    for i in range(8):
-        latency = round(max(400, min(rng.lognormvariate(math.log(1500), 0.5), 12000)), 1)
-        tokens_in = rng.randint(180, 350)
-        tokens_out = rng.randint(10, 100)
-        cost = (tokens_in / 1000) * 0.03 + (tokens_out / 1000) * 0.06
-        logger.info("pipeline", f"Query {i} processed",
-                    question_id=i, latency_ms=latency)
-        logger.info("llm", "LLM call completed",
-                    model="gpt-4", input_tokens=tokens_in,
-                    output_tokens=tokens_out, cost_usd=round(cost, 5))
-        if latency > 3000:
-            logger.warning("llm", f"Slow call: {latency:.0f}ms",
-                           question_id=i, latency_ms=latency)
-        if rng.random() < 0.1:
-            logger.error("evaluation", "Incorrect prediction",
-                         question_id=i, expected="A", predicted="C")
+    section("6. Prompt Tracking")
+    for version in prompt_versions():
+        print(version)
 
-    print(f"\n  Total log entries: {len(logger.logs)}")
-    for level, count in sorted(logger.summary().items()):
-        print(f"  {level}: {count}")
+    section("7. Response Monitoring")
+    print(quality_alerts(RESPONSES))
 
-    print("\n  --- Recent logs ---")
-    logger.print_logs(last_n=8)
-    print("\n  --- Errors only ---")
-    logger.print_logs(level="ERROR")
-
-    # === 3. LATENCY MONITORING ===
-    separator("3. LATENCY MONITORING")
-    tracker = LatencyTracker(threshold_ms=3000.0)
-    rng = random.Random(42)
-    latencies = [max(400, min(rng.lognormvariate(math.log(1500), 0.5), 12000))
-                 for _ in range(50)]
-    tracker.record_batch(latencies)
-
-    print("\n  Latency Statistics:")
-    tracker.print_stats()
-    print("\n  Latency Distribution:")
-    tracker.print_histogram(bins=6)
-
-    slow = tracker.get_slow_calls()
-    print(f"\n  Slow calls (>{tracker.threshold_ms}ms): {len(slow)}")
-    for s in slow[:3]:
-        print(f"    Call #{s['index']}: {s['latency_ms']:.0f}ms")
-
-    # === 4. TOKEN USAGE TRACKING ===
-    separator("4. TOKEN USAGE TRACKING")
-    counter = TokenCounter()
-    rng = random.Random(42)
-    for i in range(50):
-        counter.record(rng.randint(180, 350), rng.randint(10, 120),
-                       model="gpt-4", question_id=i)
-    for i in range(10):
-        counter.record(rng.randint(180, 350), rng.randint(10, 120),
-                       model="gpt-3.5-turbo", question_id=100 + i)
-
-    print("\n  Token Usage Statistics:")
-    counter.print_stats()
-    print("\n  Usage by model:")
-    for model, stats in counter.by_model().items():
-        print(f"    {model}: {stats['calls']} calls, "
-              f"{stats['input_tokens']:,} in / {stats['output_tokens']:,} out")
-
-    sample_text = "You are an expert scientist. Answer the following multiple choice question."
-    print(f"\n  Token estimation: \"{sample_text}\"")
-    print(f"  Estimated tokens: {TokenCounter.estimate(sample_text)}")
-
-    # === 5. COST CALCULATION ===
-    separator("5. COST CALCULATION")
-    calc = CostCalculator()
-    for rec in counter.records:
-        calc.calculate(rec["input_tokens"], rec["output_tokens"], model=rec["model"])
-
-    print("\n  Cost Summary:")
-    calc.print_summary()
-
-    print("\n  --- Model cost comparison (10,000 input + 2,000 output tokens) ---")
-    comparison = calc.compare_models(10000, 2000)
-    print(f"  {'Model':<20} {'Input':>10} {'Output':>10} {'Total':>10}")
-    print(f"  {'-'*20} {'-'*10} {'-'*10} {'-'*10}")
-    for c in comparison:
-        print(f"  {c['model']:<20} ${c['input_cost']:>8.4f} "
-              f"${c['output_cost']:>8.4f} ${c['total_cost']:>8.4f}")
-
-    # === 6. PROMPT VERSION TRACKING ===
-    separator("6. PROMPT VERSION TRACKING")
-    pt = PromptTracker()
-    pt.load_from_sample(data["prompt_versions"])
-
-    rng = random.Random(42)
-    version_accuracy = {"v1": 0.58, "v2": 0.68, "v3": 0.72}
-    version_tokens = {"v1": 180, "v2": 240, "v3": 290}
-    for version, acc in version_accuracy.items():
-        for _ in range(50):
-            correct = rng.random() < acc
-            confidence = rng.uniform(0.75, 0.98) if correct else rng.uniform(0.30, 0.75)
-            latency = max(400, min(rng.lognormvariate(math.log(1500), 0.5), 12000))
-            tokens = version_tokens[version] + rng.randint(-20, 20)
-            pt.record_result(version, correct=correct, confidence=round(confidence, 3),
-                             latency_ms=round(latency, 1), tokens=tokens)
-
-    print("\n  Prompt Version Comparison:")
-    pt.print_comparison()
-
-    # === 7. RESPONSE QUALITY MONITORING ===
-    separator("7. RESPONSE QUALITY MONITORING")
-    monitor = ResponseMonitor(confidence_threshold=0.5)
-    rng = random.Random(42)
-    choices = ["A", "B", "C", "D", "E"]
-    for i in range(50):
-        gt = rng.choice(choices)
-        correct = rng.random() < 0.72
-        if correct:
-            pred, conf = gt, round(rng.uniform(0.75, 0.98), 3)
-        else:
-            pred = rng.choice([c for c in choices if c != gt])
-            conf = round(rng.uniform(0.30, 0.85), 3)
-        fmt_ok = rng.random() > 0.04
-        lat = max(400, min(rng.lognormvariate(math.log(1500), 0.5), 12000))
-        monitor.record(predicted=pred, ground_truth=gt, confidence=conf,
-                       format_ok=fmt_ok, latency_ms=round(lat, 1))
-
-    print("\n  Quality Report:")
-    monitor.print_report()
-
-    hce = monitor.high_confidence_errors()
-    if hce:
-        print(f"\n  High-confidence errors (confident but wrong):")
-        for r in hce[:5]:
-            print(f"    Predicted={r['predicted']}, Truth={r['ground_truth']}, "
-                  f"Confidence={r['confidence']:.2f}")
-
-    # === 8. UNIFIED DASHBOARD ===
-    separator("8. UNIFIED OBSERVABILITY DASHBOARD")
-    dashboard = ObservabilityDashboard(
-        latency_tracker=tracker, token_counter=counter,
-        cost_calculator=calc, response_monitor=monitor,
-        llm_logger=logger, prompt_tracker=pt,
-    )
-    dashboard.render()
-
-    # === 9. TOOLS OVERVIEW ===
-    separator("9. OBSERVABILITY TOOLS OVERVIEW")
-    tools = data["tool_comparison"]
-    for name, info in tools.items():
-        strengths = ", ".join(info["strengths"])
-        print(f"  {name}: {info['focus']} | {strengths}")
-
-    print(f"\n  {'Tool':<25} {'Focus':<45}")
-    print(f"  {'-'*25} {'-'*45}")
-    for name, info in tools.items():
-        print(f"  {name:<25} {info['focus']:<45}")
-
-    # === 10. SUMMARY ===
-    separator("10. KEY TAKEAWAYS", char="=")
-    takeaways = [
-        "Trace every LLM call: trace_id + span_id give end-to-end visibility.",
-        "Log structured data: attach tokens, cost, model to every log entry.",
-        "Track percentiles: P50/P95/P99 reveal tail latency that means miss.",
-        "Count tokens: they drive cost and help optimize prompt length.",
-        "Calculate cost per query: tiny per-call costs compound at scale.",
-        "Version your prompts: measure accuracy/latency per version.",
-        "Monitor response quality: catch confidence drift and format errors.",
-        "Use dashboards: one view for all signals prevents alert fatigue.",
-    ]
-    for i, t in enumerate(takeaways, 1):
-        print(f"  {i}. {t}")
-
-    print(f"\n{'=' * 70}")
-    print("  Chapter 10 complete.")
-    print(f"{'=' * 70}\n")
+    section("8. Dashboard")
+    print(dashboard(RESPONSES))
 
 
 if __name__ == "__main__":

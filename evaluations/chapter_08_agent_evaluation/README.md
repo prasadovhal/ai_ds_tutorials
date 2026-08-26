@@ -1,16 +1,26 @@
 # Chapter 8: Agent Evaluation
 
-Evaluation framework for LLM-based agents covering task completion, trajectory analysis, tool use, planning, memory, reflection, multi-agent coordination, coding quality, and Elo-based ranking.
+This chapter explains how to evaluate agents, not just single responses. The code is now one small, readable file.
+
+## Topics
+
+1. Task completion
+2. Goal achievement
+3. Planning quality
+4. Trajectory quality
+5. Tool use
+6. Memory
+7. Reflection
+8. Multi-agent evaluation
+9. Coding agents
+10. Browser agents
+11. Elo-style ranking
 
 ## Files
 
-| File | Description |
-|------|-------------|
-| `sample_data.json` | Agent traces: single-agent, multi-agent, coding, and browser |
-| `dataset.py` | Data loading + synthetic trace generation |
-| `evaluator.py` | All evaluation metrics (10 evaluator classes + Elo) |
-| `theory.md` | All theory, intuition, diagrams, and interview questions |
-| `main.py` | Demonstrations with output for every evaluator |
+- `main.py`: run this file
+- `theory.md`: chapter notes
+- `sample_data.json`: sample chapter data
 
 ## Run
 
@@ -19,20 +29,3 @@ cd chapter_08_agent_evaluation
 python main.py
 ```
 
-## Evaluators
-
-- **TaskCompletionEvaluator** - Binary + partial completion scoring
-- **GoalAchievementEvaluator** - Goal and sub-goal analysis
-- **TrajectoryEvaluator** - Step efficiency, waste, loops, cost
-- **ToolUseEvaluator** - Selection accuracy, arguments, diversity
-- **PlanQualityEvaluator** - Coherence, specificity, adherence
-- **MemoryEvaluator** - Information reuse and redundancy detection
-- **ReflectionEvaluator** - Self-correction and verification quality
-- **MultiAgentEvaluator** - Role separation, coordination, redundancy
-- **CodingAgentEvaluator** - Test pass rate, docstrings, error handling
-- **BrowserAgentEvaluator** - Navigation efficiency, dead ends
-- **EloRating** - Tournament-style pairwise agent comparison
-
-## Requirements
-
-Python 3.7+ (standard library only).

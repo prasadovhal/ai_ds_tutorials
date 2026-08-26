@@ -1,31 +1,29 @@
 # Chapter 12: Research Papers
 
+This chapter turns important evaluation papers into simple code demos. The rewritten file is meant to help a beginner connect paper names to the ideas they introduced.
+
+## Topics
+
+1. MT-Bench
+2. G-Eval
+3. RAGAS
+4. ARES
+5. AgentBench
+6. SWE-Bench
+7. Reflexion
+8. Calibration papers
+9. Bias papers
+10. Meta-evaluation
+
+## Files
+
+- `main.py`: run this file
+- `theory.md`: chapter notes
+- `sample_data.json`: sample chapter data
+
 ## Run
+
 ```bash
 cd chapter_12_research_papers
 python main.py
 ```
-
-## Files
-| File | Description |
-|------|-------------|
-| main.py | Explains and demonstrates key evaluation research papers |
-| evaluator.py | Simplified implementations of paper techniques |
-| dataset.py | Data loading |
-| theory.md | All paper summaries, key ideas, and interview questions |
-| sample_data.json | Sample data for paper demonstrations |
-
-## Papers Covered
-1. Judging LLM-as-a-Judge (MT-Bench, Elo)
-2. LLMs are not Fair Evaluators (position/verbosity bias)
-3. G-Eval (chain-of-thought evaluation)
-4. RAGAS (RAG evaluation)
-5. ARES (automated RAG evaluation)
-6. AgentBench (agent capabilities)
-7. SWE-Bench (software engineering)
-8. Calibrating LLM Evaluators
-9. Reflexion (self-improvement)
-10. Meta-evaluation research
-
-## Dependencies
-Python standard library only.
