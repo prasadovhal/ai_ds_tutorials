@@ -1,8 +1,24 @@
 """
 Chapter 9: Production Evaluation
 
-Single-file version for regression, deployment checks, monitoring,
-and continuous benchmarking.
+Covers evaluation strategies for production LLM systems:
+- Regression testing: preventing performance degradation
+  * Accuracy thresholds: minimum acceptable performance
+  * Latency limits: response time constraints
+  * Allowed drift: acceptable variation from baseline
+- Canary testing: gradual rollout with monitoring
+- Shadow deployment: running new model without affecting users
+- Drift detection: identifying performance degradation over time
+- Monitoring: continuous tracking of metrics and alerts
+- Alerting: triggering actions when thresholds violated
+- CI/CD integration: evaluation gates blocking bad deployments
+- Evaluation gates: quality checks before production release
+- Prompt versioning: tracking prompt history and changes
+- Dataset versioning: managing evaluation dataset versions
+- Model versioning: tracking model lineage and changes
+- Continuous benchmarking: tracking performance trends over time
+
+Single-file version demonstrating production evaluation workflow.
 """
 
 from statistics import mean

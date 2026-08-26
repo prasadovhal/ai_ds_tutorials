@@ -1,8 +1,26 @@
 """
 Chapter 3: Modern LLM Evaluation
 
-This file keeps the same ideas, but the flow is intentionally simple.
-Every dimension is shown with a tiny heuristic function and a short example.
+Covers evaluation dimensions specific to LLM outputs:
+- Correctness: does answer match expected result
+- Relevance: is answer related to the question
+- Helpfulness: is answer useful and complete
+- Completeness: does answer cover required points
+- Consistency: do multiple runs produce similar outputs
+- Hallucination: does answer contain ungrounded claims
+- Faithfulness: is answer grounded in provided context
+- Groundedness: factual consistency with evidence
+- Instruction following: compliance with given instructions
+- Fluency: grammatical correctness and naturalness
+- Coherence: logical flow and connectivity
+- Safety: absence of harmful content
+- Toxicity: absence of toxic language
+- Bias: fairness and neutrality
+- Creativity: originality and novelty
+- Readability: clarity and accessibility
+- Reasoning quality: quality of logical steps
+
+Each dimension shown with simple heuristic function and examples.
 """
 
 from statistics import mean

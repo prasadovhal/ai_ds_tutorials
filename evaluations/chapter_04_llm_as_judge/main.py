@@ -1,7 +1,29 @@
 """
 Chapter 4: LLM-as-a-Judge
 
-Simple version with no classes and no hidden control flow.
+Covers why and how to use LLMs as evaluation judges:
+- History: why BLEU/ROUGE are insufficient for LLM outputs
+- Judge prompt engineering: designing effective scoring prompts
+- Pointwise evaluation: scoring single answers on a scale
+- Pairwise evaluation: comparing which of two answers is better
+- Pass/fail evaluation: binary correctness judgment
+- Likert scale: multi-point rating scales
+- Rubric-based evaluation: structured evaluation criteria
+- G-Eval style: weighted criterion scoring
+- Arena-style evaluation: tournament-based ranking
+- Elo ranking: dynamic rating updates from comparisons
+- Constitutional evaluation: evaluation against principles
+- Self-evaluation: model evaluating its own outputs
+- Reflexion: iterative improvement through evaluation
+- Multi-agent judging: multiple judges voting on quality
+- Judge agreement: consistency across judge runs
+- Judge reliability: stability and reproducibility
+- Bias detection: position bias, length bias, favoritism
+- Meta-evaluation: evaluating the evaluators
+- Human agreement: correlation with human judgments
+- Production best practices: deployment considerations
+
+Simple implementation with no classes and clear control flow.
 """
 
 from statistics import mean

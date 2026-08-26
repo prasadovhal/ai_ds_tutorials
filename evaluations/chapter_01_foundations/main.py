@@ -1,11 +1,22 @@
 """
 Chapter 1: Foundations of LLM Evaluation
 
-Beginner-friendly version:
-- one file
-- no classes
-- small functions
-- top-to-bottom flow
+Covers the fundamentals of LLM evaluation:
+- Why evaluation matters and dataset distribution
+- Offline vs online evaluation (batch vs rolling accuracy)
+- Intrinsic vs extrinsic evaluation (metrics vs task completion)
+- Human vs automatic evaluation
+- Reference-based vs reference-free evaluation
+- Model-based evaluation (judge scoring)
+- Regression testing (comparing versions)
+- Continuous evaluation (tracking trends over versions)
+- Evaluation lifecycle (7-step process)
+- Evaluation pipelines (structured workflows)
+- Failure analysis and error taxonomy
+- Evaluation dashboards and metrics reporting
+- Evaluation gates in CI/CD deployment
+
+Beginner-friendly implementation: one file, no classes, small functions, top-to-bottom flow.
 """
 
 from collections import Counter

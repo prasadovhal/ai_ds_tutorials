@@ -1,3 +1,10 @@
+"""
+Project 1: Simple Evaluator
+
+Comprehensive multi-metric evaluator for classification predictions.
+Computes accuracy, per-class accuracy, confusion matrix, BLEU, and ROUGE scores.
+Compares random vs smart predictors and saves results to JSON.
+"""
 import sys, io; if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, json, random, os

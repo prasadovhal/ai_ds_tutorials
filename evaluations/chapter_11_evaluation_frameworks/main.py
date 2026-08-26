@@ -1,7 +1,22 @@
 """
 Chapter 11: Evaluation Frameworks
 
-One-file comparison of common framework styles.
+Covers major LLM evaluation frameworks and their approaches:
+- DeepEval: test-suite style evaluation with aggregation
+- RAGAS: RAG-specific metrics (faithfulness, relevance, precision)
+- LangSmith: tracing + evaluation feedback integration
+- Phoenix: observability and trace analysis
+- TruLens: modular feedback functions architecture
+- Inspect AI: task-based evaluation and scoring
+- Promptfoo: YAML-based test cases and batch evaluation
+- OpenAI Evals: competitive benchmark framework
+- Evidently AI: drift detection and data quality monitoring
+- Maxim AI: observation-based evaluation system
+- Comparison table: strengths, weaknesses, use cases for each
+- Integration patterns: combining multiple frameworks
+- Best practices: choosing right tool for your use case
+
+One-file demonstration of different framework styles and patterns.
 """
 
 from statistics import mean

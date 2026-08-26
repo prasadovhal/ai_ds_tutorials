@@ -1,10 +1,14 @@
 """
 Chapter 2: Classical NLP Metrics
 
-Beginner-friendly version:
-- one file
-- no classes
-- small metric functions
+Covers classic NLP and ML evaluation metrics:
+- Classification metrics: accuracy, precision, recall, F1, confusion matrix
+- Text generation metrics: BLEU, ROUGE, exact match, token F1
+- Language model metrics: perplexity, cross entropy
+- Calibration: measuring confidence vs correctness
+
+Demonstrates each metric on both classification and text generation tasks.
+Beginner-friendly implementation: one file, no classes, small metric functions.
 """
 
 import math

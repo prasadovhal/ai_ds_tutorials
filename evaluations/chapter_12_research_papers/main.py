@@ -1,7 +1,23 @@
 """
 Chapter 12: Research Papers on LLM Evaluation
 
-One-file educational demo of landmark paper ideas.
+Covers landmark research papers shaping LLM evaluation:
+- MT-Bench: multi-turn conversational benchmark and evaluation framework
+- G-Eval: LLM-as-a-Judge with form-filling and rubric-based scoring
+- RAGAS: retrieval-augmented generation evaluation metrics (faith, relevance, precision)
+- ARES: automatic evaluation with synthetic labels and judge calibration
+- AgentBench: benchmark for autonomous agent task completion
+- SWE-Bench: software engineering task evaluation (coding agents)
+- Reflexion: iterative improvement through LLM self-critique and reflection
+- Calibration papers: measuring confidence vs correctness in LLM outputs
+- Bias papers: detecting and measuring bias in LLM evaluation
+- Meta-evaluation: evaluating evaluators and judge reliability
+- Positional bias: detecting favoritism based on answer order
+- Length bias: detecting preference for longer responses
+- Judge agreement: measuring consistency across multiple judges
+- Practical takeaways: translating research into practice
+
+One-file educational demonstration of landmark paper ideas and findings.
 """
 
 from statistics import mean

@@ -1,6 +1,12 @@
+"""
+Project 8: CI/CD Evaluation Pipeline
+
+Gated evaluation pipeline for model deployment with 6 stages:
+load data, run inference (with latency), compute metrics, regression testing, quality gates, and report.
+Checks accuracy thresholds, latency p95, and regressions before deployment approval.
+"""
 import sys, io; if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-"""Project 8: CI/CD Evaluation Pipeline — runs gated eval pipeline for model deployment."""
 import csv, os, random, time
 
 try:

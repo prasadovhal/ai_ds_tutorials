@@ -1,6 +1,12 @@
+"""
+Project 7: Evaluation Dashboard
+
+Comprehensive evaluation dashboard with metrics and ASCII visualizations.
+Computes accuracy, per-class metrics, F1 scores, and generates dashboard artifacts
+for 3 simulated model variants (GPT-Basic, Claude-Mid, DeepEval-Pro).
+"""
 import sys, io; if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-"""Project 7: Evaluation Dashboard — comprehensive metrics and ASCII visualizations."""
 import csv, os, random
 
 # === Load data ===

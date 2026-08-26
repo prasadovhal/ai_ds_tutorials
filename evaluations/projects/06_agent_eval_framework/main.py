@@ -1,6 +1,11 @@
+"""
+Project 6: Agent Evaluation Framework
+
+Evaluates simulated agent traces across task completion, planning quality, tool correctness,
+and answer accuracy. Computes individual metrics and runs Elo tournament ranking.
+"""
 import sys, io; if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-"""Project 6: Agent Evaluation Framework — evaluates simulated agent traces and runs Elo tournament."""
 import random
 
 # === Define 3 simulated agent traces ===

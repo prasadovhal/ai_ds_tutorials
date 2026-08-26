@@ -1,3 +1,10 @@
+"""
+Capstone Project: Production-Grade Evaluation Platform
+
+Complete pipeline integrating: dataset management, golden set creation, RAG pipeline,
+comprehensive evaluation suite, regression testing, CI/CD quality gates, Langfuse tracing,
+and LangGraph orchestration. Demonstrates end-to-end evaluation lifecycle from data to deployment.
+"""
 import sys, io
 if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")

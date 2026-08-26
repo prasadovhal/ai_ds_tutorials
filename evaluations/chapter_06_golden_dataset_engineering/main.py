@@ -1,7 +1,22 @@
 """
 Chapter 6: Golden Dataset Engineering
 
-One-file version focused on simple flow and small functions.
+Covers creating and maintaining golden evaluation datasets:
+- Why golden datasets matter: regression testing, prompt comparison, baseline evaluation
+- Dataset types: golden, test, validation, benchmark, evaluation, production, synthetic
+- Creating golden data from:
+  * Production logs and customer conversations
+  * Support tickets and search queries
+  * Human-written and LLM-generated examples
+  * Synthetic generation and failure-driven sampling
+- Data quality: deduplication, balancing, coverage (domain, long-tail, edge cases)
+- Annotation workflow: guidelines, rubrics, ground truth, multiple annotators
+- Quality metrics: inter-annotator agreement, Cohen's Kappa
+- Using golden data: regression testing, prompt comparison, A/B testing
+- Maintaining datasets: versioning, drift detection, updates and retirement
+- Synthetic golden data: risks, validation, when to use
+
+One-file version focused on simple flow and small utility functions.
 """
 
 from collections import Counter

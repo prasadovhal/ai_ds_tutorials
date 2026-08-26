@@ -1,8 +1,22 @@
 """
 Chapter 10: Observability
 
-Simple walkthrough of traces, logs, latency, tokens, cost,
-prompt tracking, response monitoring, and dashboards.
+Covers monitoring and observability for LLM systems:
+- Tracing: end-to-end request tracking and span hierarchies
+- Structured logging: formatted logs for easy parsing and analysis
+- Latency monitoring: tracking response times and bottlenecks
+- Token tracking: counting input/output tokens for cost analysis
+- Cost monitoring: calculating and tracking expenses
+- Prompt tracking: versioning and monitoring prompt changes
+- Response monitoring: quality metrics on generated outputs
+- Quality alerts: thresholds for quality metrics
+- Toxicity alerts: detecting harmful content
+- Dashboards: aggregated metrics and visualizations
+- Tools: Phoenix, LangSmith, OpenTelemetry, MLflow, Weights & Biases
+- Correlation analysis: identifying factors affecting performance
+- Root cause analysis: investigating quality degradations
+
+Simple walkthrough of observability components and their integration.
 """
 
 from statistics import mean

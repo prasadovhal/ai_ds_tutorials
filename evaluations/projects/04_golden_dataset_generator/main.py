@@ -1,3 +1,10 @@
+"""
+Project 4: Golden Dataset Generator
+
+Generates and validates golden datasets from seed data.
+Creates synthetic questions using Ollama (or templates as fallback).
+Validates format, detects duplicates, and generates quality reports with versioning.
+"""
 import sys, io; if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import csv, json, random, os, hashlib

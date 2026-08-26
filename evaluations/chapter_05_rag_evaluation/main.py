@@ -1,8 +1,24 @@
 """
 Chapter 5: RAG Evaluation
 
-Single-file, beginner-friendly walkthrough of retrieval, generation,
-and end-to-end RAG evaluation.
+Covers evaluation for RAG (Retrieval-Augmented Generation) systems:
+- Retrieval evaluation: assessing quality of retrieved context
+  * Context precision: are retrieved docs actually relevant?
+  * Context recall: what % of answer facts appear in context?
+  * Context relevance: how well does context match the query?
+  * Hit rate: is at least one relevant doc retrieved?
+  * MRR (Mean Reciprocal Rank): rank position of first relevant doc
+  * NDCG (Normalized DCG): ranking quality metric
+- Generation evaluation: assessing quality of generated answers
+  * Answer relevance: does answer address the query?
+  * Faithfulness: is answer grounded in retrieved context?
+  * Groundedness: factual consistency with evidence
+  * Citation correctness: are citations accurate?
+  * Hallucination rate: % of ungrounded claims
+- End-to-end evaluation: combined retrieval + generation metrics
+- Framework comparison: RAGAS, DeepEval, LangSmith, Phoenix, TruLens
+
+Single-file, beginner-friendly walkthrough of RAG evaluation components.
 """
 
 from statistics import mean

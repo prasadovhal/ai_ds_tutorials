@@ -1,6 +1,12 @@
+"""
+Project 5: Continuous Evaluation System
+
+Monitors model accuracy and performance over batches simulating data arrival over time.
+Detects drift using chi-squared test, tracks accuracy trends, and flags regressions.
+Compares 3 model versions (weak, medium, drifting) across batches.
+"""
 import sys, io; if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-"""Project 5: Continuous Evaluation System — monitors model accuracy over batches, detects drift."""
 import csv, os, random
 
 # === Load data ===

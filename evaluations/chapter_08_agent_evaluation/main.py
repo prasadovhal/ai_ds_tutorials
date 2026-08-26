@@ -1,7 +1,25 @@
 """
 Chapter 8: Agent Evaluation
 
-Standalone, small-function version.
+Covers evaluation for autonomous agents and reasoning systems:
+- Task completion: did the agent finish the assigned task?
+- Goal achievement: did the agent reach the intended goal?
+- Planning quality: quality of the action plan and decomposition
+- Trajectory evaluation: assessing the sequence of steps
+- Tool selection: did the agent choose the right tools?
+- Tool correctness: were tools invoked correctly with proper arguments?
+- Tool efficiency: did agent minimize tool calls?
+- Memory evaluation: effective use of context and history
+- Reflection evaluation: quality of self-critique and error recovery
+- Multi-agent evaluation: coordination and performance in multi-agent settings
+- Long-horizon evaluation: performance on extended interaction sequences
+- Coding agents: benchmark evaluation (SWE-Bench)
+- Browser agents: web navigation and action correctness
+- Human-in-the-loop: human oversight and intervention points
+- Benchmarks: AgentBench, SWE-Bench, GAIA, WebArena, BrowseComp
+- Elo ranking: tournament-style agent comparison
+
+Standalone implementation with small utility functions.
 """
 
 from statistics import mean

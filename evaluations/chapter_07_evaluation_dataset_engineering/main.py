@@ -1,6 +1,20 @@
 """
 Chapter 7: Evaluation Dataset Engineering
 
+Covers building high-quality evaluation benchmarks:
+- Benchmark design: defining scope, coverage, and representativeness
+- Dataset quality: ensuring fairness and reliability
+- Coverage metrics: topic coverage, difficulty levels, edge cases
+- Failure-mode coverage: systematic inclusion of hard cases
+- Dataset balancing: representative distribution across labels
+- Contamination detection: ensuring no train/test overlap
+- Leakage prevention: avoiding information leaks between splits
+- Label noise: identifying and handling annotation errors
+- Annotation quality: inter-annotator agreement metrics
+- Cohen's Kappa: agreement coefficient for two annotators
+- Fleiss' Kappa: agreement for multiple annotators
+- Meta-evaluation: evaluating the evaluator and dataset quality
+
 Simple benchmark design and dataset quality checks in one file.
 """
 
