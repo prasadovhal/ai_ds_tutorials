@@ -285,8 +285,3 @@ if __name__ == "__main__":
     create_dataset_example()
     feedback_example()
     fetch_runs_example()
-
-    print("\n" + "=" * 60)
-    print("For detailed LangSmith vs Langfuse comparison theory:")
-    print("→ See 13_langsmith_vs_langfuse.md")
-    print("=" * 60)
