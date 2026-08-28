@@ -1,3 +1,14 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
+from constant import OLLAMA_BASE_URL, OLLAMA_MODEL, openai_key
+import os
+
+os.environ["OPENAI_API_KEY"] = openai_key
+
 # Temperature
 """
 Range: 0.0 to 1.0 (sometimes up to 2.0 for OpenAI).
@@ -5,7 +16,7 @@ Low (0.0 - 0.3): Factual, deterministic, repetitive. Use for Coding, Math, Data 
 High (0.7 - 1.0): Creative, diverse, unpredictable. Use for Brainstorming, Poetry, Chatbots.
 """
 
-llm_strict = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.0)
+llm_strict = ChatOllama(base_url=OLLAMA_BASE_URL, model=OLLAMA_MODEL, temperature=0.0)
 
 # Max Output Tokens (Length Limit)
 """
@@ -20,9 +31,10 @@ llm = ChatOpenAI(model="gpt-4o", max_tokens=150)
 You can tell the model to strictly stop generating if it hits a specific word or character.
 """
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    stop=["\n\n", "User:"] 
+llm = ChatOllama(
+    base_url=OLLAMA_BASE_URL,
+    model=OLLAMA_MODEL,
+    stop=["\n\n", "User:"]
 )
 
 # 4. Top_P and Top_K (Advanced Sampling)
@@ -36,8 +48,9 @@ llm = ChatGoogleGenerativeAI(
     - High P (0.9): Diverse.
 
 """
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
+llm = ChatOllama(
+    base_url=OLLAMA_BASE_URL,
+    model=OLLAMA_MODEL,
     top_k=40,
     top_p=0.95
 )
@@ -54,10 +67,9 @@ llm = ChatOpenAI(
 
 ## all together
 
-llm_sniper = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
+llm_sniper = ChatOllama(
+    base_url=OLLAMA_BASE_URL,
+    model=OLLAMA_MODEL,
     temperature=0.0,        # No creativity allowed
-    max_output_tokens=500,  # Don't write an essay
-    top_p=0.8,             # Slight flexibility for grammar
-    timeout=10             # Fail fast if API is slow
+    top_p=0.8,              # Slight flexibility for grammar
 )

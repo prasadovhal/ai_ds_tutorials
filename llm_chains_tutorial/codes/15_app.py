@@ -1,3 +1,11 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Ensure UTF-8 output on Windows
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+
 """
 "Smart Career Coach" CLI App.
     What this App does:
@@ -14,21 +22,18 @@ from typing import List
 
 # --- LIBRARIES ---
 # 1. Models & Schemas
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from pydantic import BaseModel, Field
-from constant import GOOGLE_API_KEY
-
-# 2. Setup API Key (Or use .env file)
-os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+from constant import OLLAMA_BASE_URL, OLLAMA_MODEL
 
 # --- CONFIGURATION ---
 # We use a cheaper model for the chat and a smarter one for the JSON logic if needed.
 # For simplicity, we use the same model here.
-llm = ChatGoogleGenerativeAI(model="models/gemini-2.5-flash", temperature=0.7)
+llm = ChatOllama(base_url=OLLAMA_BASE_URL, model=OLLAMA_MODEL, temperature=0.7)
 
 # --- PART 1: MEMORY (The Chatbot) ---
 # Global store for chat history

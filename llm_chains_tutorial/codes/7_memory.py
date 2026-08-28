@@ -1,16 +1,16 @@
+import sys
 import os
-from langchain_google_genai import ChatGoogleGenerativeAI
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
-from constant import GOOGLE_API_KEY
+from constant import OLLAMA_BASE_URL, OLLAMA_MODEL
 
-# Configure Gemini
-os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
-
-# 1. Initialize Model
-llm = ChatGoogleGenerativeAI(model="models/gemini-2.5-flash")
+# Configure Ollama
+llm = ChatOllama(base_url=OLLAMA_BASE_URL, model=OLLAMA_MODEL)
 
 
 
