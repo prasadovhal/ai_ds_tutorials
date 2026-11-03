@@ -1,0 +1,361 @@
+{
+  "metadata": {
+    "description": "Sample evaluation dataset with intentional quality issues for Chapter 7 - Evaluation Dataset Engineering",
+    "source": "Derived from Kaggle LLM Science Exam dataset with synthetic issues",
+    "total_questions": 20,
+    "task_type": "multiple_choice_qa",
+    "quality_issues_injected": [
+      "duplicate_questions",
+      "label_noise",
+      "class_imbalance",
+      "missing_fields",
+      "ambiguous_questions",
+      "topic_imbalance",
+      "difficulty_skew"
+    ]
+  },
+  "questions": [
+    {
+      "id": 0,
+      "prompt": "What is Newton's second law of motion?",
+      "choices": {
+        "A": "Force equals mass times acceleration (F = ma).",
+        "B": "Every action has an equal and opposite reaction.",
+        "C": "An object in motion stays in motion unless acted upon.",
+        "D": "Energy is conserved in all processes.",
+        "E": "Momentum is always conserved in collisions."
+      },
+      "ground_truth": "A",
+      "topic": "physics",
+      "difficulty": "easy",
+      "annotator_labels": ["A", "A", "A"]
+    },
+    {
+      "id": 1,
+      "prompt": "What is the chemical symbol for water?",
+      "choices": {
+        "A": "CO2",
+        "B": "H2O",
+        "C": "NaCl",
+        "D": "O2",
+        "E": "H2SO4"
+      },
+      "ground_truth": "B",
+      "topic": "chemistry",
+      "difficulty": "easy",
+      "annotator_labels": ["B", "B", "B"]
+    },
+    {
+      "id": 2,
+      "prompt": "What is the powerhouse of the cell?",
+      "choices": {
+        "A": "Nucleus",
+        "B": "Ribosome",
+        "C": "Mitochondria",
+        "D": "Golgi apparatus",
+        "E": "Endoplasmic reticulum"
+      },
+      "ground_truth": "C",
+      "topic": "biology",
+      "difficulty": "easy",
+      "annotator_labels": ["C", "C", "C"]
+    },
+    {
+      "id": 3,
+      "prompt": "What is the derivative of x^2?",
+      "choices": {
+        "A": "x",
+        "B": "2x",
+        "C": "x^3",
+        "D": "2",
+        "E": "x^2"
+      },
+      "ground_truth": "B",
+      "topic": "mathematics",
+      "difficulty": "easy",
+      "annotator_labels": ["B", "B", "B"]
+    },
+    {
+      "id": 4,
+      "prompt": "What is the speed of light in vacuum?",
+      "choices": {
+        "A": "3 x 10^8 m/s",
+        "B": "3 x 10^6 m/s",
+        "C": "3 x 10^10 m/s",
+        "D": "3 x 10^4 m/s",
+        "E": "3 x 10^12 m/s"
+      },
+      "ground_truth": "A",
+      "topic": "physics",
+      "difficulty": "easy",
+      "annotator_labels": ["A", "A", "A"]
+    },
+    {
+      "id": 5,
+      "prompt": "What is the speed of light in a vacuum?",
+      "choices": {
+        "A": "Approximately 3 x 10^8 meters per second",
+        "B": "Approximately 3 x 10^6 meters per second",
+        "C": "Approximately 3 x 10^10 meters per second",
+        "D": "Approximately 3 x 10^4 meters per second",
+        "E": "Approximately 3 x 10^12 meters per second"
+      },
+      "ground_truth": "A",
+      "topic": "physics",
+      "difficulty": "easy",
+      "annotator_labels": ["A", "A", "A"],
+      "_note": "NEAR-DUPLICATE of question 4"
+    },
+    {
+      "id": 6,
+      "prompt": "Which planet is known as the Red Planet?",
+      "choices": {
+        "A": "Venus",
+        "B": "Jupiter",
+        "C": "Mars",
+        "D": "Saturn",
+        "E": "Mercury"
+      },
+      "ground_truth": "C",
+      "topic": "astronomy",
+      "difficulty": "easy",
+      "annotator_labels": ["C", "C", "C"]
+    },
+    {
+      "id": 7,
+      "prompt": "What is the Heisenberg uncertainty principle?",
+      "choices": {
+        "A": "Energy is always conserved.",
+        "B": "You cannot simultaneously know both position and momentum with arbitrary precision.",
+        "C": "Light behaves as both a wave and a particle.",
+        "D": "Entropy of the universe always increases.",
+        "E": "Mass and energy are interchangeable."
+      },
+      "ground_truth": "B",
+      "topic": "physics",
+      "difficulty": "medium",
+      "annotator_labels": ["B", "B", "B"]
+    },
+    {
+      "id": 8,
+      "prompt": "In quantum mechanics, what does the Schrodinger equation describe?",
+      "choices": {
+        "A": "The trajectory of a classical particle.",
+        "B": "The time evolution of a quantum state.",
+        "C": "The energy levels of a hydrogen atom only.",
+        "D": "The spin of an electron in a magnetic field.",
+        "E": "The probability of nuclear decay."
+      },
+      "ground_truth": "B",
+      "topic": "physics",
+      "difficulty": "hard",
+      "annotator_labels": ["B", "B", "A"],
+      "_note": "One annotator disagreed - potential difficulty"
+    },
+    {
+      "id": 9,
+      "prompt": "What is the primary function of DNA?",
+      "choices": {
+        "A": "Energy storage",
+        "B": "Protein synthesis",
+        "C": "Carrying genetic information",
+        "D": "Cell division",
+        "E": "Immune response"
+      },
+      "ground_truth": "C",
+      "topic": "biology",
+      "difficulty": "easy",
+      "annotator_labels": ["C", "C", "C"]
+    },
+    {
+      "id": 10,
+      "prompt": "What is the pH of pure water at 25 degrees Celsius?",
+      "choices": {
+        "A": "0",
+        "B": "7",
+        "C": "14",
+        "D": "1",
+        "E": "10"
+      },
+      "ground_truth": "B",
+      "topic": "chemistry",
+      "difficulty": "easy",
+      "annotator_labels": ["B", "B", "B"]
+    },
+    {
+      "id": 11,
+      "prompt": "What is the relationship between mass and energy according to Einstein?",
+      "choices": {
+        "A": "E = mc",
+        "B": "E = mc^2",
+        "C": "E = mc^3",
+        "D": "E = m/c^2",
+        "E": "E = m + c^2"
+      },
+      "ground_truth": "A",
+      "topic": "physics",
+      "difficulty": "easy",
+      "annotator_labels": ["B", "B", "A"],
+      "_note": "LABEL NOISE: Ground truth says A but correct answer is B (E=mc^2)"
+    },
+    {
+      "id": 12,
+      "prompt": "What causes tides on Earth?",
+      "choices": {
+        "A": "Wind patterns",
+        "B": "Earth's rotation only",
+        "C": "Gravitational pull of the Moon and Sun",
+        "D": "Ocean currents",
+        "E": "Volcanic activity"
+      },
+      "ground_truth": "C",
+      "topic": "astronomy",
+      "difficulty": "medium",
+      "annotator_labels": ["C", "C", "C"]
+    },
+    {
+      "id": 13,
+      "prompt": "What is the process by which plants convert sunlight to energy?",
+      "choices": {
+        "A": "Respiration",
+        "B": "Fermentation",
+        "C": "Photosynthesis",
+        "D": "Osmosis",
+        "E": "Transpiration"
+      },
+      "ground_truth": "C",
+      "topic": "biology",
+      "difficulty": "easy",
+      "annotator_labels": ["C", "C", "C"]
+    },
+    {
+      "id": 14,
+      "prompt": "Describe the quantum chromodynamics confinement mechanism and its relationship to asymptotic freedom in non-abelian gauge theories.",
+      "choices": {
+        "A": "Confinement arises from the linear potential between quarks at large distances due to flux tube formation.",
+        "B": "Confinement is caused by electromagnetic forces between quarks.",
+        "C": "Confinement occurs because quarks have infinite mass at large distances.",
+        "D": "Confinement is a result of the weak nuclear force dominating at large scales.",
+        "E": "Confinement does not exist; quarks can be freely observed."
+      },
+      "ground_truth": "A",
+      "topic": "physics",
+      "difficulty": "very_hard",
+      "annotator_labels": ["A", "A", "E"],
+      "_note": "Very hard question - difficulty outlier"
+    },
+    {
+      "id": 15,
+      "prompt": "What is Avogadro's number approximately equal to?",
+      "choices": {
+        "A": "6.022 x 10^23",
+        "B": "6.022 x 10^20",
+        "C": "3.14159",
+        "D": "2.718",
+        "E": "1.602 x 10^-19"
+      },
+      "ground_truth": "A",
+      "topic": "chemistry",
+      "difficulty": "easy",
+      "annotator_labels": ["A", "A", "A"]
+    },
+    {
+      "id": 16,
+      "prompt": "",
+      "choices": {
+        "A": "Option A",
+        "B": "Option B",
+        "C": "Option C",
+        "D": "Option D",
+        "E": "Option E"
+      },
+      "ground_truth": "A",
+      "topic": "unknown",
+      "difficulty": "unknown",
+      "annotator_labels": ["A", "B", "C"],
+      "_note": "MISSING PROMPT - quality issue"
+    },
+    {
+      "id": 17,
+      "prompt": "What is the second law of thermodynamics?",
+      "choices": {
+        "A": "Energy cannot be created or destroyed.",
+        "B": "Entropy of an isolated system tends to increase.",
+        "C": "For every action there is an equal and opposite reaction.",
+        "D": "Heat flows from hot to cold spontaneously.",
+        "E": "Both B and D are correct descriptions."
+      },
+      "ground_truth": "B",
+      "topic": "physics",
+      "difficulty": "medium",
+      "annotator_labels": ["B", "E", "B"],
+      "_note": "AMBIGUOUS: option E is arguably also valid, causing annotator disagreement"
+    },
+    {
+      "id": 18,
+      "prompt": "What is the atomic number of Carbon?",
+      "choices": {
+        "A": "4",
+        "B": "6",
+        "C": "8",
+        "D": "12",
+        "E": "14"
+      },
+      "ground_truth": "B",
+      "topic": "chemistry",
+      "difficulty": "easy",
+      "annotator_labels": ["B", "B", "B"]
+    },
+    {
+      "id": 19,
+      "prompt": "What is natural selection?",
+      "choices": {
+        "A": "Random mutations that occur in DNA.",
+        "B": "The process where organisms better adapted to their environment survive and reproduce more.",
+        "C": "The intentional breeding of organisms by humans.",
+        "D": "The movement of organisms from one habitat to another.",
+        "E": "The spontaneous generation of life from non-living matter."
+      },
+      "ground_truth": "B",
+      "topic": "biology",
+      "difficulty": "medium",
+      "annotator_labels": ["B", "B", "B"]
+    }
+  ],
+  "contamination_test_set": [
+    {
+      "id": 100,
+      "prompt": "What is Newton's second law of motion?",
+      "ground_truth": "A",
+      "_note": "EXACT MATCH with question 0 - contamination!"
+    },
+    {
+      "id": 101,
+      "prompt": "What is the chemical formula for water?",
+      "ground_truth": "B",
+      "_note": "NEAR MATCH with question 1 - potential contamination"
+    },
+    {
+      "id": 102,
+      "prompt": "Explain the process of mitosis in eukaryotic cells.",
+      "ground_truth": "C",
+      "_note": "No match - clean test item"
+    }
+  ],
+  "annotation_simulation": {
+    "description": "Simulated annotations from 5 raters on 10 items for Fleiss Kappa demo",
+    "categories": ["relevant", "partially_relevant", "irrelevant"],
+    "annotations": [
+      ["relevant",           "relevant",           "relevant",           "relevant",           "partially_relevant"],
+      ["relevant",           "relevant",           "partially_relevant", "relevant",           "relevant"],
+      ["irrelevant",         "irrelevant",         "irrelevant",         "partially_relevant", "irrelevant"],
+      ["relevant",           "relevant",           "relevant",           "relevant",           "relevant"],
+      ["partially_relevant", "partially_relevant", "relevant",           "partially_relevant", "partially_relevant"],
+      ["irrelevant",         "partially_relevant", "irrelevant",         "irrelevant",         "irrelevant"],
+      ["relevant",           "relevant",           "relevant",           "partially_relevant", "relevant"],
+      ["partially_relevant", "relevant",           "partially_relevant", "partially_relevant", "relevant"],
+      ["irrelevant",         "irrelevant",         "irrelevant",         "irrelevant",         "irrelevant"],
+      ["relevant",           "relevant",           "relevant",           "relevant",           "relevant"]
+    ]
+  }
+}

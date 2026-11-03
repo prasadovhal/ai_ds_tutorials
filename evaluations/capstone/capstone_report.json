@@ -1,0 +1,194 @@
+{
+  "timestamp": "2026-07-04T18:05:43.638259",
+  "results": {
+    "dataset": {
+      "stats": {
+        "num_rows": 50,
+        "columns": [
+          "id",
+          "prompt",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "answer"
+        ],
+        "answer_distribution": {
+          "E": 13,
+          "A": 10,
+          "C": 10,
+          "D": 9,
+          "B": 8
+        },
+        "avg_prompt_length": 78.3
+      },
+      "version": {
+        "version": "v1.0",
+        "num_samples": 30,
+        "columns": [
+          "id",
+          "prompt",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "answer"
+        ],
+        "checksum": "b1b05ef689810757b1e356318548fd89",
+        "created_at": "2026-07-04T18:04:19.842797"
+      }
+    },
+    "evaluation_v1": {
+      "accuracy": {
+        "accuracy": 0.1667,
+        "correct": 5,
+        "total": 30
+      },
+      "retrieval": {
+        "context_precision": 0.0373,
+        "context_recall": 0.4526,
+        "num_evaluated": 30
+      },
+      "generation": {
+        "faithfulness": 1.0,
+        "relevance": 1.0
+      },
+      "latency": {
+        "p50": 2.0455,
+        "p95": 2.0713,
+        "avg": 2.0438,
+        "min": 2.0125,
+        "max": 2.0735
+      },
+      "judge": {
+        "avg_score": 4.0,
+        "sample_size": 5,
+        "details": [
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          }
+        ]
+      }
+    },
+    "evaluation_v2": {
+      "accuracy": {
+        "accuracy": 0.1,
+        "correct": 3,
+        "total": 30
+      },
+      "retrieval": {
+        "context_precision": 0.0373,
+        "context_recall": 0.4526,
+        "num_evaluated": 30
+      },
+      "generation": {
+        "faithfulness": 0.9667,
+        "relevance": 1.0
+      },
+      "latency": {
+        "p50": 2.2501,
+        "p95": 2.2784,
+        "avg": 2.2482,
+        "min": 2.2138,
+        "max": 2.2809
+      },
+      "judge": {
+        "avg_score": 3.8,
+        "sample_size": 5,
+        "details": [
+          {
+            "score": 3,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          },
+          {
+            "score": 4,
+            "reason": "heuristic: valid format check"
+          }
+        ]
+      }
+    },
+    "regression": {
+      "comparisons": {
+        "accuracy": {
+          "v1": 0.1667,
+          "v2": 0.1,
+          "diff": -0.0667,
+          "status": "REGRESSION"
+        },
+        "retrieval_precision": {
+          "v1": 0.0373,
+          "v2": 0.0373,
+          "diff": 0.0,
+          "status": "STABLE"
+        },
+        "latency_avg": {
+          "v1": 2.0438,
+          "v2": 2.2482,
+          "diff": 0.2044,
+          "status": "REGRESSION"
+        }
+      },
+      "has_regression": true,
+      "regressions": [
+        "accuracy",
+        "latency_avg"
+      ],
+      "verdict": "FAIL"
+    },
+    "quality_gates": {
+      "gates": {
+        "accuracy": {
+          "value": 0.1667,
+          "threshold": 0.7,
+          "status": "FAIL"
+        },
+        "latency_p95": {
+          "value": 2.0713,
+          "threshold": 5.0,
+          "status": "PASS"
+        },
+        "judge_score": {
+          "value": 4.0,
+          "threshold": 2.5,
+          "status": "PASS"
+        }
+      },
+      "all_passed": false,
+      "failed": [
+        "accuracy"
+      ],
+      "verdict": "FAIL"
+    }
+  }
+}

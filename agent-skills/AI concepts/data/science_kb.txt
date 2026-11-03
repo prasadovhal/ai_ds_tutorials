@@ -1,0 +1,69 @@
+===== BIOLOGY =====
+
+Chunk 1: Photosynthesis
+Photosynthesis is the process by which plants, algae, and some bacteria convert light energy into chemical energy stored in organic compounds. The light-dependent reactions occur in the thylakoid membrane, producing ATP and NADPH. The light-independent reactions (Calvin cycle) use these molecules to fix carbon dioxide into glucose in the stroma.
+
+Chunk 2: Mitochondria Structure and Function
+Mitochondria are double-membrane organelles known as the powerhouse of the cell. The inner membrane is highly folded into cristae, which house the electron transport chain and ATP synthase. Mitochondria oxidize pyruvate and fatty acids through beta-oxidation and the citric acid cycle to generate the majority of cellular ATP.
+
+Chunk 3: DNA Replication
+DNA replication is semi-conservative and semi-discontinuous. The leading strand is synthesized continuously by DNA polymerase III, while the lagging strand is synthesized as Okazaki fragments (1000-2000 nucleotides in prokaryotes, 100-200 in eukaryotes). Topoisomerase II relieves tension ahead of the replication fork.
+
+Chunk 4: CRISPR-Cas9 Gene Editing
+CRISPR-Cas9 is a molecular tool adapted from bacterial immune systems that enables precise genetic editing. The Cas9 endonuclease cleaves DNA at locations specified by a guide RNA. Double-strand breaks are repaired by non-homologous end joining (NHEJ) or homology-directed repair (HDR), allowing insertions, deletions, or corrections.
+
+Chunk 5: Protein Synthesis
+Translation begins when the ribosome recognizes the 5' cap and scans for the AUG start codon on mRNA. The ribosome contains three tRNA binding sites: A (aminoacyl), P (peptidyl), and E (exit). Elongation factors EF-Tu and EF-G catalyze peptide bond formation and ribosome translocation at a rate of 15-20 amino acids per second in prokaryotes.
+
+===== PHYSICS =====
+
+Chunk 6: Quantum Entanglement
+Quantum entanglement occurs when two or more particles are created or interact in such a way that the quantum state of one particle cannot be described independently from the others. Bell's theorem demonstrates that no local hidden variable theory can reproduce all quantum mechanical predictions, violating Bell inequalities by up to 2.7 sigma.
+
+Chunk 7: Black Holes
+Black holes form from the gravitational collapse of massive stars and are characterized by the event horizon—a boundary beyond which no information can escape. The Schwarzschild radius defines the event horizon radius as r_s = 2GM/c^2. Hawking radiation causes black holes to emit particles and gradually evaporate over timescales proportional to M^3.
+
+Chunk 8: Thermodynamics Second Law
+The second law of thermodynamics states that the entropy of an isolated system always increases over time, or remains constant for reversible processes. Entropy (S) relates to disorder and unavailable energy. The relationship ΔG = ΔH - TΔS determines spontaneity of reactions; negative ΔG indicates spontaneous processes at constant T and P.
+
+Chunk 9: Wave-Particle Duality
+Light and matter exhibit both wave and particle properties depending on the experimental measurement. The de Broglie wavelength λ = h/p relates momentum to wavelength. Young's double-slit experiment demonstrates wave interference for light, while electron diffraction patterns show wave behavior for particles.
+
+Chunk 10: Relativity Time Dilation
+Special relativity predicts time dilation: t = t₀ / √(1 - v²/c²). A moving clock runs slower relative to a stationary observer. General relativity extends this, showing that gravitational fields also cause time dilation; clocks at higher gravitational potential run faster than those at lower potential by Δt/t ≈ Δφ/c².
+
+===== CHEMISTRY =====
+
+Chunk 11: Chemical Bonding
+Covalent bonds result from electron pair sharing and follow the octet rule for main group elements. Electronegativity differences determine bond polarity: differences > 1.7 typically indicate ionic bonds, while smaller differences indicate covalent or polar covalent bonds. Coordinate covalent bonds form when one atom donates both electrons of the pair.
+
+Chunk 12: Catalysis Mechanism
+Catalysts accelerate reactions by lowering the activation energy (E_a) without being consumed. They work by stabilizing the transition state more than the reactants. The Michaelis-Menten equation v = (V_max [S]) / (K_m + [S]) describes enzyme kinetics; K_m reflects substrate affinity and V_max depends on enzyme concentration.
+
+Chunk 13: Oxidation-Reduction Reactions
+Redox reactions involve electron transfer; oxidation is loss of electrons (increase in oxidation state), and reduction is gain of electrons. The standard cell potential (E°cell) predicts spontaneity: E°cell = E°cathode - E°anode. Positive E°cell indicates spontaneous reactions under standard conditions (1 M, 25°C, 1 atm).
+
+Chunk 14: Periodic Table and Element Trends
+Atomic radius decreases left-to-right across a period (increasing nuclear charge with constant electron shells) and increases down a group (additional electron shells). Electronegativity increases left-to-right and decreases down a group. Ionization energy follows the same trend as electronegativity due to stronger nuclear attraction in smaller atoms.
+
+===== ASTRONOMY =====
+
+Chunk 15: Exoplanet Detection
+Exoplanets are detected using transit photometry (observing brightness dips as planets cross stellar disks), radial velocity (stellar motion from gravitational pull), or direct imaging. The Kepler mission discovered over 2,700 exoplanets. Habitable zone planets orbit within 0.95-1.37 AU for Sun-like stars, where liquid water can exist on planetary surfaces.
+
+Chunk 16: Stellar Evolution
+Stars evolve through the Hertzsprung-Russell diagram based on luminosity and temperature. Main sequence stars fuse hydrogen to helium for 90% of their lifetime. Massive stars (M > 20 M_sun) end as supernovae and black holes; low-mass stars become white dwarfs. The Sun will reach the red giant phase in ~5 billion years.
+
+Chunk 17: Cosmic Microwave Background
+The Cosmic Microwave Background (CMB) is electromagnetic radiation from the early universe, emitted ~380,000 years after the Big Bang. Temperature anisotropies (±0.00005 K) reveal density fluctuations that seeded galaxy formation. Power spectrum analysis constrains cosmological parameters: age 13.8 billion years, Ω_matter ≈ 0.27, Ω_dark_energy ≈ 0.73.
+
+Chunk 18: Dark Matter
+Dark matter comprises ~85% of matter in the universe but emits no light. Evidence includes galactic rotation curves, gravitational lensing, and CMB power spectrum. Leading candidates are WIMPs (weakly interacting massive particles) and axions. Direct detection experiments search for interactions with normal matter via nuclear recoil.
+
+===== INTERDISCIPLINARY =====
+
+Chunk 19: Origins of Life
+Life likely emerged in hydrothermal vents or primordial pools through abiogenesis. RNA world hypothesis suggests RNA preceded DNA and proteins, performing both genetic storage and catalysis. Amino acids form under simulated prebiotic conditions (Miller-Urey experiment); lipid bilayers spontaneously form from fatty acids, creating protocell candidates.
+
+Chunk 20: Climate Change Physics
+CO₂ atmospheric concentration increased from 280 ppm (pre-industrial) to 420 ppm (2024). Greenhouse gases trap infrared radiation; CO₂ contributes ~75% of radiative forcing. Climate sensitivity (temperature increase per doubling of CO₂) is estimated at 2.5-4°C. Feedback loops (albedo, water vapor) amplify warming; melting permafrost releases methane.

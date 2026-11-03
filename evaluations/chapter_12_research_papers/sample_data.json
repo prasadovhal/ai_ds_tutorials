@@ -1,0 +1,371 @@
+{
+  "mt_bench_conversations": [
+    {
+      "id": "mt_001",
+      "turn_1": {
+        "question": "What are the key differences between classical and quantum computing?",
+        "response_a": "Classical computing uses bits (0 or 1), while quantum computing uses qubits that can be in superposition of both states simultaneously. Quantum computers leverage entanglement and interference to solve certain problems exponentially faster, like factoring large numbers (Shor's algorithm) and searching unsorted databases (Grover's algorithm). However, quantum computers are error-prone and require extreme cooling.",
+        "response_b": "Quantum computing is faster than classical computing. It uses quantum mechanics to process information. Classical computers are slower but more reliable. Quantum computers will replace classical computers in the future."
+      },
+      "turn_2": {
+        "question": "Based on your explanation, which type would be better for running a large language model and why?",
+        "response_a": "Classical computers are currently better for running LLMs. LLMs rely on massive matrix multiplications across billions of parameters, which map well to GPU architectures (classical). Current quantum computers have too few stable qubits (~1000) and high error rates. Quantum advantage exists for specific mathematical problems, but the general-purpose computation needed for transformer inference is not among them. In 10-20 years, hybrid approaches might help with specific LLM optimization sub-problems.",
+        "response_b": "Classical computers are better for LLMs right now because quantum computers are not powerful enough yet. But quantum computers might be better in the future when they become more advanced."
+      },
+      "human_pref": "A",
+      "category": "reasoning"
+    },
+    {
+      "id": "mt_002",
+      "turn_1": {
+        "question": "Explain the concept of attention mechanism in transformers.",
+        "response_a": "The attention mechanism lets a model focus on relevant parts of the input when producing each output element. In self-attention, each token computes Query (Q), Key (K), and Value (V) vectors. Attention scores are computed as softmax(QK^T / sqrt(d_k)) * V. This allows tokens to attend to any other token regardless of distance, solving the long-range dependency problem of RNNs. Multi-head attention runs this in parallel across multiple representation subspaces.",
+        "response_b": "Attention mechanism is a way for the model to pay attention to different parts of the input. It uses queries, keys, and values to determine which parts of the input are most relevant. The transformer architecture uses multi-head attention to capture different types of relationships. Self-attention allows each word to look at all other words in the sequence, which helps the model understand context better than previous approaches like RNNs.",
+        "human_pref": "A"
+      },
+      "turn_2": {
+        "question": "How does the computational complexity of attention scale with sequence length, and what solutions exist?",
+        "response_a": "Standard self-attention has O(n^2) complexity in both time and memory, where n is sequence length. For a 100K token document, that means 10 billion attention computations per layer. Solutions include: (1) Sparse attention (BigBird, Longformer) - attend to local windows + global tokens, reducing to O(n*sqrt(n)); (2) Linear attention (Performer) - approximate softmax with kernel functions for O(n) complexity; (3) Flash Attention - not reducing theoretical complexity but optimizing GPU memory access patterns for 2-4x speedup; (4) Sliding window + chunked attention (Mistral) for efficient long context.",
+        "response_b": "Attention scales quadratically with sequence length, which means longer sequences require much more computation. Various methods have been proposed to address this, including sparse attention patterns, linear attention approximations, and more efficient memory management techniques.",
+        "human_pref": "A"
+      },
+      "category": "coding"
+    },
+    {
+      "id": "mt_003",
+      "turn_1": {
+        "question": "Write a Python function to find the longest palindromic substring.",
+        "response_a": "def longest_palindrome(s):\n    if not s:\n        return ''\n    n = len(s)\n    start, max_len = 0, 1\n    \n    def expand(l, r):\n        nonlocal start, max_len\n        while l >= 0 and r < n and s[l] == s[r]:\n            if r - l + 1 > max_len:\n                start = l\n                max_len = r - l + 1\n            l -= 1\n            r += 1\n    \n    for i in range(n):\n        expand(i, i)      # Odd length\n        expand(i, i + 1)  # Even length\n    \n    return s[start:start + max_len]\n\n# Time: O(n^2), Space: O(1)\n# Example: longest_palindrome('babad') -> 'bab' or 'aba'",
+        "response_b": "Here is a function:\n\ndef longest_palindrome(s):\n    result = ''\n    for i in range(len(s)):\n        for j in range(i, len(s)):\n            substring = s[i:j+1]\n            if substring == substring[::-1] and len(substring) > len(result):\n                result = substring\n    return result\n\nThis checks all substrings and returns the longest palindrome.",
+        "human_pref": "A"
+      },
+      "turn_2": {
+        "question": "Can you optimize this to O(n) time complexity?",
+        "response_a": "Yes, using Manacher's algorithm:\n\ndef longest_palindrome_manacher(s):\n    # Transform: 'abc' -> '#a#b#c#'\n    t = '#' + '#'.join(s) + '#'\n    n = len(t)\n    p = [0] * n  # p[i] = radius of palindrome centered at i\n    c = r = 0    # center and right boundary\n    \n    for i in range(n):\n        mirror = 2 * c - i\n        if i < r:\n            p[i] = min(r - i, p[mirror])\n        while i + p[i] + 1 < n and i - p[i] - 1 >= 0 and t[i + p[i] + 1] == t[i - p[i] - 1]:\n            p[i] += 1\n        if i + p[i] > r:\n            c, r = i, i + p[i]\n    \n    max_len = max(p)\n    center = p.index(max_len)\n    start = (center - max_len) // 2\n    return s[start:start + max_len]\n\n# Uses the symmetry property of palindromes to avoid redundant comparisons.",
+        "response_b": "O(n) is possible with Manacher's algorithm, which uses previously computed palindrome information to avoid redundant checks. It processes a transformed string and maintains a center and right boundary to efficiently expand palindromes. The algorithm is complex but achieves linear time by exploiting palindrome symmetry.",
+        "human_pref": "A"
+      },
+      "category": "coding"
+    }
+  ],
+  "position_bias_examples": [
+    {
+      "id": "pb_001",
+      "question": "What causes seasons on Earth?",
+      "response_quality": "equal",
+      "response_1": "Seasons are caused by Earth's axial tilt of 23.5 degrees. As Earth orbits the Sun, different hemispheres receive more direct sunlight at different times. When the Northern Hemisphere tilts toward the Sun, it's summer there and winter in the Southern Hemisphere.",
+      "response_2": "The Earth's axis is tilted at approximately 23.5 degrees relative to its orbital plane. This axial tilt means that as Earth revolves around the Sun, the angle of sunlight hitting different parts of Earth changes throughout the year, creating seasons. The hemisphere tilted toward the Sun experiences summer.",
+      "note": "Both responses are equivalent in quality - used to test if judge favors position 1 or 2"
+    },
+    {
+      "id": "pb_002",
+      "question": "Explain photosynthesis briefly.",
+      "response_quality": "equal",
+      "response_1": "Photosynthesis is the process by which plants convert sunlight, water, and carbon dioxide into glucose and oxygen. It occurs in chloroplasts using chlorophyll. The light reactions capture solar energy, and the Calvin cycle uses it to fix carbon into sugar molecules.",
+      "response_2": "Plants use photosynthesis to transform light energy into chemical energy. In this process, chlorophyll in chloroplasts absorbs sunlight, which drives the conversion of CO2 and H2O into glucose (C6H12O6) and O2. This involves light-dependent reactions and the Calvin cycle."
+    },
+    {
+      "id": "pb_003",
+      "question": "What is machine learning?",
+      "response_quality": "equal",
+      "response_1": "Machine learning is a subset of artificial intelligence where computers learn patterns from data without being explicitly programmed. Algorithms improve their performance on tasks through experience, using techniques like supervised learning, unsupervised learning, and reinforcement learning.",
+      "response_2": "Machine learning is an AI approach where systems automatically learn and improve from experience without explicit programming. It involves algorithms that identify patterns in data, enabling predictions or decisions. The main paradigms are supervised learning, unsupervised learning, and reinforcement learning."
+    }
+  ],
+  "g_eval_examples": [
+    {
+      "id": "geval_001",
+      "source_text": "The Eiffel Tower, located in Paris, France, was constructed from 1887 to 1889 as the centerpiece of the 1889 World's Fair. Designed by engineer Gustave Eiffel, it stands 330 meters tall and was the world's tallest structure until 1930. Today it receives about 7 million visitors annually.",
+      "summary": "The Eiffel Tower in Paris was built in 1889 for the World's Fair. It is 330 meters tall and was designed by Gustave Eiffel. It attracts millions of visitors each year.",
+      "criteria": {
+        "coherence": {"score": 5, "reason": "Logical flow, well-structured summary"},
+        "consistency": {"score": 5, "reason": "All facts match the source"},
+        "fluency": {"score": 4, "reason": "Natural language but somewhat plain"},
+        "relevance": {"score": 5, "reason": "Captures main points without tangents"}
+      }
+    },
+    {
+      "id": "geval_002",
+      "source_text": "CRISPR-Cas9 is a revolutionary gene-editing technology that allows scientists to modify DNA sequences with high precision. Discovered as a bacterial immune system, it was adapted by Jennifer Doudna and Emmanuelle Charpentier in 2012. It works by using a guide RNA to direct the Cas9 enzyme to cut DNA at specific locations, enabling insertion, deletion, or replacement of genetic material.",
+      "summary": "CRISPR is a gene editing tool discovered in 2015 by scientists. It uses enzymes to edit DNA and has many applications in medicine. The technology works by cutting genes and replacing them with new ones.",
+      "criteria": {
+        "coherence": {"score": 3, "reason": "Adequate flow but lacks precision"},
+        "consistency": {"score": 2, "reason": "Wrong year (2015 vs 2012), missing key names"},
+        "fluency": {"score": 4, "reason": "Grammatically correct and readable"},
+        "relevance": {"score": 3, "reason": "Captures general topic but misses specifics"}
+      }
+    },
+    {
+      "id": "geval_003",
+      "source_text": "The James Webb Space Telescope (JWST) launched on December 25, 2021. It is positioned at Lagrange Point 2, about 1.5 million km from Earth. With its 6.5-meter primary mirror and infrared capabilities, it can observe the earliest galaxies formed after the Big Bang, study exoplanet atmospheres, and peer through cosmic dust clouds.",
+      "summary": "JWST launched in 2021 and orbits at Lagrange Point 2. Its large mirror and infrared instruments let it study early galaxies, exoplanets, and regions obscured by dust.",
+      "criteria": {
+        "coherence": {"score": 5, "reason": "Clear, logical progression"},
+        "consistency": {"score": 5, "reason": "All stated facts are accurate"},
+        "fluency": {"score": 5, "reason": "Concise, natural prose"},
+        "relevance": {"score": 5, "reason": "Captures all key capabilities"}
+      }
+    }
+  ],
+  "rag_evaluation_examples": [
+    {
+      "id": "rag_001",
+      "question": "What is the capital of France?",
+      "contexts": [
+        "Paris is the capital and most populous city of France, with a population of over 2 million.",
+        "France is a country in Western Europe, known for its wine, cuisine, and the Eiffel Tower.",
+        "The French Revolution began in 1789 and transformed French politics."
+      ],
+      "answer": "The capital of France is Paris.",
+      "ground_truth": "Paris",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    {
+      "id": "rag_002",
+      "question": "When was the theory of general relativity published?",
+      "contexts": [
+        "Einstein developed the special theory of relativity in 1905.",
+        "The photoelectric effect was explained by Einstein in 1905.",
+        "Quantum mechanics was developed in the early 20th century."
+      ],
+      "answer": "Einstein published the theory of general relativity in 1915.",
+      "ground_truth": "1915",
+      "faithfulness": 0.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.0,
+      "context_recall": 0.0,
+      "note": "Answer is correct but NOT supported by the retrieved contexts (hallucination from parametric knowledge)"
+    },
+    {
+      "id": "rag_003",
+      "question": "How does photosynthesis work?",
+      "contexts": [
+        "Photosynthesis is the process by which green plants convert sunlight into chemical energy.",
+        "During photosynthesis, plants absorb CO2 and water, producing glucose and oxygen.",
+        "Chlorophyll in plant cells captures light energy to drive the photosynthetic reactions.",
+        "The Calvin cycle fixes carbon dioxide into organic molecules using ATP and NADPH."
+      ],
+      "answer": "Photosynthesis works by using chlorophyll to capture sunlight energy, which drives the conversion of CO2 and water into glucose and oxygen through light-dependent reactions and the Calvin cycle.",
+      "ground_truth": "Plants use chlorophyll to capture sunlight, converting CO2 and water into glucose and oxygen",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    }
+  ],
+  "agent_evaluation_examples": [
+    {
+      "id": "agent_001",
+      "task": "Find the total revenue from the sales database for Q3 2023",
+      "environment": "database",
+      "trajectory": [
+        {"step": 1, "action": "sql_query", "input": "SELECT SUM(revenue) FROM sales WHERE quarter = 'Q3' AND year = 2023", "output": "Total: $2,450,000", "correct": true},
+        {"step": 2, "action": "format_response", "input": "Format the result", "output": "The total revenue for Q3 2023 was $2,450,000.", "correct": true}
+      ],
+      "task_completed": true,
+      "steps_taken": 2,
+      "optimal_steps": 2,
+      "efficiency": 1.0
+    },
+    {
+      "id": "agent_002",
+      "task": "Debug the failing test in auth_module.py",
+      "environment": "code",
+      "trajectory": [
+        {"step": 1, "action": "read_file", "input": "auth_module.py", "output": "File contents...", "correct": true},
+        {"step": 2, "action": "run_tests", "input": "pytest auth_module.py", "output": "FAILED: test_login - AssertionError", "correct": true},
+        {"step": 3, "action": "read_file", "input": "test_auth.py", "output": "Test file contents...", "correct": true},
+        {"step": 4, "action": "edit_file", "input": "Fix typo in line 42: 'pasword' -> 'password'", "output": "File updated", "correct": true},
+        {"step": 5, "action": "run_tests", "input": "pytest auth_module.py", "output": "PASSED: all tests", "correct": true}
+      ],
+      "task_completed": true,
+      "steps_taken": 5,
+      "optimal_steps": 4,
+      "efficiency": 0.8
+    },
+    {
+      "id": "agent_003",
+      "task": "Navigate to the settings page and change the language to French",
+      "environment": "web",
+      "trajectory": [
+        {"step": 1, "action": "click", "input": "Menu button", "output": "Menu opened", "correct": true},
+        {"step": 2, "action": "click", "input": "About page", "output": "About page loaded", "correct": false},
+        {"step": 3, "action": "click", "input": "Back button", "output": "Menu reopened", "correct": true},
+        {"step": 4, "action": "click", "input": "Settings", "output": "Settings page loaded", "correct": true},
+        {"step": 5, "action": "click", "input": "Language dropdown", "output": "Dropdown opened", "correct": true},
+        {"step": 6, "action": "click", "input": "French", "output": "Language changed to French", "correct": true}
+      ],
+      "task_completed": true,
+      "steps_taken": 6,
+      "optimal_steps": 4,
+      "efficiency": 0.67
+    }
+  ],
+  "reflexion_examples": [
+    {
+      "id": "refl_001",
+      "task": "Solve: What is 17 * 23 + 45 - 12 * 3?",
+      "ground_truth": 400,
+      "attempts": [
+        {
+          "attempt": 1,
+          "answer": 382,
+          "reasoning": "17 * 23 = 391, 391 + 45 = 436, 12 * 3 = 36, 436 - 36 = 382. Wait, let me verify: 17 * 23...",
+          "correct": false,
+          "reflection": "I made an arithmetic error. 17 * 23 = 391 is correct. 391 + 45 = 436 is correct. 12 * 3 = 36 is correct. 436 - 36 = 400, not 382. I made a subtraction error."
+        },
+        {
+          "attempt": 2,
+          "answer": 400,
+          "reasoning": "17 * 23 = 391. 391 + 45 = 436. 12 * 3 = 36. 436 - 36 = 400.",
+          "correct": true,
+          "reflection": "Correct. The key was to carefully perform each arithmetic step."
+        }
+      ]
+    },
+    {
+      "id": "refl_002",
+      "task": "What is the output of: [x**2 for x in range(5) if x % 2 == 0]",
+      "ground_truth": [0, 4, 16],
+      "attempts": [
+        {
+          "attempt": 1,
+          "answer": [4, 16],
+          "reasoning": "range(5) gives [1,2,3,4,5]. Even numbers: 2, 4. Squares: 4, 16.",
+          "correct": false,
+          "reflection": "I was wrong about range(5). It starts from 0, giving [0,1,2,3,4]. So even numbers are 0, 2, 4 and their squares are 0, 4, 16."
+        },
+        {
+          "attempt": 2,
+          "answer": [0, 4, 16],
+          "reasoning": "range(5) = [0,1,2,3,4]. Even numbers (x%2==0): 0, 2, 4. Squares: 0, 4, 16.",
+          "correct": true,
+          "reflection": "Correct. Key lesson: range(n) starts from 0, not 1."
+        }
+      ]
+    }
+  ],
+  "calibration_examples": [
+    {
+      "id": "cal_001",
+      "question": "Is response A better than response B?",
+      "true_label": "A",
+      "judge_prediction": "A",
+      "judge_confidence": 0.92,
+      "human_agreement": true
+    },
+    {
+      "id": "cal_002",
+      "question": "Is response A better than response B?",
+      "true_label": "B",
+      "judge_prediction": "A",
+      "judge_confidence": 0.85,
+      "human_agreement": false,
+      "note": "Judge was overconfident and wrong - calibration issue"
+    },
+    {
+      "id": "cal_003",
+      "question": "Is response A better than response B?",
+      "true_label": "tie",
+      "judge_prediction": "A",
+      "judge_confidence": 0.55,
+      "human_agreement": false,
+      "note": "Low confidence correctly reflects uncertainty but still picked wrong"
+    },
+    {
+      "id": "cal_004",
+      "question": "Is response A better than response B?",
+      "true_label": "A",
+      "judge_prediction": "A",
+      "judge_confidence": 0.78,
+      "human_agreement": true
+    },
+    {
+      "id": "cal_005",
+      "question": "Is response A better than response B?",
+      "true_label": "B",
+      "judge_prediction": "B",
+      "judge_confidence": 0.88,
+      "human_agreement": true
+    },
+    {
+      "id": "cal_006",
+      "question": "Is response A better than response B?",
+      "true_label": "A",
+      "judge_prediction": "A",
+      "judge_confidence": 0.95,
+      "human_agreement": true
+    },
+    {
+      "id": "cal_007",
+      "question": "Is response A better than response B?",
+      "true_label": "tie",
+      "judge_prediction": "B",
+      "judge_confidence": 0.60,
+      "human_agreement": false
+    },
+    {
+      "id": "cal_008",
+      "question": "Is response A better than response B?",
+      "true_label": "B",
+      "judge_prediction": "B",
+      "judge_confidence": 0.71,
+      "human_agreement": true
+    }
+  ],
+  "swe_bench_examples": [
+    {
+      "id": "swe_001",
+      "repo": "scikit-learn/scikit-learn",
+      "issue": "KMeans with n_clusters=1 raises ValueError",
+      "issue_description": "When setting n_clusters=1, KMeans.fit() raises a ValueError about empty clusters, but a single cluster should always be valid.",
+      "test_patch": "def test_kmeans_single_cluster():\n    X = [[1, 2], [3, 4], [5, 6]]\n    km = KMeans(n_clusters=1)\n    km.fit(X)\n    assert len(km.cluster_centers_) == 1",
+      "gold_patch": "# In _kmeans.py, line 842:\n# Change: if n_clusters < 1:\n# To: if n_clusters < 1:\n#   (also handle the n_clusters == 1 case without reassignment check)",
+      "difficulty": "easy",
+      "resolved_by": ["gpt-4", "claude-3-opus"],
+      "not_resolved_by": ["gpt-3.5-turbo", "llama-2-70b"]
+    },
+    {
+      "id": "swe_002",
+      "repo": "django/django",
+      "issue": "QuerySet.union() breaks with order_by() on related fields",
+      "issue_description": "Using .union().order_by('related__field') raises a DatabaseError because the SQL compiler does not properly handle ordering by joined fields in UNION queries.",
+      "test_patch": "def test_union_order_by_related():\n    qs1 = Model.objects.filter(status='active')\n    qs2 = Model.objects.filter(status='archived')\n    result = qs1.union(qs2).order_by('category__name')\n    assert list(result)  # Should not raise",
+      "difficulty": "hard",
+      "resolved_by": ["gpt-4"],
+      "not_resolved_by": ["gpt-3.5-turbo", "claude-3-opus", "llama-2-70b"]
+    }
+  ],
+  "meta_evaluation_examples": [
+    {
+      "evaluator": "GPT-4 Judge",
+      "human_scores": [5, 3, 4, 2, 5, 1, 4, 3, 5, 2],
+      "judge_scores": [5, 4, 4, 3, 5, 2, 4, 3, 5, 3],
+      "agreement_rate": 0.70,
+      "cohens_kappa": 0.58,
+      "spearmans_rho": 0.95,
+      "bias": "slight_positive"
+    },
+    {
+      "evaluator": "Claude Judge",
+      "human_scores": [5, 3, 4, 2, 5, 1, 4, 3, 5, 2],
+      "judge_scores": [4, 3, 3, 2, 4, 1, 3, 2, 4, 2],
+      "agreement_rate": 0.50,
+      "cohens_kappa": 0.42,
+      "spearmans_rho": 0.97,
+      "bias": "slight_negative"
+    },
+    {
+      "evaluator": "Rule-Based Scorer",
+      "human_scores": [5, 3, 4, 2, 5, 1, 4, 3, 5, 2],
+      "judge_scores": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      "agreement_rate": 0.20,
+      "cohens_kappa": 0.0,
+      "spearmans_rho": 0.0,
+      "bias": "central_tendency"
+    }
+  ]
+}

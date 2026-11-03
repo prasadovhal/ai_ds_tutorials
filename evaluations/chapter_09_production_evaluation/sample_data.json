@@ -1,0 +1,233 @@
+{
+  "metadata": {
+    "description": "Simulated production logs, metrics, and alerts for Chapter 9 - Production Evaluation",
+    "source": "Derived from Kaggle LLM Science Exam dataset",
+    "simulation_period": "30 days of production traffic"
+  },
+  "production_logs": [
+    {
+      "timestamp": "2025-01-01T00:00:00Z",
+      "request_id": "req_001",
+      "model_version": "v1.0",
+      "prompt_version": "prompt_v1",
+      "question_id": 0,
+      "prediction": "D",
+      "ground_truth": "D",
+      "latency_ms": 245,
+      "tokens_used": 512,
+      "is_correct": true,
+      "confidence": 0.92
+    },
+    {
+      "timestamp": "2025-01-01T00:05:00Z",
+      "request_id": "req_002",
+      "model_version": "v1.0",
+      "prompt_version": "prompt_v1",
+      "question_id": 1,
+      "prediction": "A",
+      "ground_truth": "A",
+      "latency_ms": 198,
+      "tokens_used": 480,
+      "is_correct": true,
+      "confidence": 0.88
+    },
+    {
+      "timestamp": "2025-01-01T00:10:00Z",
+      "request_id": "req_003",
+      "model_version": "v1.0",
+      "prompt_version": "prompt_v1",
+      "question_id": 2,
+      "prediction": "B",
+      "ground_truth": "A",
+      "latency_ms": 310,
+      "tokens_used": 550,
+      "is_correct": false,
+      "confidence": 0.55
+    },
+    {
+      "timestamp": "2025-01-01T00:15:00Z",
+      "request_id": "req_004",
+      "model_version": "v1.0",
+      "prompt_version": "prompt_v1",
+      "question_id": 3,
+      "prediction": "C",
+      "ground_truth": "C",
+      "latency_ms": 220,
+      "tokens_used": 495,
+      "is_correct": true,
+      "confidence": 0.91
+    },
+    {
+      "timestamp": "2025-01-01T00:20:00Z",
+      "request_id": "req_005",
+      "model_version": "v1.0",
+      "prompt_version": "prompt_v1",
+      "question_id": 4,
+      "prediction": "D",
+      "ground_truth": "D",
+      "latency_ms": 275,
+      "tokens_used": 530,
+      "is_correct": true,
+      "confidence": 0.85
+    },
+    {
+      "timestamp": "2025-01-15T12:00:00Z",
+      "request_id": "req_500",
+      "model_version": "v2.0",
+      "prompt_version": "prompt_v2",
+      "question_id": 0,
+      "prediction": "A",
+      "ground_truth": "D",
+      "latency_ms": 180,
+      "tokens_used": 420,
+      "is_correct": false,
+      "confidence": 0.60
+    },
+    {
+      "timestamp": "2025-01-15T12:05:00Z",
+      "request_id": "req_501",
+      "model_version": "v2.0",
+      "prompt_version": "prompt_v2",
+      "question_id": 1,
+      "prediction": "A",
+      "ground_truth": "A",
+      "latency_ms": 165,
+      "tokens_used": 410,
+      "is_correct": true,
+      "confidence": 0.78
+    },
+    {
+      "timestamp": "2025-01-15T12:10:00Z",
+      "request_id": "req_502",
+      "model_version": "v2.0",
+      "prompt_version": "prompt_v2",
+      "question_id": 2,
+      "prediction": "C",
+      "ground_truth": "A",
+      "latency_ms": 190,
+      "tokens_used": 430,
+      "is_correct": false,
+      "confidence": 0.45
+    }
+  ],
+  "model_versions": {
+    "v1.0": {
+      "release_date": "2025-01-01",
+      "description": "Baseline science QA model, fine-tuned on curated dataset",
+      "expected_accuracy": 0.78,
+      "prompt_version": "prompt_v1",
+      "status": "deprecated"
+    },
+    "v1.1": {
+      "release_date": "2025-01-08",
+      "description": "Minor prompt optimization, improved physics questions",
+      "expected_accuracy": 0.80,
+      "prompt_version": "prompt_v1.1",
+      "status": "deprecated"
+    },
+    "v2.0": {
+      "release_date": "2025-01-15",
+      "description": "Major model update with new architecture, faster inference",
+      "expected_accuracy": 0.82,
+      "prompt_version": "prompt_v2",
+      "status": "canary"
+    },
+    "v2.1": {
+      "release_date": "2025-01-22",
+      "description": "Hotfix for v2.0 regression on chemistry questions",
+      "expected_accuracy": 0.83,
+      "prompt_version": "prompt_v2.1",
+      "status": "production"
+    }
+  },
+  "prompt_versions": {
+    "prompt_v1": {
+      "template": "Answer the following science question by selecting the correct option (A-E).\n\nQuestion: {question}\n\nOptions:\nA) {A}\nB) {B}\nC) {C}\nD) {D}\nE) {E}\n\nAnswer:",
+      "created": "2025-01-01",
+      "performance": {"accuracy": 0.78, "avg_latency_ms": 250}
+    },
+    "prompt_v1.1": {
+      "template": "You are a science expert. Read the question carefully and select the best answer.\n\nQuestion: {question}\n\nA) {A}\nB) {B}\nC) {C}\nD) {D}\nE) {E}\n\nThink step by step, then provide your answer as a single letter.",
+      "created": "2025-01-08",
+      "performance": {"accuracy": 0.80, "avg_latency_ms": 280}
+    },
+    "prompt_v2": {
+      "template": "Analyze this science question and identify the correct answer.\n\n{question}\n\nChoices:\n(A) {A}\n(B) {B}\n(C) {C}\n(D) {D}\n(E) {E}\n\nProvide only the letter of the correct answer.",
+      "created": "2025-01-15",
+      "performance": {"accuracy": 0.75, "avg_latency_ms": 185}
+    },
+    "prompt_v2.1": {
+      "template": "You are a science expert. Analyze this question carefully.\n\nQuestion: {question}\n\nOptions:\n(A) {A}\n(B) {B}\n(C) {C}\n(D) {D}\n(E) {E}\n\nFirst identify the scientific domain, then reason through each option. Provide your final answer as a single letter (A-E).",
+      "created": "2025-01-22",
+      "performance": {"accuracy": 0.83, "avg_latency_ms": 310}
+    }
+  },
+  "alert_history": [
+    {
+      "timestamp": "2025-01-15T14:30:00Z",
+      "alert_type": "accuracy_drop",
+      "severity": "critical",
+      "message": "Accuracy dropped below 70% threshold: current 65% (window: last 100 requests)",
+      "model_version": "v2.0",
+      "metric_value": 0.65,
+      "threshold": 0.70,
+      "resolved": true,
+      "resolution": "Rolled back to v1.1, scheduled v2.1 hotfix"
+    },
+    {
+      "timestamp": "2025-01-16T08:00:00Z",
+      "alert_type": "latency_spike",
+      "severity": "warning",
+      "message": "P95 latency exceeded 500ms: current 520ms",
+      "model_version": "v1.1",
+      "metric_value": 520,
+      "threshold": 500,
+      "resolved": true,
+      "resolution": "Transient load spike, resolved after autoscaling"
+    },
+    {
+      "timestamp": "2025-01-20T10:15:00Z",
+      "alert_type": "drift_detected",
+      "severity": "warning",
+      "message": "Input distribution drift detected: question length distribution shifted (KL divergence = 0.15, threshold = 0.10)",
+      "model_version": "v1.1",
+      "metric_value": 0.15,
+      "threshold": 0.10,
+      "resolved": false,
+      "resolution": null
+    }
+  ],
+  "deployment_gates": {
+    "accuracy_gate": {
+      "metric": "accuracy",
+      "operator": ">=",
+      "threshold": 0.75,
+      "description": "Model must achieve >= 75% accuracy on golden dataset"
+    },
+    "regression_gate": {
+      "metric": "regression_rate",
+      "operator": "<=",
+      "threshold": 0.05,
+      "description": "No more than 5% of previously correct answers may regress"
+    },
+    "latency_gate": {
+      "metric": "p95_latency_ms",
+      "operator": "<=",
+      "threshold": 500,
+      "description": "P95 latency must be under 500ms"
+    },
+    "drift_gate": {
+      "metric": "kl_divergence",
+      "operator": "<=",
+      "threshold": 0.10,
+      "description": "Output distribution drift must be within tolerance"
+    }
+  },
+  "continuous_benchmarks": [
+    {"version": "v0.9", "date": "2024-12-15", "accuracy": 0.72, "latency_p50_ms": 300, "latency_p95_ms": 480},
+    {"version": "v1.0", "date": "2025-01-01", "accuracy": 0.78, "latency_p50_ms": 250, "latency_p95_ms": 420},
+    {"version": "v1.1", "date": "2025-01-08", "accuracy": 0.80, "latency_p50_ms": 240, "latency_p95_ms": 400},
+    {"version": "v2.0", "date": "2025-01-15", "accuracy": 0.65, "latency_p50_ms": 180, "latency_p95_ms": 350},
+    {"version": "v2.1", "date": "2025-01-22", "accuracy": 0.83, "latency_p50_ms": 200, "latency_p95_ms": 380}
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pip install langchain-ollama -q)",
+      "Bash(curl -s http://localhost:11434/api/tags)",
+      "Bash(python *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git reset *)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(timeout 60 bash -c 'echo -e \"TestUser\\\\nPython Developer\\\\nI worked on stuff and made things work\" | python codes/15_app.py')",
+      "Bash(timeout 120 bash -c 'echo -e \"TestUser\\\\nPython Developer\\\\nI worked on stuff and made things work\" | python codes/15_app.py')",
+      "Bash(timeout 120 bash -c 'echo -e \"TestUser\\\\nSoftware Engineer\\\\nI made stuff work with code\" | python codes/15_app2.py')"
+    ]
+  }
+}

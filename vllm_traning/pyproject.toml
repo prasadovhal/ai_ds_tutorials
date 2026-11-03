@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "vllm-demo"
+version = "0.1.0"
+description = "vLLM demo"
+package-mode = false
+authors = ["Prasad Ovhal"]
+
+[tool.poetry.dependencies]
+python = "3.11.*"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "*"
+
+[[tool.poetry.source]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"

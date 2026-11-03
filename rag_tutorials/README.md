@@ -1,0 +1,98 @@
+# rag_tutorials
+Basic RAG understanding, to advance tutorials
+
+## Set up Python & Poetry
+
+1. cd transformers_tutorial
+2. install poetry
+`(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -`
+3. run `C:\Users\user_name\AppData\Roaming\Python\Scripts`
+4. check poetry version `poetry --version`
+5. set `poetry config virtualenvs.in-project true`
+6. run `poetry install`
+7. set venv 
+   - for windows `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` or `.venv\Scripts\activate`
+   - for linux/mac `source .venv/bin/activate`
+
+## changes you need to make
+
+1. Create `constant.py` file inside `codes/` folder.
+2. Add the following keys inside it:
+   - `GOOGLE_API_KEY = "your_google_api_key"`
+   - `OPENAI_KEY = "your_openai_key"`
+   - `HUGGINGFACE_API_KEY = "your_huggingface_api_key"`
+   - `LANGFUSE_SECRET_KEY = "your_langfuse_secret_key"`
+   - `LANGFUSE_PUBLIC_KEY = "your_langfuse_public_key"`
+   - `LANGFUSE_BASE_URL = "https://cloud.langfuse.com"`
+
+
+# Topics included in RAG
+
+1. encoding methods
+    - Bi-encoder
+    - Cross-encoder
+2. vectorDB
+    - FAISS = Facebook AI Similarity Search
+    - Chroma
+    - Qdrant
+    - Pinecone
+    - Weaviate
+    - Milvus
+    - Elasticsearch (Dense vectors)
+3. chunking
+    - token-based
+    - recursive text
+    - parent doc chunking
+    - adaptive chunk size
+4. doc parsing
+5. conversation memory
+6. Advance
+    - Hybrid-RAG
+        - re-ranking : [CLS] query [SEP] doc -> from these CLS embedding is calculated using self attention, then re-rank score = W * CLS embedding + b (where as W and B are calculated using gradient descent & Logistic Regression)
+    - Graph-RAG
+        - Knowledge graph
+    - Agentic RAG
+    - Reflection
+    - self-ask
+
+# RAG Steps
+
+1. Document Loading: Load PDFs, CSVs, Web pages, DB data.
+2. Chunking: Break long docs into smaller pieces.
+3. Embedding: Convert chunks into vectors.
+4. Store in Vector DB: So we can search via similarity.
+5. Retrieval: Convert query → embedding → similarity search.
+6. Augment Prompt: Attach retrieved chunks to prompt.
+7. Generate Answer: LLM answers using retrieved context.
+
+
+## What it includes
+1. Basic RAG pipeline with bi-encoder
+2. Basic RAG pipeline with cross-encoder
+3. Vector DB's
+    - Chroma DB
+    - Qdrant
+    - Pinecone
+    - weaviate
+    - Milvus
+    - Elasticsearch
+4. chunking
+    - Manual chunking
+    - token based chunking
+    - Recursive Chunking
+    - parent doc chunking
+    - Retreival - BM25
+    - adaptive chunking
+5. retreival
+    - dense search retrieval (meaning, dense search cosine similarity between query & doc) 
+    - BM25 (TF-IDF score, exact keywords)
+    - hybrid (0.5 * dense search cosine similarity + 0.5 * BM25 TF-IDF score)
+6. doc parsing
+    - docling
+7. Conversation memory
+8. Hallucination
+    - definantion
+    - LLM metrics, benchmarks
+    - gold dataset
+9. Agentic RAG
+    - 

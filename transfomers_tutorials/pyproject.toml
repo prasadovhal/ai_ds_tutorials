@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "transformers-demo"
+version = "0.1.0"
+description = "Transformer demo setup"
+authors = ["Prasad Ovhal"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.15"
+
+transformers = "*"
+datasets = "*"
+evaluate = "*"
+accelerate = "*"
+timm = "*"
+peft = "*"
+bitsandbytes = "*"
+onnx = "*"
+onnxruntime = "*"
+onnxscript = "*"
+llama-cpp-python = "*"
+scikit-learn = "^1.8"
+torch = {version = "^2.5.1", source = "pytorch-cu121"}
+torchvision = {version = "^0.20.1", source = "pytorch-cu121"}
+torchaudio = {version = "^2.5.1", source = "pytorch-cu121"}
+seaborn = "^0.13.2"
+wordcloud = "^1.9.6"
+nltk = "^3.9.3"
+spacy = "^3.8.11"
+
+[[tool.poetry.source]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,299 @@
+{
+  "sample_traces": [
+    {
+      "trace_id": "trace-001",
+      "name": "science_qa_pipeline",
+      "start_time": "2026-07-03T10:00:00.000Z",
+      "end_time": "2026-07-03T10:00:02.345Z",
+      "status": "OK",
+      "spans": [
+        {
+          "span_id": "span-001a",
+          "parent_span_id": null,
+          "name": "pipeline.run",
+          "start_time": "2026-07-03T10:00:00.000Z",
+          "end_time": "2026-07-03T10:00:02.345Z",
+          "attributes": {
+            "question_id": 0,
+            "pipeline_version": "1.0.0"
+          }
+        },
+        {
+          "span_id": "span-001b",
+          "parent_span_id": "span-001a",
+          "name": "prompt.format",
+          "start_time": "2026-07-03T10:00:00.010Z",
+          "end_time": "2026-07-03T10:00:00.025Z",
+          "attributes": {
+            "prompt_template_version": "v3",
+            "input_tokens": 245
+          }
+        },
+        {
+          "span_id": "span-001c",
+          "parent_span_id": "span-001a",
+          "name": "llm.call",
+          "start_time": "2026-07-03T10:00:00.025Z",
+          "end_time": "2026-07-03T10:00:02.100Z",
+          "attributes": {
+            "model": "gpt-4",
+            "input_tokens": 245,
+            "output_tokens": 38,
+            "latency_ms": 2075,
+            "temperature": 0.0
+          }
+        },
+        {
+          "span_id": "span-001d",
+          "parent_span_id": "span-001a",
+          "name": "response.parse",
+          "start_time": "2026-07-03T10:00:02.100Z",
+          "end_time": "2026-07-03T10:00:02.115Z",
+          "attributes": {
+            "parsed_answer": "D",
+            "confidence": 0.92
+          }
+        },
+        {
+          "span_id": "span-001e",
+          "parent_span_id": "span-001a",
+          "name": "evaluation.check",
+          "start_time": "2026-07-03T10:00:02.115Z",
+          "end_time": "2026-07-03T10:00:02.345Z",
+          "attributes": {
+            "correct": true,
+            "ground_truth": "D",
+            "predicted": "D"
+          }
+        }
+      ]
+    },
+    {
+      "trace_id": "trace-002",
+      "name": "science_qa_pipeline",
+      "start_time": "2026-07-03T10:00:03.000Z",
+      "end_time": "2026-07-03T10:00:08.712Z",
+      "status": "SLOW",
+      "spans": [
+        {
+          "span_id": "span-002a",
+          "parent_span_id": null,
+          "name": "pipeline.run",
+          "start_time": "2026-07-03T10:00:03.000Z",
+          "end_time": "2026-07-03T10:00:08.712Z",
+          "attributes": {
+            "question_id": 1,
+            "pipeline_version": "1.0.0"
+          }
+        },
+        {
+          "span_id": "span-002b",
+          "parent_span_id": "span-002a",
+          "name": "prompt.format",
+          "start_time": "2026-07-03T10:00:03.010Z",
+          "end_time": "2026-07-03T10:00:03.030Z",
+          "attributes": {
+            "prompt_template_version": "v3",
+            "input_tokens": 312
+          }
+        },
+        {
+          "span_id": "span-002c",
+          "parent_span_id": "span-002a",
+          "name": "llm.call",
+          "start_time": "2026-07-03T10:00:03.030Z",
+          "end_time": "2026-07-03T10:00:08.500Z",
+          "attributes": {
+            "model": "gpt-4",
+            "input_tokens": 312,
+            "output_tokens": 85,
+            "latency_ms": 5470,
+            "temperature": 0.0
+          }
+        },
+        {
+          "span_id": "span-002d",
+          "parent_span_id": "span-002a",
+          "name": "response.parse",
+          "start_time": "2026-07-03T10:00:08.500Z",
+          "end_time": "2026-07-03T10:00:08.520Z",
+          "attributes": {
+            "parsed_answer": "B",
+            "confidence": 0.65
+          }
+        },
+        {
+          "span_id": "span-002e",
+          "parent_span_id": "span-002a",
+          "name": "evaluation.check",
+          "start_time": "2026-07-03T10:00:08.520Z",
+          "end_time": "2026-07-03T10:00:08.712Z",
+          "attributes": {
+            "correct": false,
+            "ground_truth": "A",
+            "predicted": "B"
+          }
+        }
+      ]
+    }
+  ],
+  "sample_logs": [
+    {
+      "timestamp": "2026-07-03T10:00:00.000Z",
+      "level": "INFO",
+      "component": "pipeline",
+      "message": "Starting science QA pipeline",
+      "metadata": {
+        "question_id": 0,
+        "model": "gpt-4",
+        "prompt_version": "v3"
+      }
+    },
+    {
+      "timestamp": "2026-07-03T10:00:02.100Z",
+      "level": "INFO",
+      "component": "llm",
+      "message": "LLM call completed",
+      "metadata": {
+        "question_id": 0,
+        "latency_ms": 2075,
+        "input_tokens": 245,
+        "output_tokens": 38,
+        "model": "gpt-4",
+        "cost_usd": 0.00961
+      }
+    },
+    {
+      "timestamp": "2026-07-03T10:00:08.500Z",
+      "level": "WARNING",
+      "component": "llm",
+      "message": "LLM call exceeded latency threshold",
+      "metadata": {
+        "question_id": 1,
+        "latency_ms": 5470,
+        "threshold_ms": 3000,
+        "model": "gpt-4"
+      }
+    },
+    {
+      "timestamp": "2026-07-03T10:00:08.712Z",
+      "level": "ERROR",
+      "component": "evaluation",
+      "message": "Incorrect prediction detected",
+      "metadata": {
+        "question_id": 1,
+        "expected": "A",
+        "predicted": "B",
+        "confidence": 0.65
+      }
+    }
+  ],
+  "sample_metrics": {
+    "latency": {
+      "p50_ms": 1850,
+      "p95_ms": 4200,
+      "p99_ms": 5800,
+      "mean_ms": 2150,
+      "min_ms": 800,
+      "max_ms": 6200
+    },
+    "tokens": {
+      "total_input_tokens": 14250,
+      "total_output_tokens": 2890,
+      "avg_input_tokens_per_query": 285,
+      "avg_output_tokens_per_query": 57.8,
+      "queries_processed": 50
+    },
+    "cost": {
+      "total_cost_usd": 0.598,
+      "avg_cost_per_query_usd": 0.01196,
+      "model_breakdown": {
+        "gpt-4": {
+          "queries": 50,
+          "input_cost": 0.4275,
+          "output_cost": 0.1734,
+          "total_cost": 0.598
+        }
+      }
+    },
+    "quality": {
+      "accuracy": 0.72,
+      "avg_confidence": 0.78,
+      "low_confidence_count": 8,
+      "response_format_errors": 2
+    }
+  },
+  "model_pricing": {
+    "gpt-4": {
+      "input_per_1k_tokens": 0.03,
+      "output_per_1k_tokens": 0.06
+    },
+    "gpt-4-turbo": {
+      "input_per_1k_tokens": 0.01,
+      "output_per_1k_tokens": 0.03
+    },
+    "gpt-3.5-turbo": {
+      "input_per_1k_tokens": 0.0005,
+      "output_per_1k_tokens": 0.0015
+    },
+    "claude-3-opus": {
+      "input_per_1k_tokens": 0.015,
+      "output_per_1k_tokens": 0.075
+    },
+    "claude-3-sonnet": {
+      "input_per_1k_tokens": 0.003,
+      "output_per_1k_tokens": 0.015
+    },
+    "claude-3-haiku": {
+      "input_per_1k_tokens": 0.00025,
+      "output_per_1k_tokens": 0.00125
+    }
+  },
+  "prompt_versions": {
+    "v1": {
+      "template": "Answer the following question: {question}\nChoices: {choices}\nAnswer:",
+      "description": "Minimal prompt, no instructions",
+      "avg_accuracy": 0.58,
+      "avg_tokens": 180
+    },
+    "v2": {
+      "template": "You are a science expert. Answer the following multiple choice question by selecting the best option (A, B, C, D, or E).\n\nQuestion: {question}\n{choices}\n\nAnswer (letter only):",
+      "description": "Added role and format instruction",
+      "avg_accuracy": 0.68,
+      "avg_tokens": 240
+    },
+    "v3": {
+      "template": "You are an expert scientist with deep knowledge across physics, chemistry, biology, and earth sciences.\n\nCarefully read the following multiple choice question. Consider each option thoroughly before selecting the best answer.\n\nQuestion: {question}\n\nOptions:\n{choices}\n\nProvide ONLY the letter (A, B, C, D, or E) of the correct answer:",
+      "description": "Added chain-of-thought encouragement and expertise framing",
+      "avg_accuracy": 0.72,
+      "avg_tokens": 290
+    }
+  },
+  "tool_comparison": {
+    "Phoenix (Arize)": {
+      "focus": "Tracing and evaluation for LLM apps",
+      "strengths": ["Open-source", "Rich tracing UI", "Evaluation built-in", "Works with any LLM"],
+      "best_for": "Teams wanting open-source observability with strong tracing"
+    },
+    "LangSmith": {
+      "focus": "Tracing, testing, evaluation for LangChain",
+      "strengths": ["Deep LangChain integration", "Dataset management", "Online evaluation", "Playground"],
+      "best_for": "Teams heavily using LangChain framework"
+    },
+    "OpenTelemetry": {
+      "focus": "Vendor-neutral observability standard",
+      "strengths": ["Industry standard", "Vendor agnostic", "Rich ecosystem", "Traces + metrics + logs"],
+      "best_for": "Enterprise teams needing vendor-neutral instrumentation"
+    },
+    "MLflow": {
+      "focus": "ML experiment tracking and model management",
+      "strengths": ["Experiment comparison", "Model registry", "Artifact storage", "Wide adoption"],
+      "best_for": "Teams tracking ML experiments alongside LLM evaluation"
+    },
+    "Weights & Biases": {
+      "focus": "Experiment tracking, monitoring, collaboration",
+      "strengths": ["Beautiful dashboards", "Real-time monitoring", "Team collaboration", "Sweeps"],
+      "best_for": "Teams needing rich visualization and team collaboration"
+    }
+  }
+}
